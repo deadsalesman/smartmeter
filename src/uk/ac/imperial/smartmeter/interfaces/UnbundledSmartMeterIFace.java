@@ -7,5 +7,5 @@ public interface UnbundledSmartMeterIFace {
 	public void addRequirement(ElectricityRequirement req);
 	public ElectricityRequirement getRequirement(int index);
 	public void removeRequirement(int index);
-	
+	public void main(String[] args);
 }

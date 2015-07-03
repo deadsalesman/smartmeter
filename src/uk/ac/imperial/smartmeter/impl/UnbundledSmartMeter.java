@@ -31,4 +31,10 @@ public class UnbundledSmartMeter implements UnbundledSmartMeterIFace {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
 }

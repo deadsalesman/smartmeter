@@ -13,7 +13,7 @@ public class webTester {
 	}
 	public static String doHttpURLConnection()
 	{
-		String url_string = "http://www.penguintutor.com/quiz/themes/penguintutor/wquiz.css";
+		String url_string = "https://usm-server-dev-usm-dev2015.c9.io/";
 		HttpURLConnection conn = null;
 		BufferedReader reader = null;
 		StringBuilder stringBuilder; 
@@ -30,13 +30,11 @@ public class webTester {
 			stringBuilder = new StringBuilder();
 			
 			String line = null;
-			line = reader.readLine();
-			//while(line != null);
-			for (int i = 0; i < 10; i++)
-			{
+			//line = reader.readLine();
+			while((line = reader.readLine()) != null){
 				System.out.println("GOT" + line);
 				stringBuilder.append(line + "\n");
-				line = reader.readLine();
+				//line = reader.readLine();
 			}
 			System.out.println(url);
 			System.out.println(conn.getResponseCode());
