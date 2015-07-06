@@ -6,9 +6,10 @@ public class UniformConsumptionProfile extends ConsumptionProfile {
 	protected double shape(double time) {
 		return 1;
 	}
-	public UniformConsumptionProfile()
+	public UniformConsumptionProfile(double dur, double amplitude)
 	{
-		super();
+		super(dur);
+		name = "Uniform";
 	}
 
 	

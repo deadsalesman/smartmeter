@@ -3,7 +3,7 @@ package uk.ac.imperial.smartmeter.res;
 public class DecimalRating {
 	private int value;
 	
-	DecimalRating(int i)
+	public DecimalRating(int i)
 	{
 		setValue(i);
 	}

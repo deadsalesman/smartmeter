@@ -1,18 +1,18 @@
 package uk.ac.imperial.smartmeter.db;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import uk.ac.imperial.smartmeter.impl.ElectronicDevice;
 import uk.ac.imperial.smartmeter.res.DeviceType;
 
 public class DevicesDBManager 
-     extends DBManager
-	 implements DBManagerIFace{
+     extends DBManager{
 	public DevicesDBManager(String dbLocation) {
 		super(dbLocation);
-		initialiseDeviceEnumTable();
+		initialiseEnumTable();
+	    initialiseDeviceTable();
 	}
 	private final String devTable = "DEVICE_TABLE";
 	private final String enumTable = "ENUM_TABLE";
@@ -31,9 +31,24 @@ public class DevicesDBManager
 			"FOREIGN KEY(TYPE) REFERENCES      ENUM_TABLE(ID));"
 			;
 
-	public boolean initialiseDeviceEnumTable()
+	public boolean initialiseDeviceTable()
 	{
-		ResultSet verifyEnumTable = queryDB("SELECT COUNT(*) FROM " + enumTable);
+		LocalSet verifyEnumTable = queryDB("SELECT COUNT(*) FROM " + devTable);
+		if (verifyEnumTable==null)
+		{
+			try {
+				createTable(devTable);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+		
+	}
+	public boolean initialiseEnumTable()
+	{
+		LocalSet verifyEnumTable = queryDB("SELECT COUNT(*) FROM " + enumTable);
 		int l = DeviceType.values().length;
 		int count = -1;
 		try {
@@ -43,7 +58,7 @@ public class DevicesDBManager
 			}
 			else
 			{
-			  count = verifyEnumTable.getInt(1);
+			  count = (int)verifyEnumTable.data.get(0).values().toArray()[0]; //I am so sorry
 			}
 			if ((verifyEnumTable==null)||(count!=l))
 			{
@@ -68,54 +83,48 @@ public class DevicesDBManager
 		String fmt = "INSERT INTO "+devTable+"(ID, STATE, TYPE, UUID) " + "VALUES ("
 				+ ed.getId().hashCode() + ", " + state + ", " + ed.getType().ordinal() + ", '" + ed.getId().toString() + "' "
 				+ " );";
-		if (!insertValue(devTable, fmt)) {
-			try {
-				createTable(devTable);
-				insertDevice(ed);
-				return true;
-			} catch (SQLException e) {
-				return false;
-			}
-
-		}
-		return true;
+	
+		return insertValue(devTable, fmt);
 	}
-	public ElectronicDevice ResToED(ResultSet res)
+	public ElectronicDevice ResToED(LocalSet res)
 	{
 		ElectronicDevice ed = null;
-		try {
-			ed = new ElectronicDevice(res.getBoolean("STATE"),res.getInt("TYPE"),res.getString("UUID"));
-		} catch (SQLException e) {
-		}
+		ed = new ElectronicDevice((boolean)res.data.get(0).get("STATE"),(int)res.data.get(0).get("TYPE"),(String)res.data.get(0).get("UUID"));
 		return ed;
-		
 	}
-	public ArrayList<ElectronicDevice> ResToEDArray(ResultSet res)
+	public ArrayList<ElectronicDevice> ResToEDArray(LocalSet res)
 	{
 		ArrayList<ElectronicDevice> array = new ArrayList<ElectronicDevice>();
 		try {
-			while(res.next())
+			for (Map<String,Object> ls : res.data)
 			{
-				array.add(ResToED(res));
+				array.add(new ElectronicDevice(((int)ls.get("STATE")==1?true:false),(int)ls.get("TYPE"),(String)ls.get("UUID")));
 			}
-		} catch (SQLException e) {
+		} catch (NullPointerException e) {
+
 		}
 		return array;
 		
 	}
+	public boolean updateDeviceState(int id, boolean state)
+	{
+		int value = state ? 1 : 0;
+		String stmt = "UPDATE " + devTable + " SET STATE = " + value + " WHERE ID = " + id + ";";
+		return genericDBUpdate(stmt);
+	}
 	public ArrayList<ElectronicDevice> extractAllDevices()
 	{
-		ResultSet res = extractAllData(devTable);
+		LocalSet res = extractAllData(devTable);
 		return ResToEDArray(res);
 	}
 	public ArrayList<ElectronicDevice> extractMultipleDevices(int lower,int upper)
 	{
-		ResultSet res = extractSelectedData(devTable,upper,lower);
+		LocalSet res = extractSelectedData(devTable,upper,lower);
 		return ResToEDArray(res);
 	}
 	public ElectronicDevice extractSingleDevice(int index)
 	{
-		ResultSet res = extractSelectedData(devTable,index+1,index);
+		LocalSet res = extractSelectedData(devTable,index+1,index);
 		return ResToED(res);
 	}
 	public void createTable(String tableName) throws SQLException{

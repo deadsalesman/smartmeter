@@ -3,37 +3,55 @@ package uk.ac.imperial.smartmeter.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.impl.ElectronicDevice;
+import uk.ac.imperial.smartmeter.impl.ElectronicDeviceController;
+import uk.ac.imperial.smartmeter.impl.LocalController;
+import uk.ac.imperial.smartmeter.res.DecimalRating;
+import uk.ac.imperial.smartmeter.res.DeviceType;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 
 public class DBTester {
-	static DevicesDBManager db;
 	
 	public static void main(String[] args)
 	{
-		db = new DevicesDBManager("jdbc:sqlite:test.db");
-		if (db.main(null))
-		{
-			System.out.println("Success");
-		}
-		db.initialiseDeviceEnumTable();
-		ResultSet res = db.queryDB("SELECT * FROM DEVICE_TABLE;");
-		db.spamResultSet(res);
-		res = db.queryDB("SELECT * FROM ENUM_TABLE;");
-		db.spamResultSet(res);
-		ArrayList<ElectronicDevice> a = null;
-		ArrayList<ElectronicDevice> b = new ArrayList<ElectronicDevice>();
-		db.insertDevice(new ElectronicDevice(true,1));
-		db.insertDevice(new ElectronicDevice(true,3));
-		db.insertDevice(new ElectronicDevice(true,2));
-		db.insertDevice(new ElectronicDevice(true,0));
-		db.insertDevice(new ElectronicDevice(true,2));
-		db.insertDevice(new ElectronicDevice(true,1));
-		db.insertDevice(new ElectronicDevice(true,3));
-		
-		res = db.queryDB("SELECT * FROM DEVICE_TABLE;");
-		db.spamResultSet(res);
-		ElectronicDevice ed = db.extractSingleDevice(4);
-		ArrayList<ElectronicDevice> arr  = db.extractMultipleDevices(2, 5);
+		//testECDB();
+		testRQDB();
 	}
+private static void testECDB()
+{
+	LocalSet res;
+	ElectronicDeviceController a = new ElectronicDeviceController();
+	
+	ElectronicDeviceController b = new ElectronicDeviceController();
+	b.addDevice(new ElectronicDevice(true,0));
+	b.addDevice(new ElectronicDevice(true,1));
+	b.addDevice(new ElectronicDevice(true,2));
+	b.addDevice(new ElectronicDevice(true,3));
+	b.pushToDB();
+	res = b.db.queryDB("SELECT * FROM DEVICE_TABLE;");
+	b.db.spamLocalSet(res);
+	
+	DeviceType t = DeviceType.LED;
+	b.pushToDB();
+	b.setDevicesOfType(t, false);
+	a.pullFromDB();
+	
+	int e =3;
 }
+private static void testRQDB()
+{
+	LocalSet res;
+	LocalController l = new LocalController();
+	LocalController p = new LocalController();
+	l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(4),1,1));
+	l.pushToDB();
+	p.pullFromDB();
+	
+}
+}
+

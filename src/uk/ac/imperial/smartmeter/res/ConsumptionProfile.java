@@ -1,13 +1,14 @@
 package uk.ac.imperial.smartmeter.res;
 
 public abstract class ConsumptionProfile {
-	private double amplitude; 
-	private double duration; //in ms
+	protected double amplitude; 
+	protected double duration; //in ms
+	protected String name;
 	protected abstract double shape(double time); //normalised to [0,1]
-	public ConsumptionProfile()
+	public ConsumptionProfile(double dur)
 	{
 		amplitude = 1;
-		duration = 1000;
+		duration = dur;
 	}
 	public double getConsumption(double time)
 	{
@@ -19,5 +20,8 @@ public abstract class ConsumptionProfile {
 		{
 			return 0;
 		}
+	}
+	public String getName() {
+		return name;
 	}
 }

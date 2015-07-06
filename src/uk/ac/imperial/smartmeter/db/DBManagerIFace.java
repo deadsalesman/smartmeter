@@ -1,13 +1,14 @@
 package uk.ac.imperial.smartmeter.db;
 
-import java.sql.ResultSet;
+import java.sql.Connection;
 
 public interface DBManagerIFace {
 	public boolean createTable(String tableName, String fmt);
 	public boolean insertValue(String tableName, String fmt);
-	public ResultSet queryDB(String fmt);
-	public boolean connectDB(String fmt);
-	public void spamResultSet(ResultSet res);
-	public ResultSet extractSelectedData(String tableName, int upperBound, int lowerBound);
-	public ResultSet extractAllData(String tableName);
+	public LocalSet queryDB(String fmt);
+	public String connectDB(String fmt);
+	public void spamLocalSet(LocalSet res);
+	public LocalSet extractSelectedData(String tableName, int upperBound, int lowerBound);
+	public LocalSet extractAllData(String tableName);
+	Connection getConnection();
 }

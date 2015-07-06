@@ -1,39 +1,32 @@
 package uk.ac.imperial.smartmeter.impl;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.db.DevicesDBManager;
 import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceControllerIFace;
+import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
+import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DeviceType;
 
 
-public class ElectronicDeviceController implements ElectronicDeviceControllerIFace {
-	private ArrayList<ElectronicDevice> devices;
-	private DevicesDBManager db;
+public class ElectronicDeviceController 
+	implements ElectronicDeviceControllerIFace, UniqueIdentifierIFace{
+	private ArraySet<ElectronicDevice> devices;
+	public DevicesDBManager db;
+	private UUID id;
 	
-	@Override
-	public void addDevice(ElectronicDevice dev) {
-		boolean exists = false;
-		for (ElectronicDevice ed : devices)
-		{
-			exists |= dev.getId()==ed.getId();
-		}
-		if (!exists) {
-			devices.add(dev);
-
-		}
+	public ElectronicDeviceController()
+	{
+		id = UUID.randomUUID();
+		devices = new ArraySet<ElectronicDevice>();
+		db = new DevicesDBManager("jdbc:sqlite:edc.db");
 	}
-
-	@Override
-	public void removeDevice(int index) {
-		try {
-		devices.remove(index);
-		}
-		catch (IndexOutOfBoundsException e){
-			System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
-		}
+	public String getId()
+	{
+		return id.toString();
 	}
-
+	
 	@Override
 	public Boolean getDeviceState(int index) {
 		
@@ -45,7 +38,10 @@ public class ElectronicDeviceController implements ElectronicDeviceControllerIFa
 		}
 		return null;
 	}
-
+   public void addDevice(ElectronicDevice e)
+   {
+	   devices.add(e);
+   }
 	
 
 	@Override
@@ -67,6 +63,7 @@ public class ElectronicDeviceController implements ElectronicDeviceControllerIFa
 
 		try {
 			devices.get(index).setState(newState);
+			db.updateDeviceState(devices.get(index).hashCode(), newState);
 		}
 		catch (IndexOutOfBoundsException e){
 			System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
@@ -82,6 +79,7 @@ public class ElectronicDeviceController implements ElectronicDeviceControllerIFa
 			if (device.getType()==type)
 			{
 				device.setState(newState);
+				db.updateDeviceState(device.getId().hashCode(), newState);
 			}
 		}
 	}
@@ -92,20 +90,28 @@ public class ElectronicDeviceController implements ElectronicDeviceControllerIFa
 		return null;
 	}
 
+	
+	
+	protected void finalize() throws Throwable
+	{
+		pushToDB();
+		super.finalize();
+	}
+	
 	@Override
 	public void pushToDB() {
-		for (ElectronicDevice ed : devices)
+		for (ElectronicDevice i : devices)
 		{
-			db.insertDevice(ed);
+			db.insertDevice(i);
 		}
+		
 	}
-
 	@Override
 	public void pullFromDB() {
 		ArrayList<ElectronicDevice>temp_array = db.extractAllDevices();
-		for (ElectronicDevice ed : temp_array)
+		for (ElectronicDevice i : temp_array)
 		{
-			devices.add(ed);
+			devices.add(i);
 		}
 	}
 }

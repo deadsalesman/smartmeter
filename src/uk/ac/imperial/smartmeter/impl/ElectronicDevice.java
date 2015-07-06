@@ -6,7 +6,7 @@ import uk.ac.imperial.smartmeter.interfaces.*;
 import uk.ac.imperial.smartmeter.res.DeviceType;
 
 
-public class ElectronicDevice implements ElectronicDeviceIFace{
+public class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace{
 	private DeviceType type;
 	private Boolean state;
 	private UUID id;
@@ -51,8 +51,8 @@ public class ElectronicDevice implements ElectronicDeviceIFace{
 		state = newState;
 	}
 
-	public UUID getId() {
-		return id;
+	public String getId() {
+		return id.toString();
 	}
 
 	@Override
