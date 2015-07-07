@@ -18,7 +18,7 @@ public class User implements UniqueIdentifierIFace{
 		hash = passwdHash;
 		id = UUID.fromString(idString);
 	}
-	User(String username)
+	public User(String username)
 	{
 		name = username;
 		id = UUID.randomUUID();

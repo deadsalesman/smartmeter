@@ -16,10 +16,11 @@ public class LocalController implements LocalControllerIFace {
 	private User masterUser;
 	
 	
-	public LocalController()
+	public LocalController(String username)
 	{
 		dbReq  = new ReqsDBManager("jdbc:sqlite:req.db");
 		reqList = new ArraySet<ElectricityRequirement>();
+		masterUser = new User(username);
 	}
 	@Override
 	public Boolean registerDeviceController() {

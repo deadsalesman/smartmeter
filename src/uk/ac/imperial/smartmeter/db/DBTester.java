@@ -46,8 +46,8 @@ private static void testECDB()
 private static void testRQDB()
 {
 	LocalSet res;
-	LocalController l = new LocalController();
-	LocalController p = new LocalController();
+	LocalController l = new LocalController("Samuel Jackson");
+	LocalController p = new LocalController("John Travolta");
 	l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(4),1,1));
 	l.pushToDB();
 	p.pullFromDB();

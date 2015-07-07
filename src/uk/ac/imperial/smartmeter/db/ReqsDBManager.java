@@ -104,8 +104,6 @@ public class ReqsDBManager extends DBManager{
 	{
 		ElectricityRequirement er = null;
 		try{
-			String test = (String)ls.get("START");
-			String toast = (String)ls.get("END");
 		er = new ElectricityRequirement(
 				df.parse((String)ls.get("START")),
 				df.parse((String)ls.get("END")),
