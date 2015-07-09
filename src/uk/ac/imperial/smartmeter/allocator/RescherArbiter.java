@@ -114,7 +114,7 @@ public class RescherArbiter {
 		{
 			for (int i = 0; i < a.size(); i++)
 			{
-				total.set(i, a.get(i) + weightings.get(i)*total.get(i));
+				total.set(i, 1 + a.get(i) + weightings.get(i)*total.get(i));
 			}
 		}
 		Map<UserAgent, Double> ret = new HashMap<UserAgent, Double>();

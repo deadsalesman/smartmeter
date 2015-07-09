@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import uk.ac.imperial.smartmeter.allocator.UserAgent;
-import uk.ac.imperial.smartmeter.impl.HighLevelController;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.User;

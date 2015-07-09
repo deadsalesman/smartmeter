@@ -10,9 +10,9 @@ public class equalityComparator implements Comparator<UserAgent> {
 		int ret = 0;
 		Double s = o1.getAverageAllocation();
 		Double p = o2.getAverageAllocation();
-		if (s ==p) { ret =  0;}
-		if (s < p) { ret = -1;}
-		if (s > p) { ret =  1;}
+		if (s ==p) {ret =   0;}
+		if (s < p) { ret =  1;}
+		if (s > p) { ret = -1;}
 		return ret;
 	}
 

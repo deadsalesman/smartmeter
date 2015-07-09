@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.comparators.requirementPrioComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.EleGenConglomerate;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
@@ -24,8 +25,9 @@ public class TicketAllocator {
 	private Map<UserAgent, Double> rankings;
 	private Map<UserAgent, Integer> indexes; 
 	private Map<UserAgent, Boolean> userFinished; 
+	private boolean tryHard;
 	
-	public TicketAllocator(ArraySet<UserAgent> users, Date d)
+	public TicketAllocator(ArraySet<UserAgent> users, Date d, boolean reallocate)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
 		usrArray = new ArraySet<UserAgent>();
@@ -33,6 +35,7 @@ public class TicketAllocator {
 		tickets = new HashMap<UserAgent, ArraySet<ElectricityTicket>>();
 		conglom = new EleGenConglomerate();
 		startDate = d;
+		tryHard = reallocate;
 		for (UserAgent u : users)
 		{
 			addUser(u);
@@ -98,16 +101,36 @@ public class TicketAllocator {
 		}
 		return viable;
 	}
-	
-	private Boolean processRequirement(UserAgent u, ElectricityRequirement req)
+	private Boolean genTicketIfPossible(UserAgent u, ElectricityRequirement req)
 	{
-		if (updateInterferedNodes(req, reqMap.get(req))) { 
+		Boolean ret = false;
+		ArrayList<QuantumNode> nodes = req.getTampered() ? queue.findIntersectingNodes(req) : reqMap.get(req);
+		if (updateInterferedNodes(req, nodes)) { 
 			ElectricityTicket ticket = generateTicket(req);
 			tickets.get(u).add(ticket);
+			ret = true;
 		}
-		
-		return false;
-		
+		return ret;
+	}
+	private Boolean processRequirement(UserAgent u, ElectricityRequirement req)
+ {
+		Boolean ret = false;
+		ret = genTicketIfPossible(u, req);
+		if (!ret && tryHard) {
+			int count = 0;
+			int attemptLimit = 3;
+			while ((count <= attemptLimit) && (!ret)) {
+				int offset = 1;
+				QuantumNode first = queue.findIntersectingNodes(req).get(0);
+				req.setStartTime(DateHelper.dPlus(first.getSoonestFinishingTime(), offset));
+				ret = genTicketIfPossible(u, req);
+				count++;
+			}
+
+		}
+
+		return ret;
+
 	}
 	public Map<UserAgent, ArraySet<ElectricityTicket>> calculateTickets()
 	{
@@ -128,12 +151,13 @@ public class TicketAllocator {
 			/*finds the highest priority agent, and tries to create a ticket for the highest priority requirement they have */
 			finished = true;
 			UserAgent max = findMaxAgent(rankings);
-			processRequirement(max, max.getReq(indexes.get(max)));
+			ElectricityRequirement req = max.getReq(indexes.get(max));
+			processRequirement(max, req);
 			
 			/* attempts to move on to the next requirement in the available set */
 			if (indexes.get(max) < max.getReqs().getSize() - 1) {
 				indexes.put(max, indexes.get(max) + 1);
-				rankings.put(max, rankings.get(max)-1);
+				rankings.put(max, rankings.get(max)-req.getDuration()*req.getMaxConsumption());
 			}
 			else
 			{

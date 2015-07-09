@@ -26,6 +26,10 @@ public class DateHelper {
 	{
 		return new Date(d.getTime()+(long)(offset*QuantumNode.quanta));
 	}
+	public static Date dPlus(Date d, Integer offset)
+	{
+		return new Date(d.getTime()+(long)(offset*QuantumNode.quanta));
+	}
 	public static Date incrementDay(Date d, int i)
 	{
 		return new Date(d.getTime()+i*DayNode.mSecInDay);

@@ -23,9 +23,9 @@ public class TestESort extends GenericTest{
 		
 		ArraySet.sort(l, new equalityComparator());
 		
-		return (l.get(2).getUser().getName()=="Samuel Jackson")
+		return (l.get(0).getUser().getName()=="Samuel Jackson")
 				&&(l.get(1).getUser().getName()=="Uma Thurman")
-				&&(l.get(0).getUser().getName()=="John Travolta");
+				&&(l.get(2).getUser().getName()=="John Travolta");
 	}
 
 }

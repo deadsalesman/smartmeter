@@ -1,15 +1,12 @@
 package uk.ac.imperial.smartmeter.res;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 import uk.ac.imperial.smartmeter.allocator.UserAgent;
-import uk.ac.imperial.smartmeter.comparators.demandComparator;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>, Collection<T>{

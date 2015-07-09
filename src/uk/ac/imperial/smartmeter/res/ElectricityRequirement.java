@@ -3,16 +3,18 @@ package uk.ac.imperial.smartmeter.res;
 import java.util.Date;
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ElectricityRequirement implements UniqueIdentifierIFace{
-	private final Date startTime;
-	private final Date endTime;
-	private final double duration;
-	private final DecimalRating priority;
-	private final UniformConsumptionProfile profile; //consumption assum
+	private Date startTime;
+	private Date endTime;
+	private double duration;
+	private DecimalRating priority;
+	private UniformConsumptionProfile profile; //consumption assum
 	private UUID reqID;
 	private UUID userID;
+	private Boolean tampered = false;
 	public int getProfileCode()
 	{
 		return ProfileList.getCode(profile);
@@ -61,9 +63,18 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 	public Date getStartTime() {
 		return startTime;
 	}
-
+	public Boolean getTampered()
+	{
+		return tampered;
+	}
 	public Date getEndTime() {
 		return endTime;
+	}
+	public void setStartTime(Date d)
+	{
+		startTime = new Date(d.getTime());
+		endTime = DateHelper.dPlus(d, duration/QuantumNode.quanta);
+		tampered = true;
 	}
 	public double getMaxConsumption()
 	{

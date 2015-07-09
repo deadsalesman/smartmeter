@@ -7,7 +7,8 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 
 public class QuantumNode implements TimeNode {
 	private ArraySet<ElectricityRequirement> reqs;
-	private Double capacity;
+	private Double currentCapacity;
+	private Double maxCapacity;
 	private Date startTime;
 	public static final Integer quanta = 3600000; //ms, MUST be a factor of 3600 (seconds in an hour)
 	private Date endTime;
@@ -16,11 +17,8 @@ public class QuantumNode implements TimeNode {
 		reqs = new ArraySet<ElectricityRequirement>();
 		startTime = start;
 		endTime = new Date(startTime.getTime()+quanta);
-		capacity = cap;
-	}
-	public QuantumNode(Date start)
-	{
-		this(3.,start);
+		currentCapacity = cap;
+		maxCapacity = cap;
 	}
 	public Integer getQuanta()
 	{
@@ -30,10 +28,10 @@ public class QuantumNode implements TimeNode {
 	{
 		
 		Double max = e.getMaxConsumption();
-		if (max <= capacity)
+		if (max <= currentCapacity)
 		{
 			reqs.add(e);
-			capacity -= e.getMaxConsumption();
+			currentCapacity -= e.getMaxConsumption();
 			return true;
 		}
 		else 
@@ -44,16 +42,34 @@ public class QuantumNode implements TimeNode {
 	public void removeReq(int index)
 	{
 		ElectricityRequirement e = reqs.remove(index);
-		capacity += e.getMaxConsumption();
+		currentCapacity += e.getMaxConsumption();
+	}
+	public Date getSoonestFinishingTime()
+ {
+		Date d = null;
+		if (reqs.getSize() == 0) {
+			d = endTime;
+		} else {
+			d = reqs.get(0).getEndTime();
+			for (ElectricityRequirement e : reqs) {
+				if (e.getEndTime().before(d)) {
+					d = e.getEndTime();
+				}
+			}
+		}
+		return d;
 	}
 	public Double getCapacity()
 	{
-		return capacity;
+		return currentCapacity;
 	}
 	public Date getStartTime() {
 		return startTime;
 	}
 	public Date getEndTime() {
 		return endTime;
+	}
+	public Double getMaxCapacity() {
+		return maxCapacity;
 	}
 }

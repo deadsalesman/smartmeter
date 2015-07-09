@@ -19,7 +19,7 @@ public class CalendarQueue {
  {
 	 return calendar.get(0).getSize();
  }
- private void initialiseCalendar(EleGenConglomerate e)
+ private void initialiseCalendar()
  {
 	 for (int i = 0; i < daysInCalendar; i++)
 	 {
@@ -59,7 +59,8 @@ public class CalendarQueue {
  {
 	 calendar = new ArrayList<DayNode>(daysInCalendar);
 	 startTime = d;
-	 initialiseCalendar(e);
+	 conglom = e;
+	 initialiseCalendar();
  }
  public DayNode push(DayNode d)
  {

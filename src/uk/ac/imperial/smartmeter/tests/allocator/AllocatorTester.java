@@ -18,11 +18,13 @@ public class AllocatorTester extends GenericTester{
 		testLog.add(new TestCalendarSize());
 		testLog.add(new TestCalendarQueue());
 		testLog.add(new TestInterference());
+		testLog.add(new TestSufficientGeneration());
 		testLog.add(new TestNotExclusive());
 		testLog.add(new TestMutuallyExclusive());
 		testLog.add(new TestInsufficientGeneration());
 		testLog.add(new TestOrdering());
 		testLog.add(new TestUserPriority());
+		testLog.add(new TestRearrangeMutex());
 		
 		return reportLog();
 	}

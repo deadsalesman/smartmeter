@@ -20,9 +20,9 @@ public class needsComparator implements Comparator<UserAgent> {
 		{
 			p +=r.getMaxConsumption();
 		}
-		if (s ==p) { ret =  0;}
-		if (s < p) { ret =  1;}
-		if (s > p) { ret = -1;}
+		if (s ==p) {ret =    0;}
+		if (s < p) { ret =  -1;}
+		if (s > p) { ret =   1;}
 		return ret;
 	}
 

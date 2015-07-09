@@ -23,7 +23,7 @@ public class DayNode implements TimeNode{
 		for (int i = 0; i < nNodes; i++)
 		{
 			Date d = new Date(startTime.getTime()+i*QuantumNode.quanta);
-			QuantumNode n = new QuantumNode(d);
+			QuantumNode n = new QuantumNode(e.getPredictedOutput(d),d);
 			nodes.add(n);
 		}
 	}

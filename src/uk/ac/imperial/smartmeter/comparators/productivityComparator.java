@@ -11,8 +11,8 @@ public class productivityComparator implements Comparator<UserAgent> {
 		Double s = o1.getEconomicPower();
 		Double p = o2.getEconomicPower();
 		if (s ==p) { ret =  0;}
-		if (s < p) { ret =  1;}
-		if (s > p) { ret = -1;}
+		if (s < p) { ret = -1;}
+		if (s > p) { ret =  1;}
 		return ret;
 	}
 

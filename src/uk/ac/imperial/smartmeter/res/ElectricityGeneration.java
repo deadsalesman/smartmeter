@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.util.Date;
+
 public class ElectricityGeneration {
 	private double currentOutput;
 	//private kalmanFilter predictor;
@@ -16,7 +18,7 @@ public class ElectricityGeneration {
 	{
 		return currentOutput;
 	}
-	public double getPredictedOutput(double elapsed)
+	public double getPredictedOutput(Date elapsed)
 	{
 		return currentOutput; //assume input is constant
 	}

@@ -5,7 +5,7 @@ import uk.ac.imperial.smartmeter.res.EleGenConglomerate;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestDayNodeDiff extends GenericTest {
-
+	//This test has been observed to fail. I am not sure why.
 	@Override
 	public boolean doTest() {
 		 DayNode d = new DayNode(2,new EleGenConglomerate());
