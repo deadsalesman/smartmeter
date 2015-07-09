@@ -1,19 +1,18 @@
 package uk.ac.imperial.smartmeter.db;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Map;
 
 import uk.ac.imperial.smartmeter.res.User;
 
-public class UserDBManager extends DBManager{
+public class UserDBManager extends IntegratedDBManager<User>{
 	public UserDBManager(String dbLocation) {
-		super(dbLocation);
-		initialiseUserTable();
+
+		super(dbLocation, primTable, primFmt);
 	}
-	private final String userTable = "USER_TABLE";
-	private String profileFmt   = 
-			"CREATE TABLE     " +  userTable + "("   +
+	private static String primTable = "USER_TABLE";
+	private static String primFmt   = 
+			"CREATE TABLE     " +  primTable + "("   +
 			"ID     INT       PRIMARY KEY NOT NULL," +
 			"SALT   INT       NOT NULL,"             +
 			"HASH   INT       NOT NULL,"             +
@@ -21,11 +20,7 @@ public class UserDBManager extends DBManager{
 			"NAME   CHAR(50)  NOT NULL);"
 			;
 	
-	public boolean insertRequirement(User r) {
-		String fmt = null;
-		return insertValue(userTable, fmt);
-	}
-	private User formatMap(Map<String,Object> ls)
+	public User formatMap(Map<String,Object> ls) 
 	{
 		User u = new User(
 				(String)ls.get("SALT"),
@@ -35,47 +30,13 @@ public class UserDBManager extends DBManager{
 				);
 		return u;
 	}
-	public User resToUser(LocalSet res)
-	{
-		return formatMap(res.data.get(0));
-	}
-	public ArrayList<User> resToUserArray(LocalSet res)
-	{
-		ArrayList<User> array = new ArrayList<User>();
-		try {
-			for (Map<String,Object> ls : res.data)
-			{
-					array.add(formatMap(ls));
-			}
-		} catch (NullPointerException e) {
-
-		}
-		return array;
-		
-	}
-	public ArrayList<User> extractAll()
-	{
-		LocalSet res = extractAllData(userTable);
-		return resToUserArray(res);
-	}
-	public ArrayList<User> extractMultipleUsers(int lower,int upper)
-	{
-		LocalSet res = extractSelectedData(userTable,upper,lower);
-		return resToUserArray(res);
-	}
-	public User extractSingleUser(int index)
-	{
-		LocalSet res = extractSelectedData(userTable,index+1,index);
-		return resToUser(res);
-	}
-	public void createTable(String tableName) throws SQLException{
+	public void createTable(String tableName) throws SQLException{  
 		String fmt = "";
 		boolean validTable = false;
-		switch(tableName){
-		case userTable:
-			fmt = profileFmt;
+		if (tableName == primTable)
+		{
+			fmt = primFmt;
 			validTable = true;
-			break;
 		}
 		if (validTable) {
 			genericDBUpdate(fmt);
@@ -85,20 +46,13 @@ public class UserDBManager extends DBManager{
 			throw new SQLException("Invalid Table Name");
 		}
 	}
-	
-	public boolean initialiseUserTable()
-	{
-		LocalSet verifyProfileTable = queryDB("SELECT COUNT(*) FROM " + userTable);
-		if (verifyProfileTable==null)
-		{
-			try {
-				createTable(userTable);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		return true;
-		
+	@Override
+	public boolean insertElement(User r) {
+		String fmt = "INSERT INTO "+primTable+"(ID, SALT, HASH, UUID, NAME) " + "VALUES ("
+				+ r.getId().hashCode() + ", '" + r.getSalt() + "', '" + r.getHash() 
+				+ "', '" + r.getId() + "', '" + r.getName() + "' "
+				+ " );";
+		return insertValue(primTable, fmt);
 	}
+	
 }

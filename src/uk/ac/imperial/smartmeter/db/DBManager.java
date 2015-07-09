@@ -50,7 +50,7 @@ public class DBManager implements DBManagerIFace {
 			stmt.executeUpdate(fmt);
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return false;
 	}
@@ -97,12 +97,12 @@ public class DBManager implements DBManagerIFace {
 	public boolean createTable(String tableName, String fmt) {
 		if (genericDBUpdate(fmt))
 		{
-			System.out.println("Table created");
+			//System.out.println("Table created");
 			return true;
 		}
 		else
 		{
-			System.out.println("Table not created");
+			//System.out.println("Table not created");
 		
 		}
 		return false;
@@ -111,12 +111,12 @@ public class DBManager implements DBManagerIFace {
 	public boolean insertValue(String tableName, String fmt) {
 		if (genericDBUpdate(fmt))
 		{
-			System.out.println("Value entered");
+			//System.out.println("Value entered");
 			return true;
 		}
 		else
 		{
-			System.out.println("Value not entered");
+			//System.out.println("Value not entered");
 		
 		}
 		return false;
@@ -134,7 +134,7 @@ public class DBManager implements DBManagerIFace {
 		}
 		catch (NullPointerException e)
 		{
-			System.out.println("No data present in ResultSet");
+			//System.out.println("No data present in ResultSet");
 		}
 		
 	}

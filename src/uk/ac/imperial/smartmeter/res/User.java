@@ -8,7 +8,7 @@ import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 public class User implements UniqueIdentifierIFace{
 	private UUID id;
 	private String name;
-	private String hash;
+	private String hash = "";
 	private String salt = "decentralised";
 	
 	public User(String saltNew, String passwdHash, String idString, String username)
@@ -36,6 +36,12 @@ public class User implements UniqueIdentifierIFace{
 	}
 	public String getName() {
 		return name;
+	}
+	public String getHash() {
+		return hash;
+	}
+	public String getSalt() {
+		return salt;
 	}
 	public boolean verify(String pass)
 	{

@@ -8,7 +8,7 @@ public class UniformConsumptionProfile extends ConsumptionProfile {
 	}
 	public UniformConsumptionProfile(double dur, double amplitude)
 	{
-		super(dur);
+		super(dur,amplitude);
 		name = "Uniform";
 	}
 

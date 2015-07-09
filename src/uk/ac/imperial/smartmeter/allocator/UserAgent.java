@@ -1,6 +1,9 @@
 package uk.ac.imperial.smartmeter.allocator;
 
+import java.util.UUID;
+
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.User;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
@@ -8,12 +11,53 @@ import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 public class UserAgent implements UniqueIdentifierIFace {
 	private User user;
 	private Double socialWorth;
-	private Double generatedPower;
+	private ElectricityGeneration generatedPower;
 	private ArraySet<ElectricityRequirement> reqs;
 	private Double economicPower;
 	private Double averageAllocation;
+	private UUID id;
+	
+	public UserAgent(User u, Double worth, Double generation, Double economic, Double allocation)
+	{
+		this(u,worth,generation,(ArraySet<ElectricityRequirement>)null,economic,allocation);
+	}
+	public UserAgent(User u, Double worth, Double generation, ElectricityRequirement r, Double economic, Double allocation)
+	{
+		this(u,worth,generation,new ArraySet<ElectricityRequirement>(r),economic,allocation);
+	}
+	public UserAgent(User u, Double worth, Double generation, ArraySet<ElectricityRequirement> r, Double economic, Double allocation)
+	{
+		user = u;
+		socialWorth = worth;
+		generatedPower = new ElectricityGeneration(generation);
+		reqs = r;
+		economicPower = economic;
+		averageAllocation = allocation;
+		if (r!= null)
+		{
+			reqs = r;
+		}
+		else
+		{
+			reqs = new ArraySet<ElectricityRequirement>();
+		}
+		id = UUID.randomUUID();
+	}
+	public UserAgent(User u)
+	{
+		this(u,0.,0.,(ArraySet<ElectricityRequirement>)null,0.,0.);
+	}
 	public User getUser() {
 		return user;
+	}
+	public Boolean addReq(ElectricityRequirement req)
+	{
+		if (req.getUserID().equals(user.getId()))
+		{
+			reqs.add(req);
+			return true;
+		}
+		else return false;
 	}
 	public void setUser(User user) {
 		this.user = user;
@@ -24,11 +68,14 @@ public class UserAgent implements UniqueIdentifierIFace {
 	public void setSocialWorth(Double socialWorth) {
 		this.socialWorth = socialWorth;
 	}
-	public Double getGeneratedPower() {
+	public ElectricityGeneration getGeneratedPower() {
 		return generatedPower;
 	}
-	public void setGeneratedPower(Double generatedPower) {
-		this.generatedPower = generatedPower;
+	public Double getCurrentPower() {
+		return generatedPower.getCurrentOutput();
+	}
+	public Double getMaxPower() {
+		return generatedPower.getMaxOutput();
 	}
 	public Double getEconomicPower() {
 		return economicPower;
@@ -58,7 +105,7 @@ public class UserAgent implements UniqueIdentifierIFace {
 	}
 	@Override
 	public String getId() {
-		return user.getId();
+		return id.toString();
 	}
 
 }

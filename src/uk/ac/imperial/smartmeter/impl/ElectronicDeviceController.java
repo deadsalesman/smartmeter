@@ -8,6 +8,7 @@ import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceControllerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DeviceType;
+import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 
 
 public class ElectronicDeviceController 
@@ -26,7 +27,10 @@ public class ElectronicDeviceController
 	{
 		return id.toString();
 	}
-	
+	public int getDeviceCount()
+	{
+		return devices.size();
+	}
 	@Override
 	public Boolean getDeviceState(int index) {
 		
@@ -102,13 +106,13 @@ public class ElectronicDeviceController
 	public void pushToDB() {
 		for (ElectronicDevice i : devices)
 		{
-			db.insertDevice(i);
+			db.insertElement(i);
 		}
 		
 	}
 	@Override
 	public void pullFromDB() {
-		ArrayList<ElectronicDevice>temp_array = db.extractAllDevices();
+		ArrayList<ElectronicDevice>temp_array = db.extractAll();
 		for (ElectronicDevice i : temp_array)
 		{
 			devices.add(i);

@@ -27,7 +27,10 @@ public class LocalController implements LocalControllerIFace {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	public int getReqCount()
+	{
+		return reqList.size();
+	}
 	public ElectricityRequirement generateRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude)
 	{
 		return new ElectricityRequirement(start, end, prio, profileId, amplitude, masterUser.getId());
@@ -73,7 +76,7 @@ public class LocalController implements LocalControllerIFace {
 	public void pushToDB() {
 		for (ElectricityRequirement r : reqList)
 		{
-			dbReq.insertRequirement(r);
+			dbReq.insertElement(r);
 		}
 		
 	}

@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,25 +12,23 @@ import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ProfileList;
 
-public class ReqsDBManager extends DBManager{
-
-	
+public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 	public ReqsDBManager(String dbLocation) {
-		super(dbLocation);
-		initialiseProfileTable();
-	    initialiseReqTable();
+		super(dbLocation,primTable,primFmt);
+	    initialiseProfileTable();
 	}
-	private final String reqTable = "REQUIREMENT_TABLE";
-	private final String profileTable = "PROFILE_TABLE";
+	private static String primTable = "REQUIREMENT_TABLE";
+	private static String profileTable = "PROFILE_TABLE";
+
 	DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	
-	private String profileFmt   = 
+	private static String profileFmt   = 
 			"CREATE TABLE     " +  profileTable + "("   +
 			"ID     INT       PRIMARY KEY NOT NULL," +
 			"NAME   CHAR(50)              NOT NULL);"
 			;
-	private String reqFmt = 
-			"CREATE    TABLE    " + reqTable    +  "("                                  +
+	private static String primFmt = 
+			"CREATE    TABLE    " + primTable    +  "("                                 +
 			"REQID     INT          PRIMARY KEY  NOT NULL,"                             +
 			"START     CHAR(20)                  NOT NULL,"                             +
 			"END       CHAR(20)                  NOT NULL,"                             +
@@ -43,22 +40,8 @@ public class ReqsDBManager extends DBManager{
 			"FOREIGN   KEY(PROFILE) REFERENCES    PROFILE_TABLE(ID));"/*,"		        +
 			"FOREIGN   KEY(USERID)  REFERENCES    USER_TABLE(ID));"*/
 			;
-
-	public boolean initialiseReqTable()
-	{
-		LocalSet verifyProfileTable = queryDB("SELECT COUNT(*) FROM " + reqTable);
-		if (verifyProfileTable==null)
-		{
-			try {
-				createTable(reqTable);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		return true;
-		
-	}
+	
+	
 	public boolean initialiseProfileTable()
 	{
 		LocalSet verifyProfileTable = queryDB("SELECT COUNT(*) FROM " + profileTable);
@@ -90,17 +73,17 @@ public class ReqsDBManager extends DBManager{
 		}
 		return false;
 	}
-
-	public boolean insertRequirement(ElectricityRequirement r) {
-		String fmt = "INSERT INTO "+reqTable+"(REQID, START, END, PRIORITY, PROFILE, AMPLITUDE, USERID, UUID) " + "VALUES ("
+	
+	public boolean insertElement(ElectricityRequirement r) {
+		String fmt = "INSERT INTO "+primTable+"(REQID, START, END, PRIORITY, PROFILE, AMPLITUDE, USERID, UUID) " + "VALUES ("
 				+ r.getId().hashCode() + ", '" + df.format(r.getStartTime()) + "', '" + df.format(r.getEndTime()) 
 				+ "', " + r.getPriority() + ", " + r.getProfileCode() + ", " + r.getMaxConsumption()
 				+ ", '" + r.getUserID() + "' "+ ", '" + r.getId() + "' "
 				+ " );";
-		return insertValue(reqTable, fmt);
+		return insertValue(primTable, fmt);
 	}
-	
-	private ElectricityRequirement formatMap(Map<String,Object> ls)
+	@Override
+	public ElectricityRequirement formatMap(Map<String,Object> ls)
 	{
 		ElectricityRequirement er = null;
 		try{
@@ -120,51 +103,20 @@ public class ReqsDBManager extends DBManager{
 		}
 		return er;
 	}
-	public ElectricityRequirement ResToReq(LocalSet res)
-	{
-		return formatMap(res.data.get(0));
-	}
-	public ArrayList<ElectricityRequirement> resToReqArray(LocalSet res)
-	{
-		ArrayList<ElectricityRequirement> array = new ArrayList<ElectricityRequirement>();
-		try {
-			for (Map<String,Object> ls : res.data)
-			{
-					array.add(formatMap(ls));
-			}
-		} catch (NullPointerException e) {
 
-		}
-		return array;
-		
-	}
-	public ArrayList<ElectricityRequirement> extractAll()
-	{
-		LocalSet res = extractAllData(reqTable);
-		return resToReqArray(res);
-	}
-	public ArrayList<ElectricityRequirement> extractMultipleReqs(int lower,int upper)
-	{
-		LocalSet res = extractSelectedData(reqTable,upper,lower);
-		return resToReqArray(res);
-	}
-	public ElectricityRequirement extractSingleReq(int index)
-	{
-		LocalSet res = extractSelectedData(reqTable,index+1,index);
-		return ResToReq(res);
-	}
+	@Override
 	public void createTable(String tableName) throws SQLException{
 		String fmt = "";
 		boolean validTable = false;
-		switch(tableName){
-		case profileTable:
+		if (tableName == profileTable)
+		{
 			fmt = profileFmt;
 			validTable = true;
-			break;
-		case reqTable:
-			fmt = reqFmt;
+		}
+		if (tableName == primTable)
+		{
+			fmt = primFmt;
 			validTable = true;
-			break;
 		}
 		if (validTable) {
 			genericDBUpdate(fmt);
@@ -174,7 +126,4 @@ public class ReqsDBManager extends DBManager{
 			throw new SQLException("Invalid Table Name");
 		}
 	}
-
 }
-
-

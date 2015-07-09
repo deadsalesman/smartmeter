@@ -10,6 +10,11 @@ public abstract class ConsumptionProfile {
 		amplitude = 1;
 		duration = dur;
 	}
+	public ConsumptionProfile(double dur,double amp)
+	{
+		amplitude = amp;
+		duration = dur;
+	}
 	public double getConsumption(double time)
 	{
 		if ((time <= duration) && (time >= 0))

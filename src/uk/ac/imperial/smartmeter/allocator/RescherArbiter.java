@@ -1,7 +1,18 @@
 package uk.ac.imperial.smartmeter.allocator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import uk.ac.imperial.smartmeter.comparators.demandComparator;
+import uk.ac.imperial.smartmeter.comparators.equalityComparator;
+import uk.ac.imperial.smartmeter.comparators.needsComparator;
+import uk.ac.imperial.smartmeter.comparators.productivityComparator;
+import uk.ac.imperial.smartmeter.comparators.socialComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 
 public class RescherArbiter {
 
@@ -12,8 +23,11 @@ public class RescherArbiter {
 	private Double productivityModifier;
 	private Double socialModifier;
 	private ArrayList<Double> weightings;
-	
-	RescherArbiter(Double d, Double e, Double n, Double p, Double s)
+	public RescherArbiter()
+	{
+		this(1.,1.,1.,1.,1.);
+	}
+	public RescherArbiter(Double d, Double e, Double n, Double p, Double s)
 	{
 		demandModifier = d;
 		equalityModifier = e;
@@ -28,37 +42,74 @@ public class RescherArbiter {
 		weightings.add(productivityModifier);
 		weightings.add(socialModifier);
 	}
-	ArrayList<Integer> demandCanon(ArraySet<UserAgent> users)
+	private ArrayList<Integer> getValidIntArray(int size)
 	{
-		ArraySet.sort(users, new demandComparator());
-		return null;
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		for (int i = 0; i < size; i++)
+		{
+			ret.add(-1);
+		}
+		
+		return ret;
 	}
-	ArrayList<Integer> equalityCanon(ArraySet<UserAgent> users)
+	private ArrayList<Double> getValidDoubleArray(int size)
 	{
-		return null;
+		ArrayList<Double> ret = new ArrayList<Double>();
+		for (int i = 0; i < size; i++)
+		{
+			ret.add(0.);
+		}
+		
+		return ret;
 	}
-	ArrayList<Integer> needsCanon(ArraySet<UserAgent> users)
+	public ArrayList<Integer> evaluateCanon(ArraySet<UserAgent> users, Comparator<UserAgent> canon)
 	{
-		return null;
+		ArrayList<Integer> ret = getValidIntArray(users.getSize());
+		ArraySet<UserAgent> temp = new ArraySet<UserAgent>();
+		temp.addAll(users);
+		ArraySet.sort(temp, canon);
+		for (int i = 0; i < users.getSize(); i++)
+		{
+			for (int j = 0; j < temp.getSize(); j++)
+			{
+				if (users.get(i).getId().equals(temp.get(j).getId())){
+					ret.set(i,j);
+				}
+			}
+		}
+		return ret;
 	}
-	ArrayList<Integer> productivityCanon(ArraySet<UserAgent> users)
+	
+	private Map<UserAgent, Double> normaliseWeighting(Map<UserAgent,Double> m)
 	{
-		return null;
+		Double totalEnergy = 0.;
+		Double totalWeight = 0.;
+		Double scalingFactor = 1.;
+
+		for (Entry<UserAgent, Double> e : m.entrySet()) {
+			for (ElectricityRequirement r : e.getKey().getReqs()) {
+				totalEnergy += r.getMaxConsumption() * r.getDuration();
+			}
+			totalWeight += e.getValue();
+		}
+		scalingFactor = totalEnergy / totalWeight;
+		for (Entry<UserAgent, Double> e : m.entrySet()) {
+			e.setValue(e.getValue() * scalingFactor);
+		}
+
+		return m;
 	}
-	ArrayList<Integer> socialCanon(ArraySet<UserAgent> users)
-	{
-		return null;
-	}
-	ArrayList<Double> getFinalWeighting(ArraySet<UserAgent> users)
+	public Map<UserAgent, Double> getWeighting(ArraySet<UserAgent> users)
 	{
 		ArrayList<ArrayList<Integer>> ranks = new ArrayList<ArrayList<Integer>>();
-		ranks.add(demandCanon(users));
-		ranks.add(equalityCanon(users));
-		ranks.add(needsCanon(users));
-		ranks.add(productivityCanon(users));
-		ranks.add(socialCanon(users));
 		
-		ArrayList<Double> total = new ArrayList<Double>();
+		ranks.add(evaluateCanon(users, new demandComparator()));
+		ranks.add(evaluateCanon(users, new equalityComparator()));
+		ranks.add(evaluateCanon(users, new needsComparator()));
+		ranks.add(evaluateCanon(users, new productivityComparator()));
+		ranks.add(evaluateCanon(users, new socialComparator()));
+		
+		ArrayList<Double> total = getValidDoubleArray(users.getSize());
 		for (ArrayList<Integer> a : ranks)
 		{
 			for (int i = 0; i < a.size(); i++)
@@ -66,6 +117,10 @@ public class RescherArbiter {
 				total.set(i, a.get(i) + weightings.get(i)*total.get(i));
 			}
 		}
-		return total;
+		Map<UserAgent, Double> ret = new HashMap<UserAgent, Double>();
+		for (int i = 0; i < users.getSize(); i++) {
+			ret.put(users.get(i), total.get(i));
+		}
+		return normaliseWeighting(ret);
 	}
 }

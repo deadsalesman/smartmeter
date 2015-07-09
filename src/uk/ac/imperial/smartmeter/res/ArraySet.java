@@ -1,13 +1,18 @@
 package uk.ac.imperial.smartmeter.res;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import uk.ac.imperial.smartmeter.allocator.UserAgent;
-import uk.ac.imperial.smartmeter.allocator.demandComparator;
+import uk.ac.imperial.smartmeter.comparators.demandComparator;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
-public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>{
+public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>, Collection<T>{
 	/**
 	 * 
 	 */
@@ -16,6 +21,11 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	public ArraySet()
 	{
 		arr = new ArrayList<T>();
+	}
+	public ArraySet(T t)
+	{
+		arr = new ArrayList<T>();
+		arr.add(t);
 	}
 	public boolean add(T i) {
 		boolean exists = false;
@@ -30,6 +40,14 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 		}
 		return !exists;
 		
+	}
+	public ArrayList<T> getAll()
+	{
+		return arr;
+	}
+	public int getSize()
+	{
+		return arr.size();
 	}
 	public void set(T t, int index)
 	{
@@ -49,6 +67,10 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 		}
 		return ret;
 	}
+	public void addAll(ArraySet<T> n)
+	{
+		arr.addAll(n.getAll());
+	}
 	@Override
 	public Iterator<T> iterator(){
 		return arr.iterator();
@@ -56,11 +78,11 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	@Override
 	public int compareTo(T o) {
 		// TODO Auto-generated method stub
+		//No default sort!
 		return 0;
 	}
-	public static void sort(ArraySet<UserAgent> users, demandComparator d) {
-		// TODO Auto-generated method stub
-		
+	public static void sort(ArraySet<UserAgent> users, Comparator<UserAgent> d) {
+		Collections.sort(users.arr, d);
 	}
 	
 

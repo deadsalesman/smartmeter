@@ -22,6 +22,14 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 	{
 		this(start,end,prio,1,1,user,"");
 	}
+	public ElectricityRequirement(double amplitude)
+	{
+		this(new Date(), new Date(), new DecimalRating(2),1,amplitude,UUID.randomUUID().toString()); //DEBUG ONLY
+	}
+	public ElectricityRequirement(Date start, Date end)
+	{
+		this(start, end, new DecimalRating(5),1,1.,UUID.randomUUID().toString());
+	}
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude, String iDUser)
     {
 		this(start, end, prio, profileId, amplitude, iDUser, UUID.randomUUID().toString());
