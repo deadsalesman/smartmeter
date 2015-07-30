@@ -112,4 +112,13 @@ public class DevicesDBManager
 		return ed;
 	}
 
+
+	@Override
+	public boolean removeElement(ElectronicDevice r) {
+		String fmt = "DELETE FROM "+primTable+" WHERE ID = " + r.getId().hashCode()
+				+ " );";
+	
+		return deleteValue(primTable, fmt);
+	}
+
 }

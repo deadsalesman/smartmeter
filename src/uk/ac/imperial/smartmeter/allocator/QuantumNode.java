@@ -27,11 +27,11 @@ public class QuantumNode implements TimeNode {
 	public boolean addReq(ElectricityRequirement e)
 	{
 		
-		Double max = e.getMaxConsumption();
-		if (max <= currentCapacity)
+		Double consumption = e.getConsumption(startTime);
+		if (consumption <= currentCapacity)
 		{
 			reqs.add(e);
-			currentCapacity -= e.getMaxConsumption();
+			currentCapacity -= consumption;
 			return true;
 		}
 		else 
@@ -42,7 +42,7 @@ public class QuantumNode implements TimeNode {
 	public void removeReq(int index)
 	{
 		ElectricityRequirement e = reqs.remove(index);
-		currentCapacity += e.getMaxConsumption();
+		currentCapacity += e.getConsumption(startTime);
 	}
 	public Date getSoonestFinishingTime()
  {

@@ -13,9 +13,9 @@ public class TestOrdering extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		UserAgent u = new UserAgent(TicketTestHelper.uma,1.,1.1,1.,1.);
-		UserAgent j = new UserAgent(TicketTestHelper.john,1.1,1.1,1.1,1.);
-		UserAgent s = new UserAgent(TicketTestHelper.sam,1.,1.,1.,1.);
+		UserAgent u = new UserAgent(TicketTestHelper.user1,1.,1.1,1.,1.);
+		UserAgent j = new UserAgent(TicketTestHelper.user2,1.1,1.1,1.1,1.);
+		UserAgent s = new UserAgent(TicketTestHelper.user3,1.,1.,1.,1.);
 		
 		TicketTestHelper.bindRequirement(u,1.1, 2.3, 4,3.);
 		TicketTestHelper.bindRequirement(j,1.1, 2.3, 4,3.);

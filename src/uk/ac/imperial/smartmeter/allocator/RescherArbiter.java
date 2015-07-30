@@ -79,7 +79,8 @@ public class RescherArbiter {
 		}
 		return ret;
 	}
-	
+	//Deprecated
+	@SuppressWarnings("unused")
 	private Map<UserAgent, Double> normaliseWeighting(Map<UserAgent,Double> m)
 	{
 		Double totalEnergy = 0.;
@@ -87,6 +88,7 @@ public class RescherArbiter {
 		Double scalingFactor = 1.;
 
 		for (Entry<UserAgent, Double> e : m.entrySet()) {
+			totalWeight = 0.;
 			for (ElectricityRequirement r : e.getKey().getReqs()) {
 				totalEnergy += r.getMaxConsumption() * r.getDuration();
 			}
@@ -114,13 +116,13 @@ public class RescherArbiter {
 		{
 			for (int i = 0; i < a.size(); i++)
 			{
-				total.set(i, 1 + a.get(i) + weightings.get(i)*total.get(i));
+				total.set(i, 1 + a.get(i) + weightings.get(ranks.indexOf(a))*total.get(i));
 			}
 		}
 		Map<UserAgent, Double> ret = new HashMap<UserAgent, Double>();
 		for (int i = 0; i < users.getSize(); i++) {
 			ret.put(users.get(i), total.get(i));
 		}
-		return normaliseWeighting(ret);
+		return ret;
 	}
 }

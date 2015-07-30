@@ -1,7 +1,6 @@
 package uk.ac.imperial.smartmeter.tests.database;
 
-import uk.ac.imperial.smartmeter.db.LocalSet;
-import uk.ac.imperial.smartmeter.impl.HighLevelController;
+import uk.ac.imperial.smartmeter.impl.HLController;
 import uk.ac.imperial.smartmeter.res.User;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
@@ -11,17 +10,14 @@ public class TestUSRDB extends GenericTest {
 	public boolean doTest() {
 
 
-		HighLevelController l = new HighLevelController();
+		HLController l = new HLController();
 		String tar = l.dbUser.getPrimTable();
 		l.dbUser.genericDBUpdate("DROP TABLE "+tar);
 		
-		HighLevelController p = new HighLevelController();
+		HLController p = new HLController();
 		
 		l.addUser(new User("John Travolta"));
-		l.pushUsrToDB();
-		/*LocalSet res;
-		res = p.dbUser.queryDB("SELECT * FROM " +tar);
-		p.dbReq.spamLocalSet(res);*/
+		l.pushUsrsToDB();
 		
 		p.pullUsrFromDB();
 		

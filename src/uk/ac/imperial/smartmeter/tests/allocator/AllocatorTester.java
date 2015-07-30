@@ -25,6 +25,7 @@ public class AllocatorTester extends GenericTester{
 		testLog.add(new TestOrdering());
 		testLog.add(new TestUserPriority());
 		testLog.add(new TestRearrangeMutex());
+		testLog.add(new TestTrickyAllocConstantGenerationProfile());
 		
 		return reportLog();
 	}

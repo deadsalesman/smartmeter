@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import uk.ac.imperial.smartmeter.db.ReqsDBManager;
-import uk.ac.imperial.smartmeter.db.UserDBManager;
-import uk.ac.imperial.smartmeter.interfaces.*;
-import uk.ac.imperial.smartmeter.res.*;
+import uk.ac.imperial.smartmeter.interfaces.LocalControllerIFace;
+import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.DecimalRating;
+import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.User;
 
-public class LocalController implements LocalControllerIFace {
+//LocalController
+public class LController implements LocalControllerIFace {
 	private ArraySet<ElectricityRequirement> reqList;
 	private ElectricityGeneration eleGen;
 	public ReqsDBManager dbReq;
@@ -16,7 +20,7 @@ public class LocalController implements LocalControllerIFace {
 	private User masterUser;
 	
 	
-	public LocalController(String username)
+	public LController(String username)
 	{
 		dbReq  = new ReqsDBManager("jdbc:sqlite:req.db");
 		reqList = new ArraySet<ElectricityRequirement>();
@@ -36,9 +40,12 @@ public class LocalController implements LocalControllerIFace {
 		return new ElectricityRequirement(start, end, prio, profileId, amplitude, masterUser.getId());
 	}
 	@Override
-	public void addRequirement(ElectricityRequirement req) {
-		reqList.add(req);
+	public Boolean addRequirement(ElectricityRequirement req) {
+		Boolean success = reqList.add(req);
+		if (success) {
 		maxEleConsumption += req.getMaxConsumption();
+		}
+		return success;
 	}
 
 	@Override

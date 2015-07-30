@@ -14,7 +14,7 @@ public class TestUserPriority extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		UserAgent u = new UserAgent(TicketTestHelper.uma,8.,10.,6.,5.);
+		UserAgent u = new UserAgent(TicketTestHelper.user1,8.,10.,6.,5.);
 		
 		ElectricityRequirement e = TicketTestHelper.bindRequirement(u,1.1, 2.3, 9,5.);
 		TicketTestHelper.bindRequirement(u,1.1, 2.3, 7, 6);

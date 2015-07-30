@@ -1,6 +1,11 @@
 package uk.ac.imperial.smartmeter.db;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +75,11 @@ public class DBManager implements DBManagerIFace {
 		}
 		return ret;
 	}
-
+	public boolean dropTable(String tableName)
+	{
+		String fmt = "DROP TABLE " + tableName;
+		return genericDBUpdate(fmt);
+	}
 	public String connectDB(String addr) {
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -154,5 +163,20 @@ public class DBManager implements DBManagerIFace {
 		String fmt = "SELECT * FROM " + tableName  +";";
 		LocalSet res = queryDB(fmt);
 		return res;
+	}
+
+	@Override
+	public boolean deleteValue(String tableName, String fmt) {
+		if (genericDBUpdate(fmt))
+		{
+			//System.out.println("Value entered");
+			return true;
+		}
+		else
+		{
+			//System.out.println("Value not entered");
+		
+		}
+		return false;
 	}
 }

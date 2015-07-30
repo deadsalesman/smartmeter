@@ -57,7 +57,7 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 		return priority.getValue();
 	}
 	public double getDuration() {
-		return duration;
+		return duration/QuantumNode.quanta;
 	}
 
 	public Date getStartTime() {
@@ -80,9 +80,9 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 	{
 		return profile.amplitude;
 	}
-	public double getConsumption(double time)
+	public double getConsumption(Date time)
 	{
-		return profile.getConsumption(time); //a classic example of where dependency injection might not be a bad idea
+		return profile.getConsumption(startTime, time); //a classic example of where dependency injection might not be a bad idea
 	}
 
 	public String getId() {

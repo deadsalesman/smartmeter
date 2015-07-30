@@ -2,7 +2,8 @@ package uk.ac.imperial.smartmeter.res;
 
 import java.util.UUID;
 
-import uk.ac.imperial.smartmeter.interfaces.*;
+import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceIFace;
+import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 
 public class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace{
@@ -35,7 +36,6 @@ public class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifier
 		type = DeviceType.values()[device];
 		id = UUID.randomUUID();
 	}
-	
 	@Override
 	public double getConsumptionRate() {
 		// TODO Auto-generated method stub

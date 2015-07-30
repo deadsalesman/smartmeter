@@ -1,8 +1,7 @@
 package uk.ac.imperial.smartmeter.tests.database;
 
 import uk.ac.imperial.smartmeter.allocator.UserAgent;
-import uk.ac.imperial.smartmeter.db.LocalSet;
-import uk.ac.imperial.smartmeter.impl.HighLevelController;
+import uk.ac.imperial.smartmeter.impl.HLController;
 import uk.ac.imperial.smartmeter.res.User;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
@@ -11,23 +10,22 @@ public class TestAGTDB extends GenericTest {
 	@Override
 	public boolean doTest() {
 
-		HighLevelController l = new HighLevelController();
-		String tar = l.dbAgt.getPrimTable();
-		l.dbAgt.genericDBUpdate("DROP TABLE "+tar);
+		HLController d = new HLController();
+		d.dbAgt.dropHostedTable();
+		d.dbReq.dropHostedTable();
+		d.dbUser.dropHostedTable();
 		
-		HighLevelController p = new HighLevelController();
+		HLController l = new HLController();
 		
 		l.addUserAgent(new UserAgent(new User("John Travolta"),1.,2.,3.,4.));
 		l.addUserAgent(new UserAgent(new User("Uma Thurman"),8.,7.,6.,5.));
 		l.addUserAgent(new UserAgent(new User("Samuel Jackson"),9.,10.,11.,12.));
-		l.pushAgtToDB();
-		l.pushUsrToDB();
-		/*LocalSet res;
-		res = p.dbAgt.queryDB("SELECT * FROM " +tar);
-		p.dbReq.spamLocalSet(res);*/
 		
-		p.pullAgtFromDB();
-		
+
+		HLController p = new HLController();
+		p.dbAgt.dropHostedTable();
+		p.dbReq.dropHostedTable();
+		p.dbUser.dropHostedTable();
 		return (p.getAgtCount()==l.getAgtCount());
 	}
 

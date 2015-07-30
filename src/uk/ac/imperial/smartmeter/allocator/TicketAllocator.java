@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.allocator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class TicketAllocator {
 	private Map<UserAgent, Boolean> userFinished; 
 	private boolean tryHard;
 	
-	public TicketAllocator(ArraySet<UserAgent> users, Date d, boolean reallocate)
+	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
 		usrArray = new ArraySet<UserAgent>();
@@ -36,7 +37,7 @@ public class TicketAllocator {
 		conglom = new EleGenConglomerate();
 		startDate = d;
 		tryHard = reallocate;
-		for (UserAgent u : users)
+		for (UserAgent u : collection)
 		{
 			addUser(u);
 		}
@@ -75,7 +76,7 @@ public class TicketAllocator {
 		Double max = -1.;
 		for (Entry<UserAgent, Double> u : m.entrySet())
 		{
-			if (u.getValue() > max)
+			if ((u.getValue() > max)&&(!userFinished.containsKey(u)))
 			{
 				maxAgt = u.getKey();
 				max = u.getValue();
@@ -86,10 +87,9 @@ public class TicketAllocator {
 	private Boolean updateInterferedNodes(ElectricityRequirement e, ArrayList<QuantumNode> nodes)
 	{
 		Boolean viable = true; //until proved otherwise;
-		Double requirementMagnitude = e.getMaxConsumption();
 		for (QuantumNode n : nodes)
 		{
-			viable &= (n.getCapacity() >= requirementMagnitude);
+			viable &= (n.getCapacity() >= e.getConsumption(n.getStartTime()));
 		}
 		
 		if (viable)
@@ -132,6 +132,19 @@ public class TicketAllocator {
 		return ret;
 
 	}
+	
+	private Double findReqRatio(int offset, ArraySet<ElectricityRequirement> reqs)
+	{
+		ElectricityRequirement subject = reqs.get(offset);
+		Double ret = subject.getMaxConsumption()*subject.getDuration()*subject.getPriority();
+		Double tally = 0.;
+		for (int i = offset; i < reqs.getSize(); i++)
+		{
+			tally += reqs.get(i).getMaxConsumption()*reqs.get(i).getDuration()*reqs.get(i).getPriority();
+		}
+		//System.out.println(tally + " " + ret + " " + reqs.getSize() + " " + offset);
+		return ret/tally;
+	}
 	public Map<UserAgent, ArraySet<ElectricityTicket>> calculateTickets()
 	{
 		rankings = arbiter.getWeighting(usrArray);
@@ -152,18 +165,28 @@ public class TicketAllocator {
 			finished = true;
 			UserAgent max = findMaxAgent(rankings);
 			ElectricityRequirement req = max.getReq(indexes.get(max));
-			processRequirement(max, req);
-			
+			if (processRequirement(max, req))
+			{
+				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
+				rankings.put(max, newRank);//rankings.put(max, newRank >= 0 ? newRank : 10); //hack. bad. fix. tomorrow.
+				if (newRank ==0)
+				{
+					userFinished.put(max, true);
+				}
+			}
+			//System.out.println(max.getUser().getName());
+			//System.out.println(max.getReqs().getSize());
 			/* attempts to move on to the next requirement in the available set */
-			if (indexes.get(max) < max.getReqs().getSize() - 1) {
-				indexes.put(max, indexes.get(max) + 1);
-				rankings.put(max, rankings.get(max)-req.getDuration()*req.getMaxConsumption());
+			
+			if (indexes.get(max) == max.getReqs().getSize()-1)
+			{
+				userFinished.put(max, true);
+				rankings.put(max, 0.);
 			}
 			else
 			{
-		    /* there are no further requirements for that user */
-				userFinished.put(max, true);
-				rankings.put(max, 0.);
+
+				indexes.put(max, indexes.get(max) + 1);	
 			}
 			for (Boolean b : userFinished.values())
 			{

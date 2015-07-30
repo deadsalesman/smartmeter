@@ -93,4 +93,11 @@ public class AgentDBManager extends IntegratedDBManager<UserAgent>{
 			throw new SQLException("Invalid Table Name");
 		}
 	}
+
+	@Override
+	public boolean removeElement(UserAgent r) {
+		String fmt = "DELETE FROM "+primTable+" WHERE ID = " + r.getId().hashCode() 
+				+ " );";
+		return deleteValue(primTable, fmt);
+	}
 }

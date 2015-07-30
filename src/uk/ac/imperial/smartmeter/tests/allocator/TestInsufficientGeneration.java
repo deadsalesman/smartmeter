@@ -13,7 +13,7 @@ public class TestInsufficientGeneration extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		UserAgent u = new UserAgent(TicketTestHelper.uma,8.,1.,6.,5.);
+		UserAgent u = new UserAgent(TicketTestHelper.user1,8.,1.,6.,5.);
 		
 		TicketTestHelper.bindRequirement(u,1.1, 2.3, 4,3.);
 

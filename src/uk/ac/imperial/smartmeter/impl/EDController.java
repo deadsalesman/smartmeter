@@ -10,18 +10,19 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DeviceType;
 import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 
-
-public class ElectronicDeviceController 
+//ElectronicDeviceController
+public class EDController 
 	implements ElectronicDeviceControllerIFace, UniqueIdentifierIFace{
 	private ArraySet<ElectronicDevice> devices;
 	public DevicesDBManager db;
 	private UUID id;
 	
-	public ElectronicDeviceController()
+	public EDController()
 	{
 		id = UUID.randomUUID();
 		devices = new ArraySet<ElectronicDevice>();
 		db = new DevicesDBManager("jdbc:sqlite:edc.db");
+		pullFromDB();
 	}
 	public String getId()
 	{
@@ -30,6 +31,30 @@ public class ElectronicDeviceController
 	public int getDeviceCount()
 	{
 		return devices.size();
+	}
+	public int getDeviceIndex(String deviceID)
+	{
+		for (ElectronicDevice ed : devices)
+		{
+			if (ed.getId().equals(deviceID))
+			{
+				return devices.indexOf(ed);
+			}
+		}
+		
+		return -1;
+	}
+	public ElectronicDevice getDevice(String deviceID)
+	{
+		for (ElectronicDevice ed : devices)
+		{
+			if (ed.getId().equals(deviceID))
+			{
+				return ed;
+			}
+		}
+		
+		return null;
 	}
 	@Override
 	public Boolean getDeviceState(int index) {
@@ -42,11 +67,28 @@ public class ElectronicDeviceController
 		}
 		return null;
 	}
-   public void addDevice(ElectronicDevice e)
+   public Boolean addDevice(ElectronicDevice e)
    {
-	   devices.add(e);
+	   if(db.insertElement(e))
+	   {
+		   return devices.add(e);
+	   }
+	   else 
+	   {
+		   return false;
+	   }
    }
-	
+   public Boolean removeDevice(int index)
+   {
+	   if(db.removeElement(devices.get(index)))
+	   {
+		   return devices.remove(devices.get(index));
+	   }
+	   else 
+	   {
+		   return false;
+	   }
+   }
 
 	@Override
 	public DeviceType getDeviceType(int index) {
@@ -63,14 +105,16 @@ public class ElectronicDeviceController
 	
 
 	@Override
-	public void setDeviceState(int index, Boolean newState) {
+	public Boolean setDeviceState(int index, Boolean newState) {
 
 		try {
 			devices.get(index).setState(newState);
 			db.updateDeviceState(devices.get(index).hashCode(), newState);
+			return true;
 		}
 		catch (IndexOutOfBoundsException e){
 			System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			return false;
 		}
 	}
 

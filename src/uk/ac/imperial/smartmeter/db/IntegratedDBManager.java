@@ -19,7 +19,7 @@ public abstract class IntegratedDBManager<T extends UniqueIdentifierIFace> exten
 	protected String primFmt = null;
 
 	public abstract boolean insertElement(T r);
-
+	public abstract boolean removeElement(T r);
 	public abstract T formatMap(Map<String, Object> ls);
 
 	public T resToObject(LocalSet res) // T
@@ -80,5 +80,8 @@ public abstract class IntegratedDBManager<T extends UniqueIdentifierIFace> exten
 		return true;
 
 	}
-
+	public boolean dropHostedTable()
+	{
+		return dropTable(primTable);
+	}
 }

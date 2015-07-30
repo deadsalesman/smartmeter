@@ -15,9 +15,12 @@ import uk.ac.imperial.smartmeter.res.User;
 
 public class TicketTestHelper {
 	
-	public static User uma = new User("Uma Thurman");
-	public static User john = new User("John Travolta");
-	public static User sam = new User("Samuel Jackson");
+	public static User user1 = new User("Vincent Vega");
+	public static User user2 = new User("Jules Winnfield");
+	public static User user3 = new User("Mia Wallace");
+	public static User user4 = new User("Butch Coolidge");
+	public static User user5 = new User("Winston Wolfe");
+	public static User user6 = new User("Marsellus Wallace");
 	
 
 	public static ArraySet<UserAgent> array = new ArraySet<UserAgent>();

@@ -28,7 +28,26 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 		boolean exists = false;
 		if (arr != null) {
 			for (T old : arr) {
-				exists |= i.getId() == old.getId();
+				exists |= i.getId().equals(old.getId());
+			}
+		}
+		if (!exists) {
+			arr.add(i);
+
+		}
+		return !exists;
+		
+	}
+	public boolean forceAdd(T i)
+	{
+		boolean exists = false;
+		if (arr != null) {
+			for (T old : arr) {
+				if(i.getId().toString().equals(old.getId().toString()))
+				{
+					exists = true;
+					arr.set(arr.indexOf(old), i);
+				}
 			}
 		}
 		if (!exists) {
@@ -41,6 +60,10 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	public ArrayList<T> getAll()
 	{
 		return arr;
+	}
+	public int indexOf(T t)
+	{
+		return arr.indexOf(t);
 	}
 	public int getSize()
 	{

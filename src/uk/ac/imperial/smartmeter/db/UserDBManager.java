@@ -54,5 +54,11 @@ public class UserDBManager extends IntegratedDBManager<User>{
 				+ " );";
 		return insertValue(primTable, fmt);
 	}
+	@Override
+	public boolean removeElement(User r) {
+		String fmt = "DELETE FROM "+primTable+" WHERE ID = " + r.getId().hashCode()
+				+ " );";
+		return deleteValue(primTable, fmt);
+	}
 	
 }

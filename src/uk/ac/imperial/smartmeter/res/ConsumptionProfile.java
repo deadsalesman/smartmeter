@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.util.Date;
+
 public abstract class ConsumptionProfile {
 	protected double amplitude; 
 	protected double duration; //in ms
@@ -15,8 +17,9 @@ public abstract class ConsumptionProfile {
 		amplitude = amp;
 		duration = dur;
 	}
-	public double getConsumption(double time)
+	public double getConsumption(Date start, Date offset)
 	{
+		Long time = offset.getTime() - start.getTime();
 		if ((time <= duration) && (time >= 0))
 		{
 			return amplitude*shape(time/duration);
