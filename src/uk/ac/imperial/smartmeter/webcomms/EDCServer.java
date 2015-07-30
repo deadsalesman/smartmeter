@@ -88,7 +88,7 @@ public class EDCServer{
 		}
 	}
 
-	public void listen() throws IOException {
+	public Boolean listen() throws IOException {
 
 		try (ServerSocket serverSocket = new ServerSocket(portNum);
 				Socket clientSocket = serverSocket.accept();
@@ -103,14 +103,16 @@ public class EDCServer{
 				outputLine = recvMsg(inputLine);
 				out.println(outputLine);
 				if (outputLine.equals("NUL"))
-					break;
+					return true;
 			}
+			out.println("NUL");
 		} catch (IOException e) {
 			System.out
 					.println("Exception caught when trying to listen on port "
 							+ portNum + " or listening for a connection");
 			System.out.println(e.getMessage());
 		}
+		return false;
 	}
 
 }

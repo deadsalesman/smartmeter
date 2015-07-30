@@ -7,48 +7,25 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.List;
+
+import uk.ac.imperial.smartmeter.impl.LCHandler;
 
 public class LCClient{
 	private String eDCHost;
 	private int eDCPort;
 	private String hLCHost;
 	private int hLCPort;
-	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum) {
+	private static LCHandler handler;
+	
+	
+	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String userID) {
 		eDCHost = eDCHostName;
 		eDCPort = eDCPortNum;
 		hLCHost = hLCHostName;
 		hLCPort = hLCPortNum;
+		handler = new LCHandler(userID);
 	}
-	private Boolean addDevice(List<String> splitMsg)
-	{
-		return false;
-	}
-	public Boolean setState(String deviceId, Boolean val)
-	{
-		String input = deviceId + '.' + boolToStr(val);
-		try {
-			return Boolean.parseBoolean(connectEDC(input).get(0));
-		} catch (IOException e) {
-			return false;
-		}
-	}
-	private Boolean getState(List<String> splitMsg)
-	{
-		return false;//handler.getState(splitMsg.get(1));
-	}
-	private Boolean removeDevice(List<String> splitMsg)
-	{
-		return false;//handler.removeDevice(splitMsg.get(1));
-	}
-	private String getDevice(List<String> splitMsg) {
 
-		return "";//ret;
-	}
-	private String boolToStr(Boolean b)
-	{
-		return b ? "TRUE" : "FALSE";
-	}
 	public ArrayList<String> connectEDC(String input) throws IOException {
 		ArrayList<String> inputArr = new ArrayList<String>();
 		inputArr.add(input);
@@ -100,5 +77,57 @@ public class LCClient{
 			System.exit(1);
 		}
 		return ret;
+	}
+	
+
+	public Boolean addDevice(Boolean state, Integer type, String deviceID)
+	{
+		String inputLine = "ADD," + Boolean.toString(state) + "," + Integer.toString(type) + "," + deviceID;
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectEDC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+	
+	public Boolean setState(String deviceId, Boolean val)
+	{
+		return false;
+	}
+	public Boolean getState(String deviceID)
+	{
+		String inputLine = "GETS," + deviceID;
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectEDC(input);
+			return Boolean.parseBoolean(ret.get(0));
+		} catch (IOException e) {
+		}
+		return null;
+	}
+	public Boolean removeDevice(String deviceID)
+	{
+		String inputLine = "REM," + deviceID;
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectEDC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
 	}
 }

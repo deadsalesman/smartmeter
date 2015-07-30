@@ -11,6 +11,7 @@ public class EDContNode {
 			System.exit(1);
 		}
 		client = new EDCServer(Integer.parseInt(args[0]));
-		client.listen();
+		while(client.listen()){}
 	}
+	
 }
