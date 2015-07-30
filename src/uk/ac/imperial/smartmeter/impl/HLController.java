@@ -14,6 +14,7 @@ import uk.ac.imperial.smartmeter.db.UserDBManager;
 import uk.ac.imperial.smartmeter.interfaces.HighLevelControllerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.User;
@@ -62,7 +63,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		User owner  = null;
 		for (User u : userList)
 		{
-			if (e.getUserID()==u.getId())
+			if (e.getUserID().equals(u.getId()))
 			{found = true; owner = u;}
 		}
 		if (found)
@@ -76,8 +77,10 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	{
 		for (User e : userList)
 		{
-			if (u.equals(e)){u=e;}
+			if (u.getId().equals(e.getId())){u=e;}
 		}
+		alloc = new TicketAllocator(agentList.values(), new Date(), true);
+		alloc.calculateTickets();
 		return alloc.getTicketsOfUser(agentList.get(u));
 	}
     public ArraySet<UserAgent> generateAgentSet()
@@ -111,11 +114,12 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 			pushReqToDB(req);
 		}
 	}
-	public void addUser(User u)
+	public boolean addUser(User u)
 	{
-		userList.add(u);
+		boolean ret = userList.add(u);
 		pushUsrToDB(u);
 		updateAgentList(u);
+		return ret;
 	}
 	@Override
 	public String getId() {
@@ -205,5 +209,17 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 			pushAgtToDB(u);
 		}
 
+	}
+
+	public Boolean setUserGeneration(String userId, ElectricityGeneration e) {
+		for (UserAgent u: agentList.values())
+		{
+			if(u.getUser().getId().equals(userId))
+			{
+				u.setGeneratedPower(e);
+				return true;
+			}
+		}
+		return false;
 	}
 }

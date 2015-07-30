@@ -57,7 +57,7 @@ public class UserDBManager extends IntegratedDBManager<User>{
 	@Override
 	public boolean removeElement(User r) {
 		String fmt = "DELETE FROM "+primTable+" WHERE ID = " + r.getId().hashCode()
-				+ " );";
+				+ " ;";
 		return deleteValue(primTable, fmt);
 	}
 	

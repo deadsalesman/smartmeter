@@ -77,6 +77,10 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	{
 		return arr.get(index);
 	}
+	public Boolean remove(T object)
+	{
+		return arr.remove(object);
+	}
 	public T remove(int index) {
 		T ret = null;
 		try {

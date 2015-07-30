@@ -2,11 +2,11 @@ package uk.ac.imperial.smartmeter.allocator;
 
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.User;
-import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class UserAgent implements UniqueIdentifierIFace {
 	private User user;
@@ -106,6 +106,9 @@ public class UserAgent implements UniqueIdentifierIFace {
 	@Override
 	public String getId() {
 		return id.toString();
+	}
+	public void setGeneratedPower(ElectricityGeneration e) {
+		generatedPower = e;
 	}
 
 }

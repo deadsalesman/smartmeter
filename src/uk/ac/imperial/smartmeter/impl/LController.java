@@ -112,8 +112,9 @@ public class LController implements LocalControllerIFace {
 		return eleGen;
 	}
 
-	public void setEleGen(ElectricityGeneration eleGen) {
+	public boolean setEleGen(ElectricityGeneration eleGen) {
 		this.eleGen = eleGen;
+		return true;
 	}
 	public double getMaxEleConsumption() {
 		return maxEleConsumption;

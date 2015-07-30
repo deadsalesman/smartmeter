@@ -23,9 +23,17 @@ public class User implements UniqueIdentifierIFace{
 		name = username;
 		id = UUID.randomUUID();
 	}
-	User(String username, String password)
+	public User(String username, String password)
 	{
 		this(username);
+		//TODO: make not awful
+		hash = Integer.toString(password.hashCode() ^ salt.hashCode()); //supermegainsecure for any value of secure. do properly 
+		
+	}
+	public User(String username, String uID, String password)
+	{
+		name = username;
+		id = UUID.fromString(uID);
 		//TODO: make not awful
 		hash = Integer.toString(password.hashCode() ^ salt.hashCode()); //supermegainsecure for any value of secure. do properly 
 		

@@ -130,7 +130,7 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 	@Override
 	public boolean removeElement(ElectricityRequirement r) {
 		String fmt = "DELETE FROM "+primTable+" WHERE REQID = " + r.getId().hashCode()
-				+ " );";
+				+ " ;";
 		return insertValue(primTable, fmt);
 	}
 }

@@ -48,7 +48,12 @@ public class EDCServer{
 	}
 	private String boolToStr(Boolean b)
 	{
-		return b ? "TRUE" : "FALSE";
+		if (b==null){
+			return "NULL";
+		}
+		else {
+			return b ? "TRUE" : "FALSE";
+		}
 	}
 	private String resultToStr(Boolean b)
 	{
@@ -92,8 +97,10 @@ public class EDCServer{
 
 		try (ServerSocket serverSocket = new ServerSocket(portNum);
 				Socket clientSocket = serverSocket.accept();
+				@SuppressWarnings("resource")
 				PrintWriter out = new PrintWriter(
 						clientSocket.getOutputStream(), true);
+				@SuppressWarnings("resource")
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						clientSocket.getInputStream()));) {
 
@@ -106,7 +113,8 @@ public class EDCServer{
 					return true;
 			}
 			out.println("NUL");
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			System.out
 					.println("Exception caught when trying to listen on port "
 							+ portNum + " or listening for a connection");

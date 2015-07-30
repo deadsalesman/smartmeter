@@ -164,7 +164,9 @@ public class TicketAllocator {
 			/*finds the highest priority agent, and tries to create a ticket for the highest priority requirement they have */
 			finished = true;
 			UserAgent max = findMaxAgent(rankings);
+			try{
 			ElectricityRequirement req = max.getReq(indexes.get(max));
+			
 			if (processRequirement(max, req))
 			{
 				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
@@ -187,6 +189,13 @@ public class TicketAllocator {
 			{
 
 				indexes.put(max, indexes.get(max) + 1);	
+			}
+
+			}
+			catch(IndexOutOfBoundsException e)
+			{
+				userFinished.put(max, true);
+				rankings.put(max, 0.);
 			}
 			for (Boolean b : userFinished.values())
 			{

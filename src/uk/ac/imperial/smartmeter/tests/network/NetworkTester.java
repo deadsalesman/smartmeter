@@ -8,8 +8,10 @@ public class NetworkTester extends GenericTester{
 	{
 		testLog.add(new TestECDBNode());
 		testLog.add(new TestECDBNodeWriteSetGet());
-		testLog.add(new TestECDBNodeReadWrite());
 		testLog.add(new TestECDBNodeRemove());
+		testLog.add(new TestHLCAddReq());
+		testLog.add(new TestPushGeneration());
+		testLog.add(new TestHLCGetTkt());
 		return reportLog();
 	}
 }

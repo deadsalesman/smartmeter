@@ -6,9 +6,16 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.impl.LCHandler;
+import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
 public class LCClient{
 	private String eDCHost;
@@ -16,14 +23,18 @@ public class LCClient{
 	private String hLCHost;
 	private int hLCPort;
 	private static LCHandler handler;
+	private String userId; 
+	private String userName;
 	
 	
-	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String userID) {
+	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name) {
 		eDCHost = eDCHostName;
 		eDCPort = eDCPortNum;
 		hLCHost = hLCHostName;
 		hLCPort = hLCPortNum;
-		handler = new LCHandler(userID);
+		userName = name;
+		userId = UUID.randomUUID().toString();
+		handler = new LCHandler(userId.toString());
 	}
 
 	public ArrayList<String> connectEDC(String input) throws IOException {
@@ -43,7 +54,7 @@ public class LCClient{
 			String fromServer;
 			while ((fromServer = in.readLine()) != null) {
 				ret.add(fromServer);
-				System.out.println("Server: " + fromServer);
+				//System.out.println("Server: " + fromServer);
 				if (fromServer.equals("NUL"))
 					break;
 			}
@@ -96,9 +107,67 @@ public class LCClient{
 		}
 		return false;
 	}
-	
-	public Boolean setState(String deviceId, Boolean val)
+	public ArraySet<ElectricityTicket> getTickets()
 	{
+		String inputLine = "TKT," +  userId;
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		ArrayList<String> input = new ArrayList<String>();
+		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectHLC(input);
+			int size = ret.size() / 5;
+			for (int i = 0; i < size; i++)
+			{
+				output.add(new ElectricityTicket(
+						null, null, null, inputLine, inputLine));
+			}
+		
+		} catch (IOException e) {
+		}
+		return output;
+	}
+	public Boolean setRequirement(ElectricityRequirement req)
+	{
+
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		String inputLine = "REQ," +
+				df.format(req.getStartTime()) + "," +
+				df.format(req.getEndTime()) + "," +
+				req.getPriority() + "," +
+				req.getProfileCode() + "," +
+				req.getMaxConsumption() + "," +
+				req.getUserID() + "," +
+				req.getId()
+				;
+	    ArrayList<String> input = new ArrayList<String>();
+	    input.add(inputLine);
+	    input.add("END");
+	    try {
+		   ArrayList<String> ret = connectHLC(input);
+		   if (ret.get(0).equals("SUCCESS"))
+		   {
+		   	return true;
+		   }
+	    } catch (IOException e) {
+	}
+	return false;
+	}
+	public Boolean setState(String deviceID, Boolean val)
+	{
+		String inputLine = "SET," + deviceID + "," + Boolean.toString(val);
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectEDC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
 		return false;
 	}
 	public Boolean getState(String deviceID)
@@ -109,6 +178,12 @@ public class LCClient{
 		input.add("END");
 		try {
 			ArrayList<String> ret = connectEDC(input);
+			switch(ret.get(0))
+			{
+			case "TRUE":  return true;
+			case "FALSE": return false;
+			case "NULL":  return null; 
+			}
 			return Boolean.parseBoolean(ret.get(0));
 		} catch (IOException e) {
 		}
@@ -122,6 +197,42 @@ public class LCClient{
 		input.add("END");
 		try {
 			ArrayList<String> ret = connectEDC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public Boolean registerUser(String passWd, String userName) {
+		String inputLine = "USR," + userName + "," + userId + "," + passWd;
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectHLC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public String getId() {
+		return handler.getId();
+	}
+
+	public boolean setGeneration(ElectricityGeneration i) {
+		String inputLine = "GEN," + userId + "," + i.getMaxOutput();
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectHLC(input);
 			if (ret.get(0).equals("SUCCESS"))
 			{
 				return true;
