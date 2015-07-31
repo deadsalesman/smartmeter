@@ -85,15 +85,22 @@ public class HLCServer {
 	}
 	private String getTkts(List<String> splitMsg) {
 		ArraySet<ElectricityTicket> tickets = handler.getTickets(new User("",splitMsg.get(1),""));
-		
 		String ret = "";
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-		for (ElectricityTicket et : tickets)
+		if (tickets != null)
 		{
-			//this is going to be hacky :(
-			ret += df.format(et.start) + "," + df.format(et.end) + "," + et.magnitude + "," + et.ownerID.toString() + "," + et.getId() + ",";
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			for (ElectricityTicket et : tickets)
+			{
+				//this is going to be hacky :(
+				ret += df.format(et.start) + "," + df.format(et.end) + "," + et.magnitude + "," + et.ownerID.toString() + "," + et.getId() + ",";
+			}
 		}
-		return "";
+		else 
+		{
+			ret = "FAILURE";
+		}
+		
+		return ret;
 	}
 	private String resultToStr(Boolean b)
 	{

@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.impl.LCHandler;
@@ -35,6 +37,8 @@ public class LCClient{
 		userName = name;
 		userId = UUID.randomUUID().toString();
 		handler = new LCHandler(userId.toString());
+		
+		//why not register the user here?
 	}
 
 	public ArrayList<String> connectEDC(String input) throws IOException {
@@ -116,12 +120,27 @@ public class LCClient{
 		input.add(inputLine);
 		input.add("END");
 		try {
-			ArrayList<String> ret = connectHLC(input);
-			int size = ret.size() / 5;
+			ArrayList<String> msg = connectHLC(input);
+			if (!msg.get(0).equals("FAILURE"))
+			{
+			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			int size = splitMsg.size() / 5;
+			int offset = 0;
 			for (int i = 0; i < size; i++)
 			{
-				output.add(new ElectricityTicket(
-						null, null, null, inputLine, inputLine));
+				try {
+					output.add(new ElectricityTicket(
+							df.parse(splitMsg.get(0+offset)),
+							df.parse(splitMsg.get(1+offset)),
+							Double.parseDouble(splitMsg.get(2+offset)),
+							splitMsg.get(3+offset),
+							splitMsg.get(4+offset)
+							));
+				} catch (Exception e) {
+					System.out.println("Invalid ticket");
+				}
+				offset += size;
+			}
 			}
 		
 		} catch (IOException e) {

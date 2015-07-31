@@ -12,6 +12,8 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestHLCAddReq());
 		testLog.add(new TestPushGeneration());
 		testLog.add(new TestHLCGetTkt());
+		testLog.add(new TestConcurrentClients());
+		testLog.add(new TestComplexTickets());
 		return reportLog();
 	}
 }
