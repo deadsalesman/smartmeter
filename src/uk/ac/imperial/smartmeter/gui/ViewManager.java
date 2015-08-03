@@ -12,6 +12,15 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.DateHelper;
+import uk.ac.imperial.smartmeter.res.DecimalRating;
+import uk.ac.imperial.smartmeter.res.DeviceType;
+import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.webcomms.LCClient;
+
 public class ViewManager extends JPanel implements ActionListener{
 
 	//private HelpView hv;
@@ -26,24 +35,27 @@ public class ViewManager extends JPanel implements ActionListener{
 	private static final String diag = "DIAG";
 	private JTextArea text;
 	private JComboBox<Integer> startHour;
-	private JComboBox endHour;
-	private JComboBox startDay;
-	private JComboBox endDay;
+	private JComboBox<Integer> endHour;
+	private JComboBox<Integer> startDay;
+	private JComboBox<Integer> endDay;
+	private JComboBox<String> devices;
 	private JButton submit;
-	private JComboBox devices;
-	
-	public ViewManager()
+	private LCClient client;
+	private String userName;
+	public ViewManager(String user, LCClient lc)
 	{
+		userName = user;
+		client = lc;
 		initialiseReqComponents();
 		setupView();
 	}
 	private void initialiseReqComponents() {
 		// TODO Auto-generated method stub
 		startHour = new JComboBox<Integer>(new Integer[]{1,2,3});
-		startDay = new JComboBox(new String[]{"M","T","W"});
-		endHour = new JComboBox(new String[]{"1","2","3"});
-		endDay = new JComboBox(new String[]{"M","T","W"});
-		devices = new JComboBox(new String[]{"Light","Dishwasher","Laser"});
+		startDay = new JComboBox<Integer>(new Integer[]{1,2,3});
+		endHour = new JComboBox<Integer>(new Integer[]{1,2,3});
+		endDay = new JComboBox<Integer>(new Integer[]{1,2,3});
+		devices = new JComboBox<String>(new String[]{"Light","Dishwasher","Laser"});
 		String imgLocation = "../images/tick.png";
 
 		URL imageURL = MainGUIClass.class.getResource(imgLocation);
@@ -159,10 +171,24 @@ public class ViewManager extends JPanel implements ActionListener{
 
 
 	}
-	private void processRequirement() {
+	private Boolean processRequirement() {
 		//verify validity of requirement
 		//generate requirement
 		//dispatch to server
-		System.out.println(devices.getItemAt(devices.getSelectedIndex()));
+		System.out.println(devices.getSelectedItem());
+		ElectricityRequirement er = new ElectricityRequirement(
+				DateHelper.incrementDay((Integer)startDay.getSelectedItem()),
+				DateHelper.incrementDay((Integer)endDay.getSelectedItem()),
+				new DecimalRating((Integer)9),
+				DeviceType.valueOf(devices.getSelectedItem().toString()).ordinal(),
+				new Double(9),
+				client.getId()
+				);
+
+		client.registerUser("ps", "lc");
+		client.setRequirement(er);
+		client.setGeneration(new ElectricityGeneration(10.));
+		ArraySet<ElectricityTicket> tkt = client.getTickets();
+		return (tkt.get(0).ownerID.toString().equals(client.getId()));
 	}
 }

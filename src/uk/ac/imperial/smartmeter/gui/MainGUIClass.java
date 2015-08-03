@@ -17,6 +17,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import uk.ac.imperial.smartmeter.webcomms.LCClient;
+
 public class MainGUIClass extends JPanel
 
 implements ActionListener {
@@ -39,12 +41,13 @@ implements ActionListener {
 	private ViewManager view;
 	private MenuManager menu;
 
-	public MainGUIClass() {
+	public MainGUIClass(String[] args) {
 
 		super(new BorderLayout());
 
 		// Create the toolbar.
-		view = new ViewManager();
+		LCClient lc = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4]);
+		view = new ViewManager(args[4],lc);
 		menu = new MenuManager(view);
 		JToolBar toolBar = new JToolBar("Still draggable");
 
@@ -238,15 +241,15 @@ implements ActionListener {
 		fram.pack();
 	}
 
-	private static void createAndShowGUI() {
+	private static void createAndShowGUI(String[] args) {
 
 		// Create and set up the window.
 
 		JFrame frame = new JFrame("ToolBarDemo");
-		frame.getContentPane().setSize(400, 400);
+		frame.getContentPane().setSize(800, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		MainGUIClass swinger = new MainGUIClass();
+		MainGUIClass swinger = new MainGUIClass(args);
 		swinger.createLayout(frame, swinger.getButtons());
 		// Add content to the window.
 
@@ -260,12 +263,15 @@ implements ActionListener {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		// Schedule a job for the event dispatch thread:
 
 		// creating and showing this application's GUI.
-
+		if (args.length != 5) {
+			System.err.println("Usage: java LContNode <host name> <port number> <host name> <port number> <username>");
+			System.exit(1);
+		}
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
@@ -274,7 +280,7 @@ implements ActionListener {
 
 				UIManager.put("swing.boldMetal", Boolean.FALSE);
 
-				createAndShowGUI();
+				createAndShowGUI(args);
 
 			}
 

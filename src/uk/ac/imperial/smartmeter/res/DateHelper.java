@@ -34,4 +34,10 @@ public class DateHelper {
 	{
 		return new Date(d.getTime()+i*DayNode.mSecInDay);
 	}
+	public static Date incrementDay(Date d, Integer i) {
+		return new Date(d.getTime()+i*DayNode.mSecInDay);
+	}
+	public static Date incrementDay(Integer i) {
+		return DateHelper.incrementDay(new Date(), i);
+	}
 }
