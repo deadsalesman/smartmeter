@@ -17,7 +17,7 @@ import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class HLCServer {
 	private int portNum;
@@ -41,7 +41,7 @@ public class HLCServer {
 		}
 		case ("USR"):
 		{
-			return resultToStr(registerUser(splitMsg));
+			return resultToStr(registerUserAgent(splitMsg));
 		}
 		case ("GID"):
 		{
@@ -75,9 +75,16 @@ public class HLCServer {
 	private Boolean setGen(List<String> splitMsg) {
 		return handler.setUserGeneration(splitMsg.get(1), new ElectricityGeneration(Double.parseDouble(splitMsg.get(2))));
 	}
-	private Boolean registerUser(List<String> splitMsg) {
+	private Boolean registerUserAgent(List<String> splitMsg) {
 		// TODO Verify user
-		return handler.addUser(new User(splitMsg.get(1),splitMsg.get(2),splitMsg.get(3)));
+		return handler.addUserAgent(new UserAgent(
+				splitMsg.get(1),
+				splitMsg.get(2),
+				splitMsg.get(3),
+				Double.parseDouble(splitMsg.get(4)),
+			    Double.parseDouble(splitMsg.get(5)),
+				Double.parseDouble(splitMsg.get(6))
+						));
 	}
 	private Boolean addReq(List<String> splitMsg) {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -98,7 +105,7 @@ public class HLCServer {
 		return handler.setRequirement(req);
 	}
 	private String getTkts(List<String> splitMsg) {
-		ArraySet<ElectricityTicket> tickets = handler.getTickets(new User("",splitMsg.get(1),""));
+		ArraySet<ElectricityTicket> tickets = handler.getTickets(splitMsg.get(1));
 		String ret = "";
 		if (tickets != null)
 		{

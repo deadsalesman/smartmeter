@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
@@ -9,7 +11,7 @@ public class UserAgent implements UniqueIdentifierIFace {
 	private ElectricityGeneration generatedPower;
 	private Double economicPower;
 	private Double averageAllocation;
-	private ArraySet<ElectricityRequirement> reqs;
+	private Map<ElectricityRequirement, ElectricityTicket> reqs;
 	private UUID id;
 	private String name;
 	private String hash = "";
@@ -23,6 +25,10 @@ public class UserAgent implements UniqueIdentifierIFace {
 	{
 		return Integer.toString(password.hashCode() ^ salt.hashCode());
 	}
+	public Map<ElectricityRequirement, ElectricityTicket> getReqs()
+	{
+		return reqs;
+	}
 	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double worth, Double generation, Double economic, Double allocation, ArraySet<ElectricityRequirement> r)
 	{
 		name = username;
@@ -31,23 +37,25 @@ public class UserAgent implements UniqueIdentifierIFace {
 		id = UUID.fromString(idString);
 		socialWorth = worth;
 		generatedPower = new ElectricityGeneration(generation);
-		reqs = r;
 		economicPower = economic;
 		averageAllocation = allocation;
 		if (r!= null)
 		{
-			reqs = r;
+			for (ElectricityRequirement e: r)
+			{
+				reqs.put(e, null);
+			}
 		}
 		else
 		{
-			reqs = new ArraySet<ElectricityRequirement>();
+			reqs = new HashMap<ElectricityRequirement,ElectricityTicket>();
 		}
 	}
 	public Boolean addReq(ElectricityRequirement req)
 	{
 		if (req.getUserID().equals(id.toString()))
 		{
-			reqs.add(req);
+			reqs.put(req, null);
 			return true;
 		}
 		else return false;
@@ -78,20 +86,6 @@ public class UserAgent implements UniqueIdentifierIFace {
 	}
 	public void setAverageAllocation(Double averageAllocation) {
 		this.averageAllocation = averageAllocation;
-	}
-	public void setReq(ElectricityRequirement e, int index)
-	{
-		reqs.set(e, index);
-	}
-	public ElectricityRequirement getReq(int index)
-	{
-		return reqs.get(index);
-	}
-	public ArraySet<ElectricityRequirement> getReqs() {
-		return reqs;
-	}
-	public void setReqs(ArraySet<ElectricityRequirement> reqs) {
-		this.reqs = reqs;
 	}
 	@Override
 	public String getId() {

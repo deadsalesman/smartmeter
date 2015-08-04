@@ -4,7 +4,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class HLCHandler {
 	private HLController controller;
@@ -17,17 +17,17 @@ public class HLCHandler {
 	{
 		return controller.queryUserExistence(userId);
 	}
-	public ArraySet<ElectricityTicket> getTickets(User u)
+	public ArraySet<ElectricityTicket> getTickets(String userId)
 	{
-		return controller.getTicket(u);
+		return controller.getTickets(userId);
 	}
 	public Boolean setRequirement(ElectricityRequirement e)
 	{
 		return controller.addRequirement(e);
 	}
-	public Boolean addUser(User u)
+	public Boolean addUserAgent(UserAgent u)
 	{
-		return controller.addUser(u);
+		return controller.addUserAgent(u);
 	}
 	public Boolean setUserGeneration(String userId, ElectricityGeneration e)
 	{
