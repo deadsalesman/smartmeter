@@ -68,8 +68,14 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		}
 		if (found)
 		{
-			agentList.get(owner).addReq(e);
-			reqList.add(e);
+			for (UserAgent u : agentList.values())
+			{
+				if (u.getUser().getId().equals(owner.getId()))
+				{
+					u.addReq(e);
+					reqList.add(e);
+				}
+			}
 		}
 		return found;
 	}
@@ -79,9 +85,14 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		{
 			if (u.getId().equals(e.getId())){u=e;}
 		}
+		//alloc.updateAgents(agentList.values());
 		alloc = new TicketAllocator(agentList.values(), new Date(), true);
 		alloc.calculateTickets();
-		return alloc.getTicketsOfUser(agentList.get(u));
+		for (UserAgent agt : agentList.values())
+		{
+			if (agt.getUser().getId().equals(u.getId())){return alloc.getTicketsOfUser(agt);}
+		}
+		return null;
 	}
     public ArraySet<UserAgent> generateAgentSet()
     {
@@ -221,5 +232,30 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 			}
 		}
 		return false;
+	}
+
+	public Boolean queryUserExistence(String userId) {
+		Boolean ret = false;
+		for (User u : userList)
+		{
+			if (u.getName().equals(userId))
+			{
+				ret = true;
+				break;
+			}
+		}
+
+		return ret;
+	}
+
+	public String getUUID(String userName) {
+		for (User u : userList)
+		{
+			if (u.getName().equals(userName))
+			{
+				return u.getId();
+			}
+		}
+        return null;
 	}
 }

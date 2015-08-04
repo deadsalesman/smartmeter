@@ -13,6 +13,10 @@ public class HLCHandler {
 	{
 		controller = new HLController();
 	}
+	public Boolean queryUserExistence(String userId)
+	{
+		return controller.queryUserExistence(userId);
+	}
 	public ArraySet<ElectricityTicket> getTickets(User u)
 	{
 		return controller.getTicket(u);
@@ -28,5 +32,8 @@ public class HLCHandler {
 	public Boolean setUserGeneration(String userId, ElectricityGeneration e)
 	{
 		return controller.setUserGeneration(userId, e);
+	}
+	public String getUUID(String string) {
+		return controller.getUUID(string);
 	}
 }

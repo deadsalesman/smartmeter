@@ -49,9 +49,9 @@ implements ActionListener {
 		LCClient lc = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4]);
 		view = new ViewManager(args[4],lc);
 		menu = new MenuManager(view);
-		JToolBar toolBar = new JToolBar("Still draggable");
+		//JToolBar toolBar = new JToolBar("Still draggable");
 
-		addButtons(toolBar);
+		//addButtons(toolBar);
 
 		// Create the text area used for output. Request
 
@@ -59,9 +59,9 @@ implements ActionListener {
 
 		// Lay out the main panel.
 
-		setPreferredSize(new Dimension(450, 130));
+		setPreferredSize(new Dimension(450, 530));
 
-		add(toolBar, BorderLayout.PAGE_START);
+		//add(toolBar, BorderLayout.PAGE_START);
 
 	}
 
@@ -256,7 +256,7 @@ implements ActionListener {
 		// frame.add(swinger);
 
 		// Display the window.
-		swinger.setSize(600, 600);
+		frame.setPreferredSize(new Dimension(900,600));
 		frame.pack();
 
 		frame.setVisible(true);

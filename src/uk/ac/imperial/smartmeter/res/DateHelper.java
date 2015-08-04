@@ -40,4 +40,14 @@ public class DateHelper {
 	public static Date incrementDay(Integer i) {
 		return DateHelper.incrementDay(new Date(), i);
 	}
+	public static Date incrementHour(Date d, int i)
+	{
+		return new Date(d.getTime()+i*DayNode.mSecInDay/24);
+	}
+	public static Date incrementHour(Date d, Integer i) {
+		return new Date(d.getTime()+i*DayNode.mSecInDay/24);
+	}
+	public static Date incrementHour(Integer i) {
+		return DateHelper.incrementHour(new Date(), i);
+	}
 }

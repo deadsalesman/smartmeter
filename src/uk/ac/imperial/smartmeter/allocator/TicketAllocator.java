@@ -18,6 +18,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 public class TicketAllocator {
 	private Map<ElectricityRequirement, ArrayList<QuantumNode>> reqMap;
 	private CalendarQueue queue;
+	private Map<ElectricityRequirement, Boolean> satMap;
 	private ArraySet<UserAgent> usrArray;
 	private Map<UserAgent, ArraySet<ElectricityTicket>> tickets;
 	private RescherArbiter arbiter;
@@ -31,6 +32,7 @@ public class TicketAllocator {
 	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
+		satMap = new HashMap<ElectricityRequirement, Boolean>();
 		usrArray = new ArraySet<UserAgent>();
 		arbiter = new RescherArbiter();
 		tickets = new HashMap<UserAgent, ArraySet<ElectricityTicket>>();
@@ -46,13 +48,23 @@ public class TicketAllocator {
 		queue = new CalendarQueue(conglom,startDate);
 		populateReqMap();
 	}
+	public void updateAgents(Collection<UserAgent> collection)
+	{
+		conglom = new EleGenConglomerate();
+		for (UserAgent u : collection)
+		{
+			addUser(u);
+		}
+		populateReqMap();
+	}
 	private void populateReqMap()
 	{
 		for (UserAgent u : usrArray)
 		{
 		for (ElectricityRequirement e: u.getReqs())
 		{
-			reqMap.put(e, queue.findIntersectingNodes(e));
+			if (!satMap.containsKey(e)){satMap.put(e,false);}
+			if (!reqMap.containsKey(e)){reqMap.put(e, queue.findIntersectingNodes(e));}
 		}
 		}
 	}
@@ -167,14 +179,15 @@ public class TicketAllocator {
 			try{
 			ElectricityRequirement req = max.getReq(indexes.get(max));
 			
-			if (processRequirement(max, req))
+			if ((!satMap.get(req))&&processRequirement(max, req))
 			{
 				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
-				rankings.put(max, newRank);//rankings.put(max, newRank >= 0 ? newRank : 10); //hack. bad. fix. tomorrow.
+				rankings.put(max, newRank);
 				if (newRank ==0)
 				{
 					userFinished.put(max, true);
 				}
+				satMap.put(req, true);
 			}
 			//System.out.println(max.getUser().getName());
 			//System.out.println(max.getReqs().getSize());

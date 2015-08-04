@@ -62,7 +62,7 @@ public class AgentDBManager extends IntegratedDBManager<UserAgent>{
 		{
 			User u = new User(
 					(String)ls.get("SALT"),
-					(String)ls.get("HASH"),
+					ls.get("HASH").toString(),
 					(String)ls.get("UUID"),
 					(String)ls.get("NAME")
 					);

@@ -8,7 +8,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 
 public class CalendarQueue {
  private ArrayList<DayNode> calendar;
- public static final int  daysInCalendar = 1; 
+ public static final int  daysInCalendar = 5; 
  private EleGenConglomerate conglom;
  private Date startTime;
  public int getCalendarSize()
@@ -61,6 +61,17 @@ public class CalendarQueue {
 	 startTime = d;
 	 conglom = e;
 	 initialiseCalendar();
+ }
+ public void updateCapacities(EleGenConglomerate e)
+ {
+	 for (DayNode d : calendar)
+	 {
+		 for (QuantumNode q : d.nodes)
+		 {
+			 //TODO: Make this work. 
+			 q.removeReq(0);
+		 }
+	 }
  }
  public DayNode push(DayNode d)
  {

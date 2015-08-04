@@ -3,6 +3,9 @@ package uk.ac.imperial.smartmeter.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -16,7 +19,6 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.DeviceType;
-import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.webcomms.LCClient;
@@ -48,6 +50,19 @@ public class ViewManager extends JPanel implements ActionListener{
 		client = lc;
 		initialiseReqComponents();
 		setupView();
+		if (!client.queryUserExists())
+		{
+			promptRegistration();
+		}
+		else
+		{
+			lc.setID(UUID.fromString(client.getRegisteredUUID()));
+		}
+		
+		
+	}
+	private void promptRegistration() {
+		RegistrationGUI rG = new RegistrationGUI(client, userName);
 	}
 	private void initialiseReqComponents() {
 		// TODO Auto-generated method stub
@@ -171,24 +186,41 @@ public class ViewManager extends JPanel implements ActionListener{
 
 
 	}
-	private Boolean processRequirement() {
+	private void processRequirement() {
 		//verify validity of requirement
 		//generate requirement
 		//dispatch to server
 		System.out.println(devices.getSelectedItem());
 		ElectricityRequirement er = new ElectricityRequirement(
 				DateHelper.incrementDay((Integer)startDay.getSelectedItem()),
-				DateHelper.incrementDay((Integer)endDay.getSelectedItem()),
+				DateHelper.incrementDay((Integer)endDay.getSelectedItem()+1),
 				new DecimalRating((Integer)9),
 				DeviceType.valueOf(devices.getSelectedItem().toString()).ordinal(),
-				new Double(9),
+				new Double(3.),
 				client.getId()
 				);
 
-		client.registerUser("ps", "lc");
 		client.setRequirement(er);
-		client.setGeneration(new ElectricityGeneration(10.));
 		ArraySet<ElectricityTicket> tkt = client.getTickets();
-		return (tkt.get(0).ownerID.toString().equals(client.getId()));
+		
+		GroupLayout gl = new GroupLayout(this);
+		this.setLayout(gl);
+		text.setText("Tickets:\n");
+		
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		if (tkt != null)
+		{
+	
+		for (ElectricityTicket et : tkt)
+		{
+			//this is going to be hacky :(
+			text.append(df.format(et.start) + ",\n" + df.format(et.end) + ",\n" + et.magnitude + ",\n" + et.ownerID.toString() + ",\n" + et.getId() + ",\n");
+		}
+
+		}
+		gl.setAutoCreateContainerGaps(true);
+		gl.setHorizontalGroup(gl.createSequentialGroup().addComponent(text));
+		gl.setVerticalGroup(gl.createParallelGroup().addComponent(text));
+		
 	}
 }

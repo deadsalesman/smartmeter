@@ -139,7 +139,7 @@ public class LCClient{
 				} catch (Exception e) {
 					System.out.println("Invalid ticket");
 				}
-				offset += size;
+				offset += 5;
 			}
 			}
 		
@@ -242,7 +242,7 @@ public class LCClient{
 	}
 
 	public String getId() {
-		return handler.getId();
+		return userId;
 	}
 
 	public boolean setGeneration(ElectricityGeneration i) {
@@ -259,5 +259,38 @@ public class LCClient{
 		} catch (IOException e) {
 		}
 		return false;
+	}
+
+	public boolean queryUserExists() {
+		String inputLine = "XST," + userName;
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectHLC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public String getRegisteredUUID() {
+		String inputLine = "GID," + userName;
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectHLC(input);
+		    return ret.get(0);
+		} catch (IOException e) {
+		}
+		return null;
+	}
+
+	public void setID(UUID fromString) {
+		userId = fromString.toString();
 	}
 }

@@ -43,6 +43,14 @@ public class HLCServer {
 		{
 			return resultToStr(registerUser(splitMsg));
 		}
+		case ("GID"):
+		{
+			return getUID(splitMsg);
+		}
+		case ("XST"):
+		{
+			return resultToStr(queryExistence(splitMsg));
+		}
 		case ("CON"):
 		{
 			return "CON";
@@ -58,6 +66,12 @@ public class HLCServer {
 		}
 	}
 	
+	private String getUID(List<String> splitMsg) {
+		return handler.getUUID(splitMsg.get(1));
+	}
+	private Boolean queryExistence(List<String> splitMsg) {
+		return handler.queryUserExistence(splitMsg.get(1));
+	}
 	private Boolean setGen(List<String> splitMsg) {
 		return handler.setUserGeneration(splitMsg.get(1), new ElectricityGeneration(Double.parseDouble(splitMsg.get(2))));
 	}
