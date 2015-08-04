@@ -1,33 +1,34 @@
-package uk.ac.imperial.smartmeter.allocator;
+package uk.ac.imperial.smartmeter.res;
 
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
-import uk.ac.imperial.smartmeter.res.ArraySet;
-import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
-import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-import uk.ac.imperial.smartmeter.res.User;
 
 public class UserAgent implements UniqueIdentifierIFace {
-	private User user;
 	private Double socialWorth;
 	private ElectricityGeneration generatedPower;
-	private ArraySet<ElectricityRequirement> reqs;
 	private Double economicPower;
 	private Double averageAllocation;
+	private ArraySet<ElectricityRequirement> reqs;
 	private UUID id;
+	private String name;
+	private String hash = "";
+	private String salt = "decentralised";
 	
-	public UserAgent(User u, Double worth, Double generation, Double economic, Double allocation)
+	public UserAgent(String saltNew, String password, String userName, Double worth, Double generation, Double economic)
 	{
-		this(u,worth,generation,(ArraySet<ElectricityRequirement>)null,economic,allocation);
+		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,worth,generation,economic, 0.,null);
 	}
-	public UserAgent(User u, Double worth, Double generation, ElectricityRequirement r, Double economic, Double allocation)
+	private static String generateHashCode(String password, String salt)
 	{
-		this(u,worth,generation,new ArraySet<ElectricityRequirement>(r),economic,allocation);
+		return Integer.toString(password.hashCode() ^ salt.hashCode());
 	}
-	public UserAgent(User u, Double worth, Double generation, ArraySet<ElectricityRequirement> r, Double economic, Double allocation)
+	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double worth, Double generation, Double economic, Double allocation, ArraySet<ElectricityRequirement> r)
 	{
-		user = u;
+		name = username;
+		salt = saltNew;
+		hash = passwdHash;
+		id = UUID.fromString(idString);
 		socialWorth = worth;
 		generatedPower = new ElectricityGeneration(generation);
 		reqs = r;
@@ -41,26 +42,15 @@ public class UserAgent implements UniqueIdentifierIFace {
 		{
 			reqs = new ArraySet<ElectricityRequirement>();
 		}
-		id = UUID.randomUUID();
-	}
-	public UserAgent(User u)
-	{
-		this(u,0.,0.,(ArraySet<ElectricityRequirement>)null,0.,0.);
-	}
-	public User getUser() {
-		return user;
 	}
 	public Boolean addReq(ElectricityRequirement req)
 	{
-		if (req.getUserID().equals(user.getId()))
+		if (req.getUserID().equals(id.toString()))
 		{
 			reqs.add(req);
 			return true;
 		}
 		else return false;
-	}
-	public void setUser(User user) {
-		this.user = user;
 	}
 	public Double getSocialWorth() {
 		return socialWorth;
@@ -110,5 +100,18 @@ public class UserAgent implements UniqueIdentifierIFace {
 	public void setGeneratedPower(ElectricityGeneration e) {
 		generatedPower = e;
 	}
-
+	public String getName() {
+		return name;
+	}
+	public String getHash() {
+		return hash;
+	}
+	public String getSalt() {
+		return salt;
+	}
+	public boolean verify(String pass)
+	{
+		return (pass.hashCode() ^ salt.hashCode()) == Integer.parseInt(hash);
+		
+	}
 }

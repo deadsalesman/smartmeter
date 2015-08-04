@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class TicketTestHelper {
 	

@@ -2,7 +2,7 @@ package uk.ac.imperial.smartmeter.comparators;
 
 import java.util.Comparator;
 
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class socialComparator implements Comparator<UserAgent> {
 

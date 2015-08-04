@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.Map;
 
 import uk.ac.imperial.smartmeter.allocator.TicketAllocator;
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestSufficientGeneration extends GenericTest {

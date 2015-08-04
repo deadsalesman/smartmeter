@@ -13,6 +13,7 @@ import uk.ac.imperial.smartmeter.comparators.productivityComparator;
 import uk.ac.imperial.smartmeter.comparators.socialComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class RescherArbiter {
 

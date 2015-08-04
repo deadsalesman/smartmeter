@@ -1,10 +1,10 @@
 package uk.ac.imperial.smartmeter.tests.allocator;
 
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.comparators.needsComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestNSort extends GenericTest{

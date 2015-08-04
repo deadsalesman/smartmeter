@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>, Collection<T>{

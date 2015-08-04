@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.TicketAllocator;
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.db.AgentDBManager;
 import uk.ac.imperial.smartmeter.db.ReqsDBManager;
 import uk.ac.imperial.smartmeter.db.UserDBManager;
@@ -18,6 +17,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 //HighLevelController
 public class HLController implements HighLevelControllerIFace, UniqueIdentifierIFace{

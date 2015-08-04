@@ -2,8 +2,8 @@ package uk.ac.imperial.smartmeter.comparators;
 
 import java.util.Comparator;
 
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class needsComparator implements Comparator<UserAgent> {
 

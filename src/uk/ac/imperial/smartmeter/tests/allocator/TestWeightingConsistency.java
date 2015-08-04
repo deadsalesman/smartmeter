@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.RescherArbiter;
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestWeightingConsistency extends GenericTest {

@@ -10,8 +10,8 @@ public class User implements UniqueIdentifierIFace{
 	private String name;
 	private String hash = "";
 	private String salt = "decentralised";
-	
-	public User(String saltNew, String passwdHash, String idString, String username)
+	//DEPRECATED: 
+	/*public User(String saltNew, String passwdHash, String idString, String username)
 	{
 		name = username;
 		salt = saltNew;
@@ -38,6 +38,7 @@ public class User implements UniqueIdentifierIFace{
 		hash = Integer.toString(password.hashCode() ^ salt.hashCode()); //supermegainsecure for any value of secure. do properly 
 		
 	}
+	*/
 	@Override
 	public String getId() {
 		return id.toString();

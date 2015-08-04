@@ -14,6 +14,7 @@ import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.EleGenConglomerate;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class TicketAllocator {
 	private Map<ElectricityRequirement, ArrayList<QuantumNode>> reqMap;

@@ -1,9 +1,9 @@
 package uk.ac.imperial.smartmeter.tests.allocator;
 
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.comparators.equalityComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestESort extends GenericTest{

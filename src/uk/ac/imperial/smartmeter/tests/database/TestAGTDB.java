@@ -1,8 +1,8 @@
 package uk.ac.imperial.smartmeter.tests.database;
 
-import uk.ac.imperial.smartmeter.allocator.UserAgent;
 import uk.ac.imperial.smartmeter.impl.HLController;
 import uk.ac.imperial.smartmeter.res.User;
+import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestAGTDB extends GenericTest {
