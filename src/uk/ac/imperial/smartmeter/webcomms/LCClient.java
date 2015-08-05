@@ -24,7 +24,7 @@ public class LCClient{
 	private int eDCPort;
 	private String hLCHost;
 	private int hLCPort;
-	private LCHandler handler;
+	public LCHandler handler;
 	private String userId; 
 	private String userName;
 	

@@ -10,7 +10,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
@@ -18,11 +21,13 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
 public class LCServer {
-	private int portNum;
+	private Integer portNum;
+	private Map<String, Double> agentUtilities;
 	public LCClient client;
-	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, int ownPort, String name,String password) {
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
+		agentUtilities = new HashMap<String, Double>();
 	}
 
 	private String recvMsg(String msg) {
@@ -51,13 +56,13 @@ public class LCServer {
 					splitMsg.get(4)
 					);
 			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(5));
-			Integer newUtility = evaluateUtility(newtkt);
-			Integer oldUtility = evaluateUtility(oldtkt);
-			Boolean result = evaluate(newUtility, oldUtility);
+			Double newUtility = evaluateUtility(newtkt);
+			Double oldUtility = evaluateUtility(oldtkt);
+			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(4));
 			
 			if (result)
 			{
-				return modifyTickets();
+				return modifyTickets(splitMsg.get(4),oldtkt);
 			}
 			else
 			{
@@ -73,24 +78,43 @@ public class LCServer {
 		return null;
 	}
 
-	private String modifyTickets() {
+	private String modifyTickets(String user, ElectricityTicket oldtkt) {
 		// TODO Auto-generated method stub
-		return null;
+		//change the owners of the tickets around
+		//format as string suitable for transfer
+		oldtkt.ownerID = UUID.fromString(user);
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		String ret = "";
+		ret += df.format(oldtkt.start) + "," + df.format(oldtkt.end) + "," + oldtkt.magnitude + "," + oldtkt.ownerID.toString() + "," + oldtkt.getId() + ",";
+		return ret;
 	}
 
-	private Boolean evaluate(Integer newUtility, Integer oldUtility) {
-		// TODO Auto-generated method stub
-		return null;
+	private Boolean decideUtility(Double newUtility, Double oldUtility, String user) {
+		// TODO implement different types of agent
+		Double history = 0.;
+		Double credit = 0.;
+		Double leeway = 0.;
+		if (agentUtilities.containsKey(user)) {
+			history = agentUtilities.get(user);
+		}
+		if ((history <= credit) && (newUtility > (oldUtility + leeway))) {
+			agentUtilities.put(user, history + (newUtility - oldUtility));
+			return true;
+		}
+		return false;
 	}
 
-	private Integer evaluateUtility(ElectricityTicket newtkt) {
-		// TODO Auto-generated method stub
-		return null;
+	private Double evaluateUtility(ElectricityTicket newtkt) {
+		Double utility = 0.;
+		for (ElectricityRequirement r : client.handler.getReqs())
+		{
+			//do some magic to assign a utility to it.
+		}
+		return utility;
 	}
 
 	private ElectricityTicket findOwnTicket(String string) {
-		// TODO Auto-generated method stub
-		return null;
+		return client.getTickets().findFromID(string);
 	}
 
 	private String findCompetingTickets(List<String> splitMsg) {

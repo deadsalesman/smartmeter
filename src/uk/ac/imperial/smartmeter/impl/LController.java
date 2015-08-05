@@ -36,6 +36,10 @@ public class LController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public ArraySet<ElectricityRequirement> getReqs()
+	{
+		return masterUser.getReqs();
+	}
 	public ElectricityRequirement generateRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude)
 	{
 		return new ElectricityRequirement(start, end, prio, profileId, amplitude, masterUser.getId());

@@ -27,6 +27,10 @@ private LController controller;
 	{
 		return controller.findCompetingTickets(req);
 	}
+	public ArraySet<ElectricityRequirement> getReqs()
+	{
+		return controller.getReqs();
+	}
 	public String getId() {
 		return id;
 	}
