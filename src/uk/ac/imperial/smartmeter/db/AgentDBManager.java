@@ -6,7 +6,6 @@ import java.util.Map;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-import uk.ac.imperial.smartmeter.res.User;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class AgentDBManager extends IntegratedDBManager<UserAgent>{
@@ -19,26 +18,37 @@ public class AgentDBManager extends IntegratedDBManager<UserAgent>{
 	private static String primFmt   = 
 			"CREATE TABLE     " +  primTable + "("   +
 			"ID     INT       PRIMARY KEY NOT NULL," +
-			"SOCIAL   REAL       NOT NULL,"             +
-			"POWER   REAL      NOT NULL,"             +
+	        "SALT   TEXT      NOT NULL,"             +
+	        "HASH   TEXT      NOT NULL,"             +
+	        "UUID   TEXT      NOT NULL,"             +
+			"NAME   CHAR(50)  NOT NULL),"            +
+			"SOCIAL REAL      NOT NULL,"             +
+			"POWER  REAL      NOT NULL,"             +
 			"ECON   REAL      NOT NULL,"             +
-			"ALLOC  REAL       NOT NULL,"               +
-			"USERID   TEXT      NOT NULL,"             +
-			"UUID      TEXT       NOT NULL,"         +
-			"FOREIGN KEY(USERID) REFERENCES USER_TABLE(ID)" +
-			"" +
+			"ALLOC  REAL      NOT NULL,"             +
 			");"
 			;
+	
 	@Override
 	public boolean insertElement(UserAgent r) {
-				String fmt = "INSERT INTO "+primTable+"(ID, SOCIAL, POWER, ECON, ALLOC, USERID, UUID) " + "VALUES ("
-				+ r.getId().hashCode() + ", " + r.getSocialWorth() + ", " + r.getMaxPower() 
-				+ ", " + r.getEconomicPower() + ", " + r.getAverageAllocation() + ", "
-				+ r.getUser().getId().hashCode() + ", '" + r.getId() + "' "
+				String fmt = "INSERT INTO "+primTable+"(ID, SALT, HASH, UUID, NAME, SOCIAL, POWER, ECON, ALLOC) " + "VALUES ("
+				+ r.getId().hashCode()     + ", '"
+				+ r.getSalt()              + "', '"
+				+ r.getHash()              + "', '"
+				+ r.getId()                + "', '"
+				+ r.getName()              + "', "
+				+ r.getSocialWorth()       + ", "
+				+ r.getMaxPower()          + ", " 
+				+ r.getEconomicPower()     + ", " 
+				+ r.getAverageAllocation() + ", "
 				+ " );";
+				
 		return insertValue(primTable, fmt);
 	}
-	
+	public boolean wipe()
+	{
+		return genericDBUpdate("DELETE FROM " + primTable);
+	}
 	@Override
 	public ArrayList<UserAgent> extractAll() // T
 	{
@@ -60,19 +70,17 @@ public class AgentDBManager extends IntegratedDBManager<UserAgent>{
 	@Override
 	public UserAgent formatMap(Map<String, Object> ls) {
 		{
-			User u = new User(
+			UserAgent ret = new UserAgent(
 					(String)ls.get("SALT"),
 					ls.get("HASH").toString(),
 					(String)ls.get("UUID"),
-					(String)ls.get("NAME")
-					);
-			UserAgent ret = new UserAgent(
-					u, 
+					(String)ls.get("NAME"),
 					(Double)ls.get("SOCIAL"), 
 					(Double)ls.get("POWER"), 
-					(ArraySet<ElectricityRequirement>) null,
 					(Double)ls.get("ECON"),
-					(Double)ls.get("ALLOC"));
+					(Double)ls.get("ALLOC"),
+					(ArraySet<ElectricityRequirement>) null
+					);
 			return ret;
 		}
 	}

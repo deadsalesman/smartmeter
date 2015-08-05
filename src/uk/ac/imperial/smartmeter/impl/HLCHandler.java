@@ -36,4 +36,10 @@ public class HLCHandler {
 	public String getUUID(String string) {
 		return controller.getUUID(string);
 	}
+	public Boolean calculateTickets() {
+		return controller.calculateTickets();
+	}
+	public Boolean clearAll(String string) {
+		return controller.clearAll(string);
+	}
 }

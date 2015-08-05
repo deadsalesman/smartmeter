@@ -13,11 +13,11 @@ public class LContNode {
 
 	public static void main(String[] args) throws IOException {
 
-		if (args.length != 5) {
-			System.err.println("Usage: java LContNode <host name> <port number> <host name> <port number> <username>");
+		if (args.length != 6) {
+			System.err.println("Usage: java LContNode <host name> <port number> <host name> <port number> <username> <password>");
 			System.exit(1);
 		}
-		client = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4]); // TODO
+		client = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4],args[5]); // TODO
 
 	}
 
@@ -48,9 +48,9 @@ public class LContNode {
 	public static Boolean removeDevice(String id) {
 		return client.removeDevice(id);
 	}
-	public static Boolean registerUser(String passWd, String userName)
+	public static Boolean registerUser(Double worth, Double generation, Double economic)
 	{
-		return client.registerUser(passWd, userName);
+		return client.registerUser(worth, generation, economic);
 	}
 	public static Boolean setRequirement(ElectricityRequirement req) {
 		return client.setRequirement(req);

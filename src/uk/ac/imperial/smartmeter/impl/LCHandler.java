@@ -6,14 +6,20 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 public class LCHandler {
 private LController controller;
 	private String id;
-	public LCHandler(String userId)
+	public LCHandler(String username,String password,Double social, Double generation, Double economic)
 	{
-		id = userId;
-		controller = new LController(id);
+		controller = new LController(username, password, social, generation, economic);
+		id = controller.getId();
 	}
 	public Boolean setRequirement(ElectricityRequirement e)
 	{
 		return controller.addRequirement(e);
+	}
+	public String getSalt(){
+		return controller.getSalt();
+	}
+	public String getHash(){
+		return controller.getHash();
 	}
 	public String getId() {
 		return id;

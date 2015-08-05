@@ -46,7 +46,7 @@ implements ActionListener {
 		super(new BorderLayout());
 
 		// Create the toolbar.
-		LCClient lc = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4]);
+		LCClient lc = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4], args[5]);
 		view = new ViewManager(args[4],lc);
 		menu = new MenuManager(view);
 		//JToolBar toolBar = new JToolBar("Still draggable");

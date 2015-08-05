@@ -6,6 +6,8 @@ public class NetworkTester extends GenericTester{
 
 	public Integer main(String[] args)
 	{
+
+		testLog.add(new TestComplexTickets());
 		testLog.add(new TestECDBNode());
 		testLog.add(new TestECDBNodeWriteSetGet());
 		testLog.add(new TestECDBNodeRemove());
@@ -13,7 +15,6 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestPushGeneration());
 		testLog.add(new TestHLCGetTkt());
 		testLog.add(new TestConcurrentClients());
-		testLog.add(new TestComplexTickets());
 		return reportLog();
 	}
 }

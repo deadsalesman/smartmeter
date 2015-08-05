@@ -62,7 +62,7 @@ public class ViewManager extends JPanel implements ActionListener{
 		
 	}
 	private void promptRegistration() {
-		RegistrationGUI rG = new RegistrationGUI(client, userName);
+		RegistrationGUI rG = new RegistrationGUI(client);
 	}
 	private void initialiseReqComponents() {
 		// TODO Auto-generated method stub

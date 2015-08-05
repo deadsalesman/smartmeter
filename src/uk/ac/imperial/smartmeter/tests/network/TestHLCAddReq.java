@@ -1,13 +1,12 @@
 package uk.ac.imperial.smartmeter.tests.network;
 
-import java.io.IOException;
-import java.util.Date;
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
-import uk.ac.imperial.smartmeter.webcomms.LContNode;
+import uk.ac.imperial.smartmeter.webcomms.LCClient;
 
 public class TestHLCAddReq extends GenericTest {
 
@@ -16,24 +15,20 @@ public class TestHLCAddReq extends GenericTest {
 		// TODO Auto-generated method stub
 
 		String t = UUID.randomUUID().toString();
-	        String[] parameters_lc = {"localHost", "9002", "localHost", "9001",t};
-			try {
-				LContNode.main(parameters_lc);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			LCClient elsie = new LCClient("localHost", 9002, "localHost", 9001,t,"");
 			ElectricityRequirement e = new ElectricityRequirement(
-					new Date(),
-					new Date(),
+					DateHelper.os(0.),
+					DateHelper.os(10.),
 					new DecimalRating(2),
 					1,
 					1,
-					LContNode.getUserId(),
+					elsie.getId(),
 					UUID.randomUUID().toString()
 					);
-			LContNode.registerUser("Password", "User");
-			return LContNode.setRequirement(e);
+			
+			elsie.registerUser(0.,0.,0.);
+			return elsie.setRequirement(e);
 			
 	}
 

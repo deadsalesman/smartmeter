@@ -12,10 +12,8 @@ public class TestRQDB extends GenericTest {
 	public boolean doTest() {
 
 		
-		LController l = new LController("Samuel Jackson");
-		l.dbReq.genericDBUpdate("DROP TABLE REQUIREMENT_TABLE");
+		LController l = new LController("Samuel Jackson", "", 0., 0., 0.);
 		
-		LController p = new LController("John Travolta");
 		l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(4),1,1));
 		l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(1),1,1));
 		l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(3),1,1));
@@ -27,6 +25,10 @@ public class TestRQDB extends GenericTest {
 		l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(11),1,1));
 		l.addRequirement(l.generateRequirement(new Date(),new Date(),new DecimalRating(1),1,1));
 		
+
+		LController p = new LController(l.getSalt(),l.getHash(),l.getId(),"Samuel Jackson", 0., 0., 0.);
+
+		l.dbReq.genericDBUpdate("DROP TABLE REQUIREMENT_TABLE");
 		return (l.getReqCount()==p.getReqCount());
 	}
 

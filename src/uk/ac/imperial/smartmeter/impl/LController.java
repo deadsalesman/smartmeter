@@ -1,7 +1,10 @@
 package uk.ac.imperial.smartmeter.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.db.ReqsDBManager;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -10,15 +13,22 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 //LocalController
 public class LController {
 	private ElectricityGeneration eleGen;
-	//public ReqsDBManager dbReq;
+	public ReqsDBManager dbReq;
 	private double maxEleConsumption;
 	private UserAgent masterUser;
 	
 	
-	public LController(String username)
+	public LController(String username,String password,Double social, Double generation, Double economic)
 	{
-		//dbReq  = new ReqsDBManager("jdbc:sqlite:req.db");
-		masterUser = new UserAgent(username, username, username, username, maxEleConsumption, maxEleConsumption, maxEleConsumption, maxEleConsumption, null);
+		dbReq  = new ReqsDBManager("jdbc:sqlite:req.db");
+		masterUser = new UserAgent(UUID.randomUUID().toString(), username, password, social, generation, economic);
+		pullFromDB();
+	}
+	public LController(String salt, String hash, String id,String username,Double social, Double generation, Double economic)
+	{
+		dbReq  = new ReqsDBManager("jdbc:sqlite:req.db");
+		masterUser = new UserAgent(salt, hash, id, username, social, generation, economic);
+		pullFromDB();
 	}
 	public Boolean registerDeviceController() {
 		// TODO Auto-generated method stub
@@ -33,42 +43,44 @@ public class LController {
 		Boolean success = masterUser.addReq(req);
 		if (success) {
 			maxEleConsumption += req.getMaxConsumption();
+			dbReq.insertElement(req);
+			return true;
 		}
-		return success;
+		return false;
 	}
 
-	private void setMaxEleConsumption(double d) {
-		maxEleConsumption = d;
-	}
 	
-/*
-	@Override
 	public void pushToDB() {
-		for (ElectricityRequirement r : reqList)
+		for (ElectricityRequirement r : masterUser.getReqs())
 		{
 			dbReq.insertElement(r);
 		}
 		
 	}
 
-	@Override
 	public void pullFromDB() {
 		ArrayList<ElectricityRequirement>temp_array = dbReq.extractAll();
 		for (ElectricityRequirement r : temp_array)
 		{
-			reqList.add(r);
+			if (r.getUserID().equals(masterUser.getId())){
+			masterUser.addReq(r);
+			}
 		}
 		updateMaxConsumption();
 		
 	}
-	*/
+	
 	private void updateMaxConsumption()
 	{
 		maxEleConsumption = 0;
-			for (ElectricityRequirement r : masterUser.getReqs().keySet()) {
+			for (ElectricityRequirement r : masterUser.getReqTktMap().keySet()) {
 				maxEleConsumption += r.getMaxConsumption();
 			}
 		
+	}
+	public String getId()
+	{
+		return masterUser.getId();
 	}
 	public ElectricityGeneration getEleGen() {
 		return eleGen;
@@ -80,5 +92,14 @@ public class LController {
 	}
 	public double getMaxEleConsumption() {
 		return maxEleConsumption;
+	}
+	public Integer getReqCount() {
+		return masterUser.getReqs().getSize();
+	}
+	public String getSalt() {
+		return masterUser.getSalt();
+	}
+	public String getHash() {
+		return masterUser.getHash();
 	}
 }

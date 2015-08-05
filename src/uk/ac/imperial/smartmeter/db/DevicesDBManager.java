@@ -29,6 +29,10 @@ public class DevicesDBManager
 			"FOREIGN KEY(TYPE) REFERENCES      ENUM_TABLE(ID));"
 			;
 
+	public boolean wipe()
+	{
+		return genericDBUpdate("DELETE FROM " + primTable);
+	}
 	public boolean initialiseEnumTable()
 	{
 		LocalSet verifyEnumTable = queryDB("SELECT COUNT(*) FROM " + enumTable);

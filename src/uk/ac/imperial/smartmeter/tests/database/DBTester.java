@@ -8,7 +8,6 @@ public class DBTester extends GenericTester{
 	{
 		testLog.add(new TestECDB());
 		testLog.add(new TestRQDB());
-		testLog.add(new TestUSRDB());
 		testLog.add(new TestAGTDB());
 		return reportLog();
 	}

@@ -37,6 +37,18 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 		return !exists;
 		
 	}
+	public T findFromID(String id)
+	{
+		for (T t : arr)
+		{
+			if (t.getId().equals(id))
+			{
+				return t;
+			}
+		}
+		
+		return null;
+	}
 	public boolean forceAdd(T i)
 	{
 		boolean exists = false;

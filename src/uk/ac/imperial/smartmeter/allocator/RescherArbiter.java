@@ -90,7 +90,7 @@ public class RescherArbiter {
 
 		for (Entry<UserAgent, Double> e : m.entrySet()) {
 			totalWeight = 0.;
-			for (ElectricityRequirement r : e.getKey().getReqs()) {
+			for (ElectricityRequirement r : e.getKey().getReqTktMap().keySet()) {
 				totalEnergy += r.getMaxConsumption() * r.getDuration();
 			}
 			totalWeight += e.getValue();

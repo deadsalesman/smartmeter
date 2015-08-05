@@ -11,7 +11,8 @@ public class UserAgent implements UniqueIdentifierIFace {
 	private ElectricityGeneration generatedPower;
 	private Double economicPower;
 	private Double averageAllocation;
-	private Map<ElectricityRequirement, ElectricityTicket> reqs;
+	private Map<ElectricityRequirement, ElectricityTicket> reqTktMap;
+	private ArraySet<ElectricityRequirement> reqs;
 	private UUID id;
 	private String name;
 	private String hash = "";
@@ -19,43 +20,74 @@ public class UserAgent implements UniqueIdentifierIFace {
 	
 	public UserAgent(String saltNew, String password, String userName, Double worth, Double generation, Double economic)
 	{
-		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,worth,generation,economic, 0.,null);
+		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,worth,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
+	}
+	public UserAgent(String saltNew, String password, String userName, Double worth, Double generation, Double economic, Double allocation)
+	{
+		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,worth,generation,economic, allocation,(ArraySet<ElectricityRequirement>)null);
 	}
 	private static String generateHashCode(String password, String salt)
 	{
 		return Integer.toString(password.hashCode() ^ salt.hashCode());
 	}
-	public Map<ElectricityRequirement, ElectricityTicket> getReqs()
+	public Map<ElectricityRequirement, ElectricityTicket> getReqTktMap()
+	{
+		return reqTktMap;
+	}
+	public ArraySet<ElectricityRequirement> getReqs()
 	{
 		return reqs;
 	}
-	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double worth, Double generation, Double economic, Double allocation, ArraySet<ElectricityRequirement> r)
+	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double social, Double generation, Double economic)
+	{
+		this(saltNew, passwdHash,idString,username,social,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
+	}
+	
+	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double social, Double generation, Double economic, Double allocation, ElectricityRequirement r)
+	{
+		this(saltNew, passwdHash,UUID.randomUUID().toString(),username,social,generation,economic, allocation,new ArraySet<ElectricityRequirement>(r));
+	}
+	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double social, Double generation, Double economic, Double allocation, ArraySet<ElectricityRequirement> r)
 	{
 		name = username;
 		salt = saltNew;
 		hash = passwdHash;
 		id = UUID.fromString(idString);
-		socialWorth = worth;
+		socialWorth = social;
 		generatedPower = new ElectricityGeneration(generation);
 		economicPower = economic;
 		averageAllocation = allocation;
+
+		reqTktMap = new HashMap<ElectricityRequirement,ElectricityTicket>();
 		if (r!= null)
 		{
+			reqs = r;
 			for (ElectricityRequirement e: r)
 			{
-				reqs.put(e, null);
+				reqTktMap.put(e, null);
 			}
 		}
 		else
 		{
-			reqs = new HashMap<ElectricityRequirement,ElectricityTicket>();
+			reqs = new ArraySet<ElectricityRequirement>();
 		}
+	}
+	public Integer countTkts()
+	{
+		//Cannot simply return the count of the tickets, as some tickets are null.
+		Integer ret = 0;
+		for (ElectricityTicket tkt : reqTktMap.values())
+		{
+			ret += (tkt==null)? 0 : 1;
+		}
+		return ret;
 	}
 	public Boolean addReq(ElectricityRequirement req)
 	{
 		if (req.getUserID().equals(id.toString()))
 		{
-			reqs.put(req, null);
+			reqTktMap.put(req, null);
+			reqs.add(req);
 			return true;
 		}
 		else return false;
@@ -107,5 +139,8 @@ public class UserAgent implements UniqueIdentifierIFace {
 	{
 		return (pass.hashCode() ^ salt.hashCode()) == Integer.parseInt(hash);
 		
+	}
+	public ElectricityRequirement getReq(Integer index) {
+		return reqs.get(index);
 	}
 }

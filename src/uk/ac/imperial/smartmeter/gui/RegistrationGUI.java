@@ -14,7 +14,7 @@ public class RegistrationGUI {
 	
 	String result;
 	
-	public RegistrationGUI(final LCClient lc, final String userName){
+	public RegistrationGUI(final LCClient lc){
 	
 	final JFrame parent = new JFrame();
 	JButton button = new JButton();
@@ -26,7 +26,7 @@ public class RegistrationGUI {
 		public void actionPerformed(ActionEvent evt)
 		{
 			result = JOptionPane.showInputDialog(parent, "Please enter your password below.", null);
-			lc.registerUser(result, userName);
+			lc.registerUser(0.,0.,0.);
 			lc.setGeneration(new ElectricityGeneration(3.));
 			parent.setVisible(false);
 			lc.queryUserExists();

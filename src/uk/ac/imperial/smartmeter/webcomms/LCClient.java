@@ -24,20 +24,20 @@ public class LCClient{
 	private int eDCPort;
 	private String hLCHost;
 	private int hLCPort;
-	private static LCHandler handler;
+	private LCHandler handler;
 	private String userId; 
 	private String userName;
 	
 	
-	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name) {
+	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name,String password) {
 		eDCHost = eDCHostName;
 		eDCPort = eDCPortNum;
 		hLCHost = hLCHostName;
 		hLCPort = hLCPortNum;
 		userName = name;
-		userId = UUID.randomUUID().toString();
-		handler = new LCHandler(userId.toString());
-		
+		handler = new LCHandler(name,password,0.,0.,0.); //TODO: make not naughty. 
+
+		userId = handler.getId();
 		//why not register the user here?
 	}
 
@@ -111,6 +111,23 @@ public class LCClient{
 		}
 		return false;
 	}
+	public Boolean GodModeCalcTKTS()
+	{
+		String inputLine = "CAL,";
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			   ArrayList<String> ret = connectHLC(input);
+			   if (ret.get(0).equals("SUCCESS"))
+			   {
+			   	return true;
+			   }
+		    } catch (IOException e) {
+		    
+		    }
+		return false;
+	}
 	public ArraySet<ElectricityTicket> getTickets()
 	{
 		String inputLine = "TKT," +  userId;
@@ -167,7 +184,7 @@ public class LCClient{
 		   ArrayList<String> ret = connectHLC(input);
 		   if (ret.get(0).equals("SUCCESS"))
 		   {
-		   	return true;
+			return handler.setRequirement(req);
 		   }
 	    } catch (IOException e) {
 	}
@@ -225,8 +242,8 @@ public class LCClient{
 		return false;
 	}
 
-	public Boolean registerUser(String passWd, String userName) {
-		String inputLine = "USR," + userName + "," + userId + "," + passWd;
+	public Boolean registerUser(Double worth, Double generation, Double economic) {
+		String inputLine = "USR," +  handler.getSalt()+ ","+  handler.getHash() + "," + userId + "," +userName +  ","+worth+","+generation+","+economic+",";
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
 		input.add("END");
@@ -244,7 +261,22 @@ public class LCClient{
 	public String getId() {
 		return userId;
 	}
-
+	public boolean wipe()
+	{
+		String inputLine = "DEL," + "drop";
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		try {
+			ArrayList<String> ret = connectHLC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
 	public boolean setGeneration(ElectricityGeneration i) {
 		String inputLine = "GEN," + userId + "," + i.getMaxOutput();
 		ArrayList<String> input = new ArrayList<String>();

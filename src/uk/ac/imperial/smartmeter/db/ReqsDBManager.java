@@ -41,7 +41,10 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 			"FOREIGN   KEY(USERID)  REFERENCES    USER_TABLE(ID));"*/
 			;
 	
-	
+	public boolean wipe()
+	{
+		return genericDBUpdate("DELETE FROM " + primTable);
+	}
 	public boolean initialiseProfileTable()
 	{
 		LocalSet verifyProfileTable = queryDB("SELECT COUNT(*) FROM " + profileTable);
@@ -75,10 +78,10 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 	}
 	
 	public boolean insertElement(ElectricityRequirement r) {
-		String fmt = "INSERT INTO "+primTable+"(REQID, START, END, PRIORITY, PROFILE, AMPLITUDE, USERID, UUID) " + "VALUES ("
+		String fmt = "INSERT INTO "+primTable+"(REQID, START, END, USERID, UUID, PRIORITY, PROFILE, AMPLITUDE) " + "VALUES ("
 				+ r.getId().hashCode() + ", '" + df.format(r.getStartTime()) + "', '" + df.format(r.getEndTime()) 
-				+ "', " + r.getPriority() + ", " + r.getProfileCode() + ", " + r.getMaxConsumption()
-				+ ", '" + r.getUserID() + "' "+ ", '" + r.getId() + "' "
+				+ "', '" + r.getUserID() + "' "+ ", '" + r.getId() + "', "+ r.getPriority() + ", "
+				+ r.getProfileCode() + ", " + r.getMaxConsumption()
 				+ " );";
 		return insertValue(primTable, fmt);
 	}

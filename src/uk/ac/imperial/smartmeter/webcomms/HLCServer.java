@@ -31,6 +31,10 @@ public class HLCServer {
 	{
 		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
 		switch (splitMsg.get(0)) {
+		case ("CAL"):
+		{
+			return resultToStr(calculateTickets());
+		}
 		case ("REQ"):
 		{
 			return resultToStr(addReq(splitMsg));
@@ -59,6 +63,10 @@ public class HLCServer {
 		{
 			return getTkts(splitMsg);
 		}
+		case ("DEL"):
+		{
+			return resultToStr(wipe(splitMsg));
+		}
 		default:
 		{
 			return "NUL";
@@ -66,6 +74,12 @@ public class HLCServer {
 		}
 	}
 	
+	private Boolean wipe(List<String> splitMsg) {
+		return handler.clearAll(splitMsg.get(1));
+	}
+	private Boolean calculateTickets() {
+		return handler.calculateTickets();
+	}
 	private String getUID(List<String> splitMsg) {
 		return handler.getUUID(splitMsg.get(1));
 	}
@@ -81,9 +95,10 @@ public class HLCServer {
 				splitMsg.get(1),
 				splitMsg.get(2),
 				splitMsg.get(3),
-				Double.parseDouble(splitMsg.get(4)),
-			    Double.parseDouble(splitMsg.get(5)),
-				Double.parseDouble(splitMsg.get(6))
+				splitMsg.get(4),
+				Double.parseDouble(splitMsg.get(5)),
+			    Double.parseDouble(splitMsg.get(6)),
+				Double.parseDouble(splitMsg.get(7))
 						));
 	}
 	private Boolean addReq(List<String> splitMsg) {

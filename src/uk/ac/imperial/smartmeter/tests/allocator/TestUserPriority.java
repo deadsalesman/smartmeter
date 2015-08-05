@@ -1,12 +1,10 @@
 package uk.ac.imperial.smartmeter.tests.allocator;
 
 import java.util.Date;
-import java.util.Map;
 
 import uk.ac.imperial.smartmeter.allocator.TicketAllocator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
@@ -14,7 +12,7 @@ public class TestUserPriority extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		UserAgent u = new UserAgent(TicketTestHelper.user1,8.,10.,6.,5.);
+		UserAgent u = new UserAgent("","",TicketTestHelper.user1,8.,10.,6.,5.);
 		
 		ElectricityRequirement e = TicketTestHelper.bindRequirement(u,1.1, 2.3, 9,5.);
 		TicketTestHelper.bindRequirement(u,1.1, 2.3, 7, 6);
@@ -28,9 +26,14 @@ public class TestUserPriority extends GenericTest {
 
 		TicketAllocator alloc = new TicketAllocator(m, new Date(),false);
 		
-		Map<UserAgent, ArraySet<ElectricityTicket>> x  = alloc.calculateTickets();
-		
-		return (x.get(u).get(0).magnitude==e.getMaxConsumption());
+		ArraySet<UserAgent> x  = alloc.calculateTickets();
+		try{
+			return (u.getReqTktMap().get(e)!=null);
+		}
+		catch(NullPointerException ex)
+		{
+			return false;
+		}
 	}
 
 }

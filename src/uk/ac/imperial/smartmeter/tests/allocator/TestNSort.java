@@ -3,7 +3,6 @@ package uk.ac.imperial.smartmeter.tests.allocator;
 import uk.ac.imperial.smartmeter.comparators.needsComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-import uk.ac.imperial.smartmeter.res.User;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
@@ -21,14 +20,14 @@ public class TestNSort extends GenericTest{
 		
 		ArraySet<UserAgent> m = new ArraySet<UserAgent>();
 
-		m.add(new UserAgent(new User("Uma Thurman"),8.,7.,j,6.,5.));
-		m.add(new UserAgent(new User("John Travolta"),1.,2.,k,3.,4.));
-		m.add(new UserAgent(new User("Samuel Jackson"),9.,10.,l,11.,12.));
+		m.add(new UserAgent("","","",TicketTestHelper.user1,8.,7.,6.,5.,j));
+		m.add(new UserAgent("","","",TicketTestHelper.user2,1.,2.,3.,4.,k));
+		m.add(new UserAgent("","","",TicketTestHelper.user3,9.,10.,11.,12.,l));
 		
 		ArraySet.sort(m, new needsComparator());
 		
-		return (m.get(2).getUser().getName()=="Samuel Jackson")
-				&&(m.get(1).getUser().getName()=="John Travolta")
-				&&(m.get(0).getUser().getName()=="Uma Thurman");
+		return (m.get(2).getName()==TicketTestHelper.user3)
+				&&(m.get(1).getName()==TicketTestHelper.user2)
+				&&(m.get(0).getName()==TicketTestHelper.user1);
     }
 }

@@ -12,14 +12,14 @@ public class TestPushGeneration extends GenericTest {
 	@Override
 	public boolean doTest() {
 		String t = UUID.randomUUID().toString();
-        String[] parameters_lc = {"localHost", "9002", "localHost", "9001",t};
+        String[] parameters_lc = {"localHost", "9002", "localHost", "9001",t,""};
 		try {
 			LContNode.main(parameters_lc);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		LContNode.registerUser("Password", "User");
+		LContNode.registerUser(0.,0.,0.);
 		return LContNode.setGeneration(new ElectricityGeneration(10.));
 		
 	}

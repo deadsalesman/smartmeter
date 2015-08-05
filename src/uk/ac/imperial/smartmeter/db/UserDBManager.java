@@ -1,10 +1,8 @@
 package uk.ac.imperial.smartmeter.db;
 
-import java.sql.SQLException;
-import java.util.Map;
 
-import uk.ac.imperial.smartmeter.res.User;
-
+//DEPRECATED
+/*
 public class UserDBManager extends IntegratedDBManager<User>{
 	public UserDBManager(String dbLocation) {
 
@@ -62,3 +60,4 @@ public class UserDBManager extends IntegratedDBManager<User>{
 	}
 	
 }
+*/

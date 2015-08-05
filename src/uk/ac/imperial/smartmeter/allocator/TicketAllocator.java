@@ -19,9 +19,7 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 public class TicketAllocator {
 	private Map<ElectricityRequirement, ArrayList<QuantumNode>> reqMap;
 	private CalendarQueue queue;
-	private Map<ElectricityRequirement, Boolean> satMap;
 	private ArraySet<UserAgent> usrArray;
-	private Map<UserAgent, ArraySet<ElectricityTicket>> tickets;
 	private RescherArbiter arbiter;
 	private EleGenConglomerate conglom;
 	private Date startDate;
@@ -33,18 +31,16 @@ public class TicketAllocator {
 	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
-		satMap = new HashMap<ElectricityRequirement, Boolean>();
-		usrArray = new ArraySet<UserAgent>();
 		arbiter = new RescherArbiter();
-		tickets = new HashMap<UserAgent, ArraySet<ElectricityTicket>>();
 		conglom = new EleGenConglomerate();
+		usrArray = (ArraySet<UserAgent>) collection;
 		startDate = d;
 		tryHard = reallocate;
+		
 		for (UserAgent u : collection)
 		{
 			addUser(u);
 		}
-		
 
 		queue = new CalendarQueue(conglom,startDate);
 		populateReqMap();
@@ -62,26 +58,20 @@ public class TicketAllocator {
 	{
 		for (UserAgent u : usrArray)
 		{
-		for (ElectricityRequirement e: u.getReqs())
+		for (ElectricityRequirement e: u.getReqTktMap().keySet())
 		{
-			if (!satMap.containsKey(e)){satMap.put(e,false);}
 			if (!reqMap.containsKey(e)){reqMap.put(e, queue.findIntersectingNodes(e));}
 		}
 		}
 	}
 	private void addUser(UserAgent u)
 	{
-		tickets.put(u, new ArraySet<ElectricityTicket>());
 		conglom.addGen(u.getGeneratedPower());
 		usrArray.add(u);
 	}
 	private ElectricityTicket generateTicket(ElectricityRequirement e)
 	{
 		return new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID());
-	}
-	public ArraySet<ElectricityTicket> getTicketsOfUser(UserAgent u)
-	{
-		return tickets.get(u);
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)
 	{
@@ -120,7 +110,7 @@ public class TicketAllocator {
 		ArrayList<QuantumNode> nodes = req.getTampered() ? queue.findIntersectingNodes(req) : reqMap.get(req);
 		if (updateInterferedNodes(req, nodes)) { 
 			ElectricityTicket ticket = generateTicket(req);
-			tickets.get(u).add(ticket);
+			u.getReqTktMap().put(req, ticket);
 			ret = true;
 		}
 		return ret;
@@ -158,7 +148,7 @@ public class TicketAllocator {
 		//System.out.println(tally + " " + ret + " " + reqs.getSize() + " " + offset);
 		return ret/tally;
 	}
-	public Map<UserAgent, ArraySet<ElectricityTicket>> calculateTickets()
+	public ArraySet<UserAgent> calculateTickets()
 	{
 		rankings = arbiter.getWeighting(usrArray);
 		indexes = new HashMap<UserAgent, Integer>();
@@ -180,7 +170,7 @@ public class TicketAllocator {
 			try{
 			ElectricityRequirement req = max.getReq(indexes.get(max));
 			
-			if ((!satMap.get(req))&&processRequirement(max, req))
+			if ((max.getReqTktMap().get(req)==null)&&(processRequirement(max, req)))
 			{
 				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
 				rankings.put(max, newRank);
@@ -188,7 +178,6 @@ public class TicketAllocator {
 				{
 					userFinished.put(max, true);
 				}
-				satMap.put(req, true);
 			}
 			//System.out.println(max.getUser().getName());
 			//System.out.println(max.getReqs().getSize());
@@ -217,7 +206,6 @@ public class TicketAllocator {
 				finished &= b;
 			}
 		}
-		return tickets;
-		
+		return usrArray;
 	}
 }
