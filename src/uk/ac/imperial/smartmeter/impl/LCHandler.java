@@ -1,7 +1,9 @@
 package uk.ac.imperial.smartmeter.impl;
 
+import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
 public class LCHandler {
 private LController controller;
@@ -20,6 +22,10 @@ private LController controller;
 	}
 	public String getHash(){
 		return controller.getHash();
+	}
+	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
+	{
+		return controller.findCompetingTickets(req);
 	}
 	public String getId() {
 		return id;

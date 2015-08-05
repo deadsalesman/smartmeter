@@ -70,8 +70,6 @@ public class DBManager implements DBManagerIFace {
 		{
 			ret = getLocalResultSet(stmt.executeQuery(fmt));
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 		return ret;
 	}

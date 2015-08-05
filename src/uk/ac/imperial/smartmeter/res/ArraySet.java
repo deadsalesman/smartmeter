@@ -112,7 +112,6 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	}
 	@Override
 	public int compareTo(T o) {
-		// TODO Auto-generated method stub
 		//No default sort!
 		return 0;
 	}

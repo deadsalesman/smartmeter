@@ -12,7 +12,6 @@ public class TestHLCAddReq extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		// TODO Auto-generated method stub
 
 		String t = UUID.randomUUID().toString();
 

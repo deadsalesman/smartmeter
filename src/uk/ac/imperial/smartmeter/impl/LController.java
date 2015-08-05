@@ -5,9 +5,11 @@ import java.util.Date;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.db.ReqsDBManager;
+import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
+import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
 //LocalController
@@ -101,5 +103,25 @@ public class LController {
 	}
 	public String getHash() {
 		return masterUser.getHash();
+	}
+	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req) {
+		ArraySet<ElectricityTicket> ret = new ArraySet<ElectricityTicket>();
+		for (ElectricityTicket t : masterUser.getReqTktMap().values())
+		if (t.start.before(req.getStartTime())){
+			
+		}
+		else
+		{
+			if (t.end.after(req.getEndTime()))
+			{
+		      break;
+			}
+			else
+			{
+				ret.add(t);
+			}
+		}
+
+		return ret;
 	}
 }

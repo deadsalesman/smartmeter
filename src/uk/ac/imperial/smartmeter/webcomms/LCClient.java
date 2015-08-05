@@ -28,7 +28,6 @@ public class LCClient{
 	private String userId; 
 	private String userName;
 	
-	
 	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name,String password) {
 		eDCHost = eDCHostName;
 		eDCPort = eDCPortNum;
@@ -36,11 +35,8 @@ public class LCClient{
 		hLCPort = hLCPortNum;
 		userName = name;
 		handler = new LCHandler(name,password,0.,0.,0.); //TODO: make not naughty. 
-
 		userId = handler.getId();
-		//why not register the user here?
 	}
-
 	public ArrayList<String> connectEDC(String input) throws IOException {
 		ArrayList<String> inputArr = new ArrayList<String>();
 		inputArr.add(input);
@@ -69,7 +65,10 @@ public class LCClient{
 		}
 		return ret;
 	}
-
+	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
+	{
+		return handler.findCompetingTickets(req);
+	}
 	public ArrayList<String> connectHLC(ArrayList<String> input) throws IOException {
 		ArrayList<String> ret =  new ArrayList<String>();
 		try (Socket kkSocket = new Socket(hLCHost, hLCPort);
@@ -82,7 +81,7 @@ public class LCClient{
 			String fromServer;
 			while ((fromServer = in.readLine()) != null) {
 				ret.add(fromServer);
-				System.out.println("Server: " + fromServer);
+				//System.out.println("Server: " + fromServer);
 				if (fromServer.equals("NUL"))
 					break;
 			}
@@ -324,5 +323,9 @@ public class LCClient{
 
 	public void setID(UUID fromString) {
 		userId = fromString.toString();
+	}
+	public void queryReq(String location, String port) {
+		// TODO Auto-generated method stub
+		
 	}
 }
