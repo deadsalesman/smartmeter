@@ -363,6 +363,24 @@ public class LCClient{
 		}
 		return false;
 	}
+	public Boolean registerClient(String location, int port, int ownPort)
+	{
+		String inputLine = "REG," + userId + "," + "localHost," + ownPort + ",";
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		ArrayList<String> msg;
+		try {
+			msg = connectClient(input, location, port);
+			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			if (splitMsg.get(0).equals("SUCCESS")) {
+				return true;
+				
+			}
+		} catch (IOException e1) {
+		} 
+		return false;
+	}
 	public Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
 		Double ret = 0.;
 		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.

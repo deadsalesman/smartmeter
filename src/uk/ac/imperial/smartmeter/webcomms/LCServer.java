@@ -10,9 +10,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
@@ -23,13 +21,13 @@ import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
 public class LCServer implements Runnable {
 	private Integer portNum;
-	private Map<String, Double> agentUtilities;
+	private UserAddressBook addresses;
 	public LCClient client;
 	Thread t;
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
-		agentUtilities = new HashMap<String, Double>();
+		addresses = new UserAddressBook();
 	}
 
 	private String recvMsg(String msg) {
@@ -41,17 +39,33 @@ public class LCServer implements Runnable {
 		case ("OFR"): {
 			return considerOffer(splitMsg);
 		}
+		case ("REG"): {
+			return register(splitMsg);
+		}
 		default: {
 			return "NUL";
 		}
 		}
 	}
 
+	private String register(List<String> splitMsg) {
+		UserAddress u = new UserAddress(splitMsg.get(1), splitMsg.get(2),Integer.parseInt(splitMsg.get(3)));
+		
+		if (addresses.addUser(u))
+		{
+			return "SUCCESS,";
+		}
+		
+		return "FAILURE,";
+	}
+
 	private String considerOffer(List<String> splitMsg) {
 
+		String traderId = splitMsg.get(10);
+        if (addresses.queryUserExists(traderId))
+        {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		try {
-			String traderId = splitMsg.get(10);
 			ElectricityTicket newtkt = new ElectricityTicket(
 					df.parse(splitMsg.get(7)),
 					df.parse(splitMsg.get(8)),
@@ -81,7 +95,8 @@ public class LCServer implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+        }
+		return "FAILURE";
 	}
 
 	private String modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt) {
@@ -108,11 +123,10 @@ public class LCServer implements Runnable {
 		Double history = 0.;
 		Double credit = 0.;
 		Double leeway = 0.;
-		if (agentUtilities.containsKey(user)) {
-			history = agentUtilities.get(user);
-		}
+		history = addresses.getHistory(user);
+		
 		if ((history <= credit) && (newUtility >= (oldUtility + leeway))) {
-			agentUtilities.put(user, history + (newUtility - oldUtility));
+			addresses.setHistory(user,history + (newUtility - oldUtility));
 			return true;
 		}
 		return false;
@@ -142,37 +156,25 @@ public class LCServer implements Runnable {
 
 	private String findCompetingTickets(List<String> splitMsg) {
 
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-		String ret = "";
-		ElectricityRequirement req;
-		try {
-			req = new ElectricityRequirement(
-					df.parse(splitMsg.get(1)),
-					df.parse(splitMsg.get(2)),
-					new DecimalRating(Integer.parseInt(splitMsg.get(3))),
-					Integer.parseInt(splitMsg.get(4)),
-					Double.parseDouble(splitMsg.get(5)),
-					splitMsg.get(6),
-					splitMsg.get(7)
-					);
-			ArraySet<ElectricityTicket> tickets = client.findCompetingTickets(req);
-			
-			if (tickets != null)
-			{
-				ret = "SUCCESS,";
-				for (ElectricityTicket et : tickets)
-				{
-					ret += et.toString();
+		String ret = "FAILURE";
+		if (addresses.queryUserExists(splitMsg.get(6))) {
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			ElectricityRequirement req;
+			try {
+				req = new ElectricityRequirement(df.parse(splitMsg.get(1)), df.parse(splitMsg.get(2)), new DecimalRating(
+						Integer.parseInt(splitMsg.get(3))), Integer.parseInt(splitMsg.get(4)),
+						Double.parseDouble(splitMsg.get(5)), splitMsg.get(6), splitMsg.get(7));
+				ArraySet<ElectricityTicket> tickets = client.findCompetingTickets(req);
+
+				if (tickets != null) {
+					ret = "SUCCESS,";
+					for (ElectricityTicket et : tickets) {
+						ret += et.toString();
+					}
 				}
+			} catch (Exception e) {
 			}
-			else 
-			{
-				ret = "FAILURE,";
-			}
-		} catch (Exception e) {
-		  ret = "FAILURE,";
 		}
-		
 		return ret;
 	}
 
@@ -214,6 +216,10 @@ public class LCServer implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public Boolean registerClient(String locationOfB, int portOfB) {
+		return client.registerClient(locationOfB, portOfB, portNum);
 	}
 
 }

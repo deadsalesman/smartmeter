@@ -34,6 +34,7 @@ public class TestGenerousFavour extends GenericTest {
 		UUID aID = UUID.fromString(a.get(0).id.toString());
 		UUID bID = UUID.fromString(b.get(0).id.toString());
 		
+		aClient.registerClient(locationOfB, portOfB);
 		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
 		ArraySet<ElectricityTicket> competing = aClient.client.queryCompeting(locationOfB,portOfB, req);
 		aClient.client.offer(locationOfB, portOfB, competing.get(0),aClient.client.handler.findMatchingTicket(req));
