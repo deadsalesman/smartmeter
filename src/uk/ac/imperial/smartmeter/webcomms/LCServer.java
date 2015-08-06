@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -119,10 +120,18 @@ public class LCServer implements Runnable {
 
 	private Double evaluateUtility(ElectricityTicket newtkt) {
 		Double utility = 0.;
-		Double duration = newtkt.end.getTime() - newtkt.start.getTime();
+		double duration;
+		duration = (newtkt.end.getTime() - newtkt.start.getTime())/QuantumNode.quanta;
 		for (ElectricityRequirement r : client.handler.getReqs())
 		{
-			if (r.getDuration())
+			if ((r.getDuration() >= duration)&&(r.getMaxConsumption() <= newtkt.magnitude))
+				{
+				  utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+				}
+			else
+			{
+				//ticket is insufficient for this requirement
+			}
 		}
 		return utility;
 	}

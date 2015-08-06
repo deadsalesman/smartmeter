@@ -27,7 +27,7 @@ public class QuantumNode implements TimeNode {
 	public boolean addReq(ElectricityRequirement e)
 	{
 		
-		Double consumption = e.getConsumption(startTime);
+		Double consumption = Math.max(e.getConsumption(startTime),e.getConsumption(endTime));
 		if (consumption <= currentCapacity)
 		{
 			reqs.add(e);

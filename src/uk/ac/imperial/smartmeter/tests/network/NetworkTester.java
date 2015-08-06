@@ -16,6 +16,7 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestConcurrentClients());
 		testLog.add(new TestComplexTickets());
 		testLog.add(new TestAppendedRequirement());
+		testLog.add(new TestGenerousFavour());
 		testLog.add(new TestFavourExchange());
 		return reportLog();
 	}

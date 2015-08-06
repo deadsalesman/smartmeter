@@ -56,7 +56,11 @@ public class TestComplexTickets extends GenericTest {
 
 		aClient.GodModeCalcTKTS();
 		
+		
 		ArraySet<ElectricityTicket> tktsA = aClient.getTickets();
+		
+
+		aClient.wipe();
 		return (tktsA.getSize()==3);
 	}
 

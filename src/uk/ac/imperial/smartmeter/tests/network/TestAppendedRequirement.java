@@ -25,6 +25,7 @@ public class TestAppendedRequirement extends GenericTest {
 
 		ArraySet<ElectricityTicket> tkt2 = elsie.getTickets();
 		
+		elsie.wipe();
 		
 		try{
 		return ((tkt1.getSize()==1)&&

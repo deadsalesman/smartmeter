@@ -9,25 +9,23 @@ import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
-public class TestFavourExchange extends GenericTest {
+public class TestGenerousFavour extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		//a will get the ticket in the preferred slot, and then exchange it with b for a favour.
-		
-		LCServer aClient = new LCServer("localHost", 9002, "localHost", 9001,9004,TicketTestHelper.user1,"");
-		LCServer bClient = new LCServer("localHost", 9002, "localHost", 9001,9003,TicketTestHelper.user2,"");
+		LCServer aClient = new LCServer("localHost", 9002, "localHost", 9001,9005,TicketTestHelper.user1,"");
+		LCServer bClient = new LCServer("localHost", 9002, "localHost", 9001,9006,TicketTestHelper.user2,"");
 		
 		aClient.start();
 		bClient.start();
 		
 		String locationOfB = "localHost";
-		int portOfB = 9003;
-		aClient.client.registerUser(0.,10.,0.);
-		bClient.client.registerUser(0.,10.,0.);
+		int portOfB = 9006;
+		aClient.client.registerUser(0.,0.,0.);
+		bClient.client.registerUser(0.,3.,0.);
 		
-		TicketTestHelper.bindRequirement(aClient.client,1.1, 6.3, 4,3.);
-		TicketTestHelper.bindRequirement(bClient.client,1.1, 6.3, 4,3.);
+		TicketTestHelper.bindRequirement(aClient.client,1.1, 2.3, 4,3.);
+		TicketTestHelper.bindRequirement(bClient.client,2.1, 6.3, 4,3.);
 		
 		aClient.client.GodModeCalcTKTS();
 		

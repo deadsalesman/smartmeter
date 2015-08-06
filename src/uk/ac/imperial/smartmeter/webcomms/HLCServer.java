@@ -126,8 +126,11 @@ public class HLCServer {
 		{
 			for (ElectricityTicket et : tickets)
 			{
-				//this is going to be hacky :(
-				ret += et.toString();
+				if (et!=null)
+				{
+
+					ret += et.toString();
+				}
 			}
 		}
 		else 

@@ -11,9 +11,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.allocator.DayNode;
 import uk.ac.imperial.smartmeter.impl.LCHandler;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
@@ -360,5 +362,24 @@ public class LCClient{
 		} catch (ParseException e1) {
 		}
 		return false;
+	}
+	public Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
+		Double ret = 0.;
+		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.
+		//However, it is a good starting point. Propose adding a flexibility measure to requirements? Integrating may be tricky.
+		double hrsOffset = 4.;
+		double msecInHr = DayNode.secInHr*1000;
+		
+		double dur1 = (end1.getTime()-start1.getTime())/msecInHr;
+		double mean1 = ((end1.getTime()+start1.getTime())/(2*msecInHr));
+		double dur2 = (end2.getTime()-start2.getTime())/msecInHr;
+		double mean2 = ((end2.getTime()+start2.getTime())/(2*msecInHr));
+		
+		double dst = -Math.abs(mean1-mean2);
+		double dsize = Math.abs(dur1-dur2)/2;
+		double uncappedUtility = (hrsOffset + dst + dsize) / hrsOffset;
+		double cappedUtility = uncappedUtility > 1. ? 1 : uncappedUtility;
+		return cappedUtility;
+		
 	}
 }
