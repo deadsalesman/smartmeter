@@ -110,22 +110,62 @@ public class LController {
 	}
 	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req) {
 		ArraySet<ElectricityTicket> ret = new ArraySet<ElectricityTicket>();
-		for (ElectricityTicket t : masterUser.getReqTktMap().values())
-		if (t.start.before(req.getStartTime())){
-			
-		}
-		else
-		{
-			if (t.end.after(req.getEndTime()))
+		for (ElectricityTicket t : masterUser.getReqTktMap().values()){
+			if (t.start.compareTo(req.getStartTime())<0)
 			{
-		      break;
+				if (t.end.compareTo(req.getStartTime())>=0)
+				{
+					ret.add(t);
+				}
 			}
 			else
 			{
-				ret.add(t);
+				if (t.start.compareTo(req.getEndTime())<=0)
+				{
+					ret.add(t);
+				}
 			}
 		}
-
+		
 		return ret;
+	}
+	public ElectricityTicket findMatchingTicket(ElectricityRequirement req) {
+		if (masterUser.getReqTktMap().containsKey(req))
+		{
+			return masterUser.getReqTktMap().get(req);
+		}
+		else return null;
+	}
+	public boolean setTicket(ElectricityTicket t) {
+		for (ElectricityRequirement r : masterUser.getReqs())
+		{
+			if (r.getId().equals(t.reqID.toString()))
+			{
+				if (masterUser.getReqTktMap().get(r)==null){
+				masterUser.getReqTktMap().put(r, t);
+				return true;
+				}
+			}
+		}
+		return false;
+	}
+	public ArraySet<ElectricityTicket> getTkts() {
+		ArraySet<ElectricityTicket> x = new ArraySet<ElectricityTicket>();
+		for (ElectricityTicket t : masterUser.getReqTktMap().values())
+		{
+			if (t!=null){x.add(t);}
+		}
+			return x;
+	}
+	public boolean forceNewTicket(ElectricityTicket t) {
+		for (ElectricityRequirement r : masterUser.getReqs())
+		{
+			if (r.getId().equals(t.reqID.toString()))
+			{
+				masterUser.getReqTktMap().put(r, t);
+				return true;
+			}
+		}
+		return false;
 	}
 }

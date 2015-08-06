@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -27,6 +29,20 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 	public ElectricityRequirement(double amplitude)
 	{
 		this(new Date(), new Date(), new DecimalRating(2),1,amplitude,UUID.randomUUID().toString()); //DEBUG ONLY
+	}
+	public String toString()
+	{
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	    String repr = 
+			df.format(this.getStartTime()) + "," +
+			df.format(this.getEndTime()) + "," +
+			this.getPriority() + "," +
+			this.getProfileCode() + "," +
+			this.getMaxConsumption() + "," +
+			this.getUserID() + "," +
+			this.getId()
+			;
+		return repr;
 	}
 	public ElectricityRequirement(Date start, Date end)
 	{

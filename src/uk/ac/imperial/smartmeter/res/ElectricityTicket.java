@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -11,15 +13,22 @@ public class ElectricityTicket implements UniqueIdentifierIFace{
 	public double magnitude;
 	public UUID ownerID;
 	public UUID id;
-	public ElectricityTicket(Date s, Date e, Double m, String owner)
+	public UUID reqID;
+	public ElectricityTicket(Date s, Date e, Double m, String owner, String reqId)
 	{
-		this(s,e,m,owner, UUID.randomUUID().toString());
+		this(s,e,m,owner, reqId, UUID.randomUUID().toString());
 	}
-	public ElectricityTicket(Date s, Date e, Double m, String owner, String idString)
+	public String toString()
+	{
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		return df.format(this.start) + "," + df.format(this.end) + "," + this.magnitude + "," + this.ownerID.toString() + "," + this.reqID.toString() + "," + this.getId() + ",";
+	}
+	public ElectricityTicket(Date s, Date e, Double m, String owner, String reqId, String idString)
 	{
 		start = s;
 		end = e;
 		magnitude = m;
+		reqID = UUID.fromString(reqId);
 		ownerID = UUID.fromString(owner);
 		id = UUID.fromString(idString);
 	}

@@ -1,6 +1,9 @@
 package uk.ac.imperial.smartmeter.tests.network;
 
+import java.util.UUID;
+
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
@@ -14,8 +17,12 @@ public class TestFavourExchange extends GenericTest {
 		
 		LCServer aClient = new LCServer("localHost", 9002, "localHost", 9001,9004,TicketTestHelper.user1,"");
 		LCServer bClient = new LCServer("localHost", 9002, "localHost", 9001,9003,TicketTestHelper.user2,"");
+		
+		aClient.start();
+		bClient.start();
+		
 		String locationOfB = "localHost";
-		String portOfB = "9003";
+		int portOfB = 9003;
 		aClient.client.registerUser(0.,10.,0.);
 		bClient.client.registerUser(0.,10.,0.);
 		
@@ -24,15 +31,19 @@ public class TestFavourExchange extends GenericTest {
 		
 		aClient.client.GodModeCalcTKTS();
 		
-		ArraySet<ElectricityTicket> a = aClient.client.getTickets();
-		ArraySet<ElectricityTicket> b = bClient.client.getTickets();
+		final ArraySet<ElectricityTicket> a = aClient.client.getTickets();
+		final ArraySet<ElectricityTicket> b = bClient.client.getTickets();
+		UUID aID = UUID.fromString(a.get(0).id.toString());
+		UUID bID = UUID.fromString(b.get(0).id.toString());
 		
-		aClient.client.queryReq(locationOfB,portOfB);
+		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
+		ArraySet<ElectricityTicket> competing = aClient.client.queryCompeting(locationOfB,portOfB, req);
+		aClient.client.offer(locationOfB, portOfB, competing.get(0),aClient.client.handler.findMatchingTicket(req));
 		
 		ArraySet<ElectricityTicket> c = aClient.client.getTickets();
 		ArraySet<ElectricityTicket> d = bClient.client.getTickets();
 		
-		return ((c.get(0).getId().equals(b.get(0).getId()))&&(d.get(0).getId().equals(a.get(0).getId())));
+		return ((c.get(0).getId().equals(bID.toString()))&&(d.get(0).getId().equals(aID.toString())));
 	}
 
 }

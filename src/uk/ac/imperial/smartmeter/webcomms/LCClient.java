@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,9 +43,10 @@ public class LCClient{
 		inputArr.add(input);
 		return connectEDC(inputArr);
 	}
-	public ArrayList<String> connectEDC(ArrayList<String> input) throws IOException {
+
+	public ArrayList<String> connectServer(ArrayList<String> input, String host, int port) throws IOException {
 		ArrayList<String> ret =  new ArrayList<String>();
-		try (Socket kkSocket = new Socket(eDCHost, eDCPort);
+		try (Socket kkSocket = new Socket(host, port);
 				PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
 				BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));) {
 			for (String s : input) {
@@ -60,39 +62,27 @@ public class LCClient{
 			}
 
 		} catch (UnknownHostException e) {
-			System.err.println("Don't know about host " + eDCHost);
+			System.err.println("Don't know about host " + host);
 			System.exit(1);
 		}
 		return ret;
 	}
+	public ArrayList<String> connectClient(ArrayList<String> input,String clientHost, int clientPort) throws IOException {
+		return connectServer(input, clientHost, clientPort);
+	}
+	
+	public ArrayList<String> connectEDC(ArrayList<String> input) throws IOException {
+		return connectServer(input, eDCHost, eDCPort);
+	}
+	
+	public ArrayList<String> connectHLC(ArrayList<String> input) throws IOException {
+		return connectServer(input, hLCHost, hLCPort);
+	}
+	
 	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
 	{
 		return handler.findCompetingTickets(req);
 	}
-	public ArrayList<String> connectHLC(ArrayList<String> input) throws IOException {
-		ArrayList<String> ret =  new ArrayList<String>();
-		try (Socket kkSocket = new Socket(hLCHost, hLCPort);
-				PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
-				BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));) {
-			for (String s : input) {
-				out.println(s);
-			}
-
-			String fromServer;
-			while ((fromServer = in.readLine()) != null) {
-				ret.add(fromServer);
-				//System.out.println("Server: " + fromServer);
-				if (fromServer.equals("NUL"))
-					break;
-			}
-
-		} catch (UnknownHostException e) {
-			System.err.println("Don't know about host " + hLCHost);
-			System.exit(1);
-		}
-		return ret;
-	}
-	
 
 	public Boolean addDevice(Boolean state, Integer type, String deviceID)
 	{
@@ -140,7 +130,7 @@ public class LCClient{
 			if (!msg.get(0).equals("FAILURE"))
 			{
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			int size = splitMsg.size() / 5;
+			int size = splitMsg.size() / 6;
 			int offset = 0;
 			for (int i = 0; i < size; i++)
 			{
@@ -150,32 +140,29 @@ public class LCClient{
 							df.parse(splitMsg.get(1+offset)),
 							Double.parseDouble(splitMsg.get(2+offset)),
 							splitMsg.get(3+offset),
-							splitMsg.get(4+offset)
+							splitMsg.get(4+offset),
+							splitMsg.get(5+offset)
 							));
 				} catch (Exception e) {
 					System.out.println("Invalid ticket");
 				}
-				offset += 5;
+				offset += 6;
 			}
 			}
 		
 		} catch (IOException e) {
 		}
-		return output;
+		
+		for (ElectricityTicket t : output)
+		{
+			handler.setTicket(t);
+		}
+		return handler.getTkts();
 	}
 	public Boolean setRequirement(ElectricityRequirement req)
 	{
-
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-		String inputLine = "REQ," +
-				df.format(req.getStartTime()) + "," +
-				df.format(req.getEndTime()) + "," +
-				req.getPriority() + "," +
-				req.getProfileCode() + "," +
-				req.getMaxConsumption() + "," +
-				req.getUserID() + "," +
-				req.getId()
-				;
+		String inputLine = "REQ," + req.toString();
+				
 	    ArrayList<String> input = new ArrayList<String>();
 	    input.add(inputLine);
 	    input.add("END");
@@ -299,10 +286,7 @@ public class LCClient{
 		input.add("END");
 		try {
 			ArrayList<String> ret = connectHLC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
+			return (ret.get(0).equals("SUCCESS"));
 		} catch (IOException e) {
 		}
 		return false;
@@ -324,8 +308,57 @@ public class LCClient{
 	public void setID(UUID fromString) {
 		userId = fromString.toString();
 	}
-	public void queryReq(String location, String port) {
-		// TODO Auto-generated method stub
-		
+
+	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
+		String inputLine = "ADV," + req.toString();
+		ArrayList<String> input = new ArrayList<String>();
+		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		input.add(inputLine);
+		input.add("END");
+		ArrayList<String> msg;
+		try {
+			msg = connectClient(input, location, port);
+			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			if (splitMsg.get(0).equals("SUCCESS")) {
+				int size = splitMsg.size() / 6;
+				int offset = 0;
+				for (int i = 0; i < size; i++) {
+					try {
+						output.add(new ElectricityTicket(df.parse(splitMsg.get(1 + offset)), df.parse(splitMsg.get(2 + offset)),
+								Double.parseDouble(splitMsg.get(3 + offset)), splitMsg.get(4 + offset), splitMsg.get(5 + offset), splitMsg.get(6 + offset)));
+					} catch (Exception e) {
+						System.out.println("Invalid ticket");
+					}
+					offset += 6;
+				}
+			}
+		} catch (IOException e1) {
+			return null;
+		}
+
+		return output;
+	}
+	public boolean offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) {
+		String inputLine = "OFR," + tktOld.toString() + tktNew.toString();
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		ArrayList<String> msg;
+		try {
+			msg = connectClient(input, location, port);
+			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			if (splitMsg.get(0).equals("SUCCESS")) {
+				DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+				tktOld = new ElectricityTicket(df.parse(splitMsg.get(1)), df.parse(splitMsg.get(2)),
+						Double.parseDouble(splitMsg.get(3)), splitMsg.get(4), splitMsg.get(5), splitMsg.get(6));
+				handler.forceNewTicket(tktOld);
+				return true;
+				
+			}
+		} catch (IOException e1) {
+		} catch (ParseException e1) {
+		}
+		return false;
 	}
 }

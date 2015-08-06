@@ -31,10 +31,24 @@ private LController controller;
 	{
 		return controller.getReqs();
 	}
+	public ElectricityTicket findMatchingTicket(ElectricityRequirement req)
+	{
+		return controller.findMatchingTicket(req);
+	}
 	public String getId() {
 		return id;
 	}
 	public boolean setGeneration(ElectricityGeneration e) {
 		return controller.setEleGen(e);
+	}
+	public boolean forceNewTicket(ElectricityTicket t) {
+		return controller.forceNewTicket(t);
+	}
+	public boolean setTicket(ElectricityTicket t) {
+		return controller.setTicket(t);
+	}
+	public ArraySet<ElectricityTicket> getTkts()
+	{
+		return controller.getTkts();
 	}
 }

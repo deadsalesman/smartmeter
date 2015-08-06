@@ -20,10 +20,11 @@ import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
-public class LCServer {
+public class LCServer implements Runnable {
 	private Integer portNum;
 	private Map<String, Double> agentUtilities;
 	public LCClient client;
+	Thread t;
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
@@ -49,20 +50,24 @@ public class LCServer {
 
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		try {
+			String traderId = splitMsg.get(10);
 			ElectricityTicket newtkt = new ElectricityTicket(
-					df.parse(splitMsg.get(1)),
-					df.parse(splitMsg.get(2)),
-					Double.parseDouble(splitMsg.get(3)),
-					splitMsg.get(4)
+					df.parse(splitMsg.get(7)),
+					df.parse(splitMsg.get(8)),
+					Double.parseDouble(splitMsg.get(9)),
+					traderId,
+					splitMsg.get(11),
+					splitMsg.get(12)
 					);
-			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(5));
+			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(6));
 			Double newUtility = evaluateUtility(newtkt);
 			Double oldUtility = evaluateUtility(oldtkt);
 			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(4));
 			
 			if (result)
 			{
-				return modifyTickets(splitMsg.get(4),oldtkt);
+				
+				return modifyTickets(oldtkt,newtkt);
 			}
 			else
 			{
@@ -78,14 +83,22 @@ public class LCServer {
 		return null;
 	}
 
-	private String modifyTickets(String user, ElectricityTicket oldtkt) {
+	private String modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt) {
 		// TODO Auto-generated method stub
 		//change the owners of the tickets around
 		//format as string suitable for transfer
-		oldtkt.ownerID = UUID.fromString(user);
+		UUID oldReq = UUID.fromString(newtkt.reqID.toString());
+		UUID oldOwner = UUID.fromString(newtkt.ownerID.toString());
+		
+		newtkt.ownerID = UUID.fromString(oldtkt.ownerID.toString());
+		newtkt.reqID = UUID.fromString(oldtkt.reqID.toString());
+		
+		oldtkt.ownerID = oldOwner;
+		oldtkt.reqID = oldReq;
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-		String ret = "";
-		ret += df.format(oldtkt.start) + "," + df.format(oldtkt.end) + "," + oldtkt.magnitude + "," + oldtkt.ownerID.toString() + "," + oldtkt.getId() + ",";
+		String ret = "SUCCESS,";
+		ret += oldtkt.toString();
+		client.handler.forceNewTicket(newtkt);
 		return ret;
 	}
 
@@ -97,7 +110,7 @@ public class LCServer {
 		if (agentUtilities.containsKey(user)) {
 			history = agentUtilities.get(user);
 		}
-		if ((history <= credit) && (newUtility > (oldUtility + leeway))) {
+		if ((history <= credit) && (newUtility >= (oldUtility + leeway))) {
 			agentUtilities.put(user, history + (newUtility - oldUtility));
 			return true;
 		}
@@ -106,9 +119,10 @@ public class LCServer {
 
 	private Double evaluateUtility(ElectricityTicket newtkt) {
 		Double utility = 0.;
+		Double duration = newtkt.end.getTime() - newtkt.start.getTime();
 		for (ElectricityRequirement r : client.handler.getReqs())
 		{
-			//do some magic to assign a utility to it.
+			if (r.getDuration())
 		}
 		return utility;
 	}
@@ -136,17 +150,18 @@ public class LCServer {
 			
 			if (tickets != null)
 			{
+				ret = "SUCCESS,";
 				for (ElectricityTicket et : tickets)
 				{
-					ret += df.format(et.start) + "," + df.format(et.end) + "," + et.magnitude + "," + et.ownerID.toString() + "," + et.getId() + ",";
+					ret += et.toString();
 				}
 			}
 			else 
 			{
-				ret = "FAILURE";
+				ret = "FAILURE,";
 			}
 		} catch (Exception e) {
-		  ret = "FAILURE";
+		  ret = "FAILURE,";
 		}
 		
 		return ret;
@@ -174,6 +189,22 @@ public class LCServer {
 			System.out.println(e.getMessage());
 		}
 		return false;
+	}
+	public void start() {
+		if (t == null)
+	      {
+	         t = new Thread (this, client.handler.getId());
+	         t.start ();
+	      }
+	}
+	@Override
+	public void run() {
+		try {
+			while(listen()){}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -71,7 +71,7 @@ public class TicketAllocator {
 	}
 	private ElectricityTicket generateTicket(ElectricityRequirement e)
 	{
-		return new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID());
+		return new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)
 	{
