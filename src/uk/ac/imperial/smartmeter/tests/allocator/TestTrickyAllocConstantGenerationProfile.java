@@ -54,8 +54,7 @@ public class TestTrickyAllocConstantGenerationProfile extends GenericTest {
 		
 		ArraySet<UserAgent> x  = alloc.calculateTickets();
 		
-
-		return (TicketTestHelper.countTickets(x)==10); //this is basically to preserve functionality. it is unlikely to be optimal, and potentially not correct.
+		return (TicketTestHelper.countTickets(x)==9); //this is basically to preserve functionality. it is unlikely to be optimal, and potentially not correct.
 	}
 
 }
