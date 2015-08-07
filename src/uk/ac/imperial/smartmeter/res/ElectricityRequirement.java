@@ -69,6 +69,16 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 			reqID = UUID.fromString(idString);
 		}
 	}
+	public ElectricityRequirement(ElectricityRequirement req) {
+		startTime = DateHelper.clone(req.startTime);
+		endTime = DateHelper.clone(req.endTime);
+		duration = new Double(req.duration);
+		priority = new DecimalRating(req.priority.getValue());
+		profile = new UniformConsumptionProfile(duration, req.profile.amplitude);
+		userID = UUID.fromString(req.getUserID());
+		reqID = UUID.fromString(req.getId());
+	}
+
 	public int getPriority() {
 		return priority.getValue();
 	}
@@ -89,6 +99,13 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 	public void setStartTime(Date d)
 	{
 		startTime = new Date(d.getTime());
+		endTime = DateHelper.dPlus(d, duration/QuantumNode.quanta);
+		tampered = true;
+	}
+	public void setStartTime(Date d, double dur)
+	{
+		startTime = new Date(d.getTime());
+		duration = dur*QuantumNode.quanta;
 		endTime = DateHelper.dPlus(d, duration/QuantumNode.quanta);
 		tampered = true;
 	}

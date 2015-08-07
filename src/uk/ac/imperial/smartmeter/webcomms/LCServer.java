@@ -23,13 +23,17 @@ public class LCServer implements Runnable {
 	private Integer portNum;
 	private UserAddressBook addresses;
 	public LCClient client;
+	Boolean active = true;
 	Thread t;
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
 		addresses = new UserAddressBook();
 	}
-
+	public void close()
+	{
+		active = false;
+	}
 	private String recvMsg(String msg) {
 		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
 		switch (splitMsg.get(0)) {
@@ -211,7 +215,7 @@ public class LCServer implements Runnable {
 	@Override
 	public void run() {
 		try {
-			while(listen()){}
+			while(listen()&&active){}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

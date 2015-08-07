@@ -11,7 +11,10 @@ public class DateHelper {
 	//dates are deprecated
 	//this adds extensions to date
 	//I am very sorry
-	
+	public static Date clone(Date d)
+	{
+		return new Date(d.getTime());
+	}
 	public static Date os(Long offset)
 	{
 		Date now = new Date();

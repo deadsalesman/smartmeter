@@ -39,6 +39,19 @@ public class QuantumNode implements TimeNode {
 			return false;
 		}
 	}
+	public Boolean removeReq(String id)
+	{
+		for (ElectricityRequirement r : reqs)
+		{
+			if (r.getId().equals(id))
+			{
+				reqs.remove(r);
+				currentCapacity += r.getConsumption(startTime);
+				return true;
+			}
+		}
+		return true; //if you want to remove something and it was never there, have you succeeded?
+	}
 	public void removeReq(int index)
 	{
 		ElectricityRequirement e = reqs.remove(index);

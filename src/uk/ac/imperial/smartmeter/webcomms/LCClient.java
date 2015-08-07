@@ -400,4 +400,28 @@ public class LCClient{
 		return cappedUtility;
 		
 	}
+	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req) {
+		String inputLine = "EXT," + tkt.toString() + req.toString();
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		input.add("END");
+		ArrayList<String> msg;
+		try {
+			msg = connectHLC(input);
+			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			if (splitMsg.get(0).equals("SUCCESS")) {
+
+				DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+				try {
+					tkt.start = df.parse(splitMsg.get(1));
+					tkt.end   = df.parse(splitMsg.get(2));
+					return true;
+				} catch (ParseException e) {
+				}
+				
+			}
+		} catch (IOException e1) {
+		} 
+		return false;
+	}
 }

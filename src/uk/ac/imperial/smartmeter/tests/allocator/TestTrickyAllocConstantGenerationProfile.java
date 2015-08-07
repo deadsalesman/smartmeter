@@ -53,7 +53,7 @@ public class TestTrickyAllocConstantGenerationProfile extends GenericTest {
 		TicketAllocator alloc = new TicketAllocator(m, new Date(),true);
 		
 		ArraySet<UserAgent> x  = alloc.calculateTickets();
-		
+		//System.out.println(TicketTestHelper.countTickets(x));
 		return (TicketTestHelper.countTickets(x)==9); //this is basically to preserve functionality. it is unlikely to be optimal, and potentially not correct.
 	}
 

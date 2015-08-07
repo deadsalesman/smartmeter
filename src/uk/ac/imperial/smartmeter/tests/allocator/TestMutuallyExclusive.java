@@ -30,7 +30,8 @@ public class TestMutuallyExclusive extends GenericTest {
 		TicketAllocator alloc = new TicketAllocator(m, new Date(),false);
 		
 		ArraySet<UserAgent> x  = alloc.calculateTickets();
-		
+
+		//System.out.println(TicketTestHelper.countTickets(x));
 		return (TicketTestHelper.countTickets(x)==1);
 	}
 

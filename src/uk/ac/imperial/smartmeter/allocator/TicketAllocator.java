@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import uk.ac.imperial.smartmeter.comparators.requirementPrioComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
+import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.EleGenConglomerate;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
@@ -87,7 +88,16 @@ public class TicketAllocator {
 		}
 		return maxAgt;
 	}
-	private Boolean updateInterferedNodes(ElectricityRequirement e, ArrayList<QuantumNode> nodes)
+	private Boolean removeReqFromNodes(ElectricityRequirement e, ArrayList<QuantumNode> nodes)
+	{
+		Boolean ret = true; //innocent until proven guilty
+		for (QuantumNode n : nodes)
+		{
+			ret &= n.removeReq(e.getId());
+		}
+		return ret;
+	}
+	private Boolean addReqToNodes(ElectricityRequirement e, ArrayList<QuantumNode> nodes)
 	{
 		Boolean viable = true; //until proved otherwise;
 		for (QuantumNode n : nodes)
@@ -108,8 +118,19 @@ public class TicketAllocator {
 	{
 		Boolean ret = false;
 		ArrayList<QuantumNode> nodes = req.getTampered() ? queue.findIntersectingNodes(req) : reqMap.get(req);
-		if (updateInterferedNodes(req, nodes)) { 
+		if (addReqToNodes(req, nodes)) { 
 			ElectricityTicket ticket = generateTicket(req);
+			u.getReqTktMap().put(req, ticket);
+			ret = true;
+		}
+		return ret;
+	}
+	private Boolean genTicketIfPossible(UserAgent u, ElectricityRequirement req, ElectricityRequirement proxy)
+	{
+		Boolean ret = false;
+		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(proxy);
+		if (addReqToNodes(proxy, nodes)) { 
+			ElectricityTicket ticket = generateTicket(proxy);
 			u.getReqTktMap().put(req, ticket);
 			ret = true;
 		}
@@ -122,11 +143,12 @@ public class TicketAllocator {
 		if (!ret && tryHard) {
 			int count = 0;
 			int attemptLimit = 3;
+			int offset = 1;
+			ElectricityRequirement proxy = new ElectricityRequirement(req);
 			while ((count <= attemptLimit) && (!ret)) {
-				int offset = 1;
-				QuantumNode first = queue.findIntersectingNodes(req).get(0);
-				req.setStartTime(DateHelper.dPlus(first.getSoonestFinishingTime(), offset));
-				ret = genTicketIfPossible(u, req);
+				QuantumNode first = queue.findIntersectingNodes(proxy).get(0);
+				proxy.setStartTime(DateHelper.dPlus(first.getSoonestFinishingTime(), offset));
+				ret = genTicketIfPossible(u, req, proxy);
 				count++;
 			}
 
@@ -207,5 +229,53 @@ public class TicketAllocator {
 			}
 		}
 		return usrArray;
+	}
+	public Boolean expandToFit(ElectricityTicket t, ElectricityRequirement e) {
+		double dur = e.getDuration();
+		double edge = t.getDuration() - dur;
+		ElectricityRequirement req = new ElectricityRequirement(DateHelper.dPlus(t.start, edge),DateHelper.dPlus(t.end, -edge),new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(req);
+		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
+		Date start = nodes.get(0).getStartTime();
+		Date end   = nodes.get(0).getEndTime();
+		int tally = 0;
+		int numberNeeded = (int)Math.ceil(dur);
+		for (QuantumNode q: nodes)
+		{
+			if (tally < numberNeeded)
+			{
+			if ((q.getCapacity() >= e.getConsumption(q.getStartTime())))
+			{
+				tally++;
+				end = q.getEndTime();
+				viableNodes.add(q);
+			}
+			else
+			{
+				tally = 0;
+				start = nodes.get(0).getEndTime();
+				viableNodes = new ArrayList<QuantumNode>();
+			}
+			}
+			else
+			{
+				t.start = start;
+				req.setStartTime(start, dur);
+				t.end = end;
+				return addReqToNodes(req, viableNodes);
+			}
+		}
+		
+		return false;
+	}
+	public Boolean extendTicket(ElectricityTicket t, ElectricityRequirement e) {
+
+		double metric = e.getDuration() - t.getDuration();
+		
+		if (metric > 0) {
+			return expandToFit(t, e);
+		}
+		
+		return false;
 	}
 }

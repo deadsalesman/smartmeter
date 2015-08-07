@@ -35,6 +35,10 @@ public class HLCServer {
 		{
 			return resultToStr(calculateTickets());
 		}
+		case ("EXT"):
+		{
+			return extendTicket(splitMsg);
+		}
 		case ("REQ"):
 		{
 			return resultToStr(addReq(splitMsg));
@@ -74,6 +78,37 @@ public class HLCServer {
 		}
 	}
 	
+	private String extendTicket(List<String> splitMsg) {
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		String ret = "FAILURE,";
+		ElectricityTicket tkt;
+		try {
+			tkt = new ElectricityTicket(
+					df.parse(splitMsg.get(1)),
+					df.parse(splitMsg.get(2)),
+					Double.parseDouble(splitMsg.get(3)),
+					splitMsg.get(4),
+					splitMsg.get(5),
+					splitMsg.get(6)
+					);
+			ElectricityRequirement req = new ElectricityRequirement(
+					df.parse(splitMsg.get(7)),
+					df.parse(splitMsg.get(8)),
+					new DecimalRating(Integer.parseInt(splitMsg.get(9))),
+					Integer.parseInt(splitMsg.get(10)),
+					Double.parseDouble(splitMsg.get(11)),
+					splitMsg.get(12),
+					splitMsg.get(13)
+					);
+			if(handler.extendTicket(tkt, req))
+			{
+			ret = "SUCCESS,";
+			ret += tkt.toString();
+			}
+		} catch (Exception e) {
+		} 
+		return ret;
+	}
 	private Boolean wipe(List<String> splitMsg) {
 		return handler.clearAll(splitMsg.get(1));
 	}

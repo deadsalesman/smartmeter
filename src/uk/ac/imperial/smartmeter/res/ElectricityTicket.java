@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ElectricityTicket implements UniqueIdentifierIFace{
@@ -22,6 +23,10 @@ public class ElectricityTicket implements UniqueIdentifierIFace{
 	{
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		return df.format(this.start) + "," + df.format(this.end) + "," + this.magnitude + "," + this.ownerID.toString() + "," + this.reqID.toString() + "," + this.getId() + ",";
+	}
+	public double getDuration()
+	{
+		return (end.getTime() - start.getTime())/QuantumNode.quanta;
 	}
 	public ElectricityTicket(Date s, Date e, Double m, String owner, String reqId, String idString)
 	{
