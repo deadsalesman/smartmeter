@@ -20,6 +20,7 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestFavourExchange());
 		testLog.add(new TestExtendTicket());
 		testLog.add(new TestPracticalExtension());
+		testLog.add(new TestPracticalIntensify());
 		return reportLog();
 	}
 }

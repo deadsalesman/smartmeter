@@ -45,4 +45,7 @@ public class HLCHandler {
 	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req) {
 		return controller.extendTicket(req, tkt);
 	}
+	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req) {
+		return controller.intensifyTicket(req,tkt);
+	}
 }

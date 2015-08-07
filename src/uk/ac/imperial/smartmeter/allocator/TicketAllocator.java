@@ -281,4 +281,28 @@ public class TicketAllocator {
 		
 		return false;
 	}
+	public Boolean intensifyTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityRequirement match) {
+		double metric = e.getMaxConsumption() - t.magnitude;
+		if (metric >0)
+		{
+			return intensify(t,e,match);
+		}
+		return false;
+	}
+	private Boolean intensify(ElectricityTicket t, ElectricityRequirement e, ElectricityRequirement match) {
+		ElectricityRequirement proxy = new ElectricityRequirement(match);
+		proxy.setStartTime(t.start, t.getDuration());
+		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(proxy);
+		removeReqFromNodes(proxy, nodes);  //removes the old requirement that has the same id as the new one
+		e.setStartTime(proxy.getStartTime());
+		nodes = queue.findIntersectingNodes(e);
+		if(addReqToNodes(e,nodes)){ //adds the new consumption requirement
+			t.start = e.getStartTime();
+			t.end = e.getEndTime();
+			t.magnitude = e.getMaxConsumption();
+			return true;
+		}
+		return false;
+	
+	}
 }

@@ -23,12 +23,13 @@ public class LCServer implements Runnable {
 	private Integer portNum;
 	private UserAddressBook addresses;
 	public LCClient client;
-	private boolean extendable = false;
+	private boolean durationModifiable = false;
+	private boolean amplitudeModifiable = false;
 	Boolean active = true;
 	Thread t;
-	public void setExtendable(Boolean t)
+	public void setTicketDurationModifiable(Boolean t)
 	{
-		extendable = t;
+		durationModifiable = t;
 	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
 		portNum = ownPort;
@@ -151,14 +152,18 @@ public class LCServer implements Runnable {
 				utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
 			} else {
 				// ticket is insufficient for this requirement
-				if (extendable)
+				if (durationModifiable)
 				{
 				client.extendTicket(newtkt, r);
 				utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
 				}
 			}
 		} else {
-			// expand in power
+			if (amplitudeModifiable)
+			{
+			client.intensifyTicket(newtkt, r);
+			utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+			}
 		}
 
 		return utility;
@@ -203,7 +208,7 @@ public class LCServer implements Runnable {
 
 			String inputLine, outputLine;
 
-			while ((inputLine = in.readLine()) != null) {
+			while (((inputLine = in.readLine()) != null)&&active) {
 				outputLine = recvMsg(inputLine);
 				out.println(outputLine);
 				if (outputLine.equals("NUL"))
@@ -234,6 +239,9 @@ public class LCServer implements Runnable {
 
 	public Boolean registerClient(String locationOfB, int portOfB) {
 		return client.registerClient(locationOfB, portOfB, portNum);
+	}
+	public void setTicketAmplitudeModifiable(Boolean b) {
+		amplitudeModifiable = b;
 	}
 
 }

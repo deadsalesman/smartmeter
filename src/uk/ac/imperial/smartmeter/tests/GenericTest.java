@@ -6,7 +6,12 @@ public abstract class GenericTest implements testIFace {
 	protected boolean print = true;
 	protected GenericTest()
 	{
+		try {
 		displayResults(doTest());
+		} catch(Exception e)
+		{
+			
+		}
 	}
 	protected GenericTest(Boolean b)
 	{

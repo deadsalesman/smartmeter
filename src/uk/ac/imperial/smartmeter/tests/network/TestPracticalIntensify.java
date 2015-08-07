@@ -9,25 +9,23 @@ import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
-public class TestFavourExchange extends GenericTest {
+public class TestPracticalIntensify extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		//a will get the ticket in the preferred slot, and then exchange it with b for a favour.
-		
-		LCServer aClient = new LCServer("localHost", 9002, "localHost", 9001,9004,TicketTestHelper.user1,"");
-		LCServer bClient = new LCServer("localHost", 9002, "localHost", 9001,9003,TicketTestHelper.user2,"");
+		LCServer aClient = new LCServer("localHost", 9002, "localHost", 9001,9012,TicketTestHelper.user1,"");
+		LCServer bClient = new LCServer("localHost", 9002, "localHost", 9001,9013,TicketTestHelper.user2,"");
 		
 		aClient.start();
 		bClient.start();
 		
 		String locationOfB = "localHost";
-		int portOfB = 9003;
-		aClient.client.registerUser(0.,10.,0.);
-		bClient.client.registerUser(0.,10.,0.);
+		int portOfB = 9013;
+		aClient.client.registerUser(0.,0.,0.);
+		bClient.client.registerUser(0.,3.,0.);
 		
-		TicketTestHelper.bindRequirement(aClient.client,1.1, 6.3, 4,3.);
-		TicketTestHelper.bindRequirement(bClient.client,1.1, 6.3, 4,3.);
+		TicketTestHelper.bindRequirement(aClient.client,1.1, 2.3, 4,1.);
+		TicketTestHelper.bindRequirement(bClient.client,1.1, 2.3, 4,3.);
 		
 		aClient.client.GodModeCalcTKTS();
 		
@@ -36,7 +34,6 @@ public class TestFavourExchange extends GenericTest {
 		UUID aID = UUID.fromString(a.get(0).id.toString());
 		UUID bID = UUID.fromString(b.get(0).id.toString());
 		
-
 		aClient.registerClient(locationOfB, portOfB);
 		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
 		ArraySet<ElectricityTicket> competing = aClient.client.queryCompeting(locationOfB,portOfB, req);
@@ -44,10 +41,21 @@ public class TestFavourExchange extends GenericTest {
 		
 		ArraySet<ElectricityTicket> c = aClient.client.getTickets();
 		ArraySet<ElectricityTicket> d = bClient.client.getTickets();
+		
+		Boolean temp1 = (c.get(0).getId().equals(aID.toString()))&&(d.get(0).getId().equals(bID.toString()));
+		
+		bClient.setTicketAmplitudeModifiable(true);
+		aClient.client.offer(locationOfB, portOfB, competing.get(0),aClient.client.handler.findMatchingTicket(req));
+		
+		ArraySet<ElectricityTicket> e = aClient.client.getTickets();
+		ArraySet<ElectricityTicket> f = bClient.client.getTickets();
+		
+		Boolean temp2 = (e.get(0).getId().equals(bID.toString()))&&(f.get(0).getId().equals(aID.toString()));
+		
 		aClient.client.wipe();
 		aClient.close();
 		bClient.close();
-		return ((c.get(0).getId().equals(bID.toString()))&&(d.get(0).getId().equals(aID.toString())));
+		return temp1&&temp2;
 	}
 
 }

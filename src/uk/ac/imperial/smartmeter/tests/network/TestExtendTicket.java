@@ -32,6 +32,7 @@ public class TestExtendTicket extends GenericTest {
 		aClient.client.extendTicket(a.get(0),req);
 		
 		aClient.client.wipe();
+		aClient.close();
 		return (Math.abs(a.get(0).getDuration()-req.getDuration())<1);
 	}
 

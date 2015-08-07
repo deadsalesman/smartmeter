@@ -2,6 +2,7 @@ package uk.ac.imperial.smartmeter.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.TicketAllocator;
@@ -38,13 +39,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	}
 	public Boolean extendTicket(ElectricityRequirement e, ElectricityTicket t)
 	{
-		double durationTicket = t.getDuration();
-		double durationReq = e.getDuration();
-		if (durationTicket < durationReq)
-		{
-			return alloc.extendTicket(t, e);
-		}
-		return false;
+	return alloc.extendTicket(t, e);
 		
 	}
 	public Boolean addRequirement(ElectricityRequirement e) {
@@ -209,5 +204,19 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 			}
 		}
         return null;
+	}
+	public ElectricityRequirement findMatchingRequirement(ElectricityTicket tkt) {
+		for (UserAgent u:agents)
+		{
+		for (Entry<ElectricityRequirement, ElectricityTicket> x : u.getReqTktMap().entrySet()) {
+			if (tkt.id.toString().equals(x.getValue().id.toString())) {
+				return x.getKey();
+			}
+		}
+		}
+		return null;
+	}
+	public Boolean intensifyTicket(ElectricityRequirement req, ElectricityTicket tkt) {
+			return alloc.intensifyTicket(tkt, req,findMatchingRequirement(tkt));
 	}
 }
