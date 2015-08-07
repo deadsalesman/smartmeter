@@ -40,7 +40,7 @@ public class ElectricityRequirement implements UniqueIdentifierIFace{
 			this.getProfileCode() + "," +
 			this.getMaxConsumption() + "," +
 			this.getUserID() + "," +
-			this.getId()
+			this.getId() + ","
 			;
 		return repr;
 	}

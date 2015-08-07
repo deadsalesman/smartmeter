@@ -37,9 +37,9 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		pullAgtFromDB();
 		pullReqsFromDB();
 	}
-	public Boolean extendTicket(ElectricityRequirement e, ElectricityTicket t)
+	public Boolean extendTicket(ElectricityRequirement e, ElectricityTicket t, ElectricityTicket tktOld)
 	{
-	return alloc.extendTicket(t, e);
+	return alloc.extendTicket(t, e, tktOld,findMatchingRequirement(tktOld));
 		
 	}
 	public Boolean addRequirement(ElectricityRequirement e) {
@@ -216,7 +216,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		}
 		return null;
 	}
-	public Boolean intensifyTicket(ElectricityRequirement req, ElectricityTicket tkt) {
-			return alloc.intensifyTicket(tkt, req,findMatchingRequirement(tkt));
+	public Boolean intensifyTicket(ElectricityRequirement req, ElectricityTicket tkt, ElectricityTicket tktOld) {
+			return alloc.intensifyTicket(tkt, req,findMatchingRequirement(tkt), tktOld,findMatchingRequirement(tktOld));
 	}
 }

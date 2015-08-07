@@ -400,9 +400,9 @@ public class LCClient{
 		return cappedUtility;
 		
 	}
-	public Boolean modifyTicket(String type,ElectricityTicket tkt, ElectricityRequirement req)
+	public Boolean modifyTicket(String type,ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt)
 	{
-		String inputLine = type + "," + tkt.toString() + req.toString();
+		String inputLine = type + "," + tkt.toString() + req.toString() + oldtkt.toString();
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
 		input.add("END");
@@ -417,6 +417,10 @@ public class LCClient{
 					tkt.start = df.parse(splitMsg.get(1));
 					tkt.end   = df.parse(splitMsg.get(2));
 					tkt.magnitude = Double.parseDouble(splitMsg.get(3));
+					
+					oldtkt.start = df.parse(splitMsg.get(7));
+					oldtkt.end   = df.parse(splitMsg.get(8));
+					oldtkt.magnitude = Double.parseDouble(splitMsg.get(9));
 					return true;
 				} catch (ParseException e) {
 				}
@@ -427,10 +431,10 @@ public class LCClient{
 		return false;
 	}
 
-	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req) {
-		return modifyTicket("EXT",tkt,req);
+	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
+		return modifyTicket("EXT",tkt,req,oldtkt);
 	}
-	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req) {
-		return modifyTicket("INT",tkt,req);
+	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
+		return modifyTicket("INT",tkt,req,oldtkt);
 	}
 }

@@ -4,19 +4,21 @@ public abstract class GenericTest implements testIFace {
 
 	protected boolean success = false;
 	protected boolean print = true;
+	protected String testId;
 	protected GenericTest()
 	{
-		try {
-		displayResults(doTest());
-		} catch(Exception e)
-		{
-			
-		}
+      this (true);
 	}
 	protected GenericTest(Boolean b)
 	{
+		testId = this.getClass().getName();
 		print = b;
+		try {
 		displayResults(doTest());
+		} catch (Exception e)
+		{
+		System.out.println("EXCEPTION THROWN IN " + testId);
+		}
 	}
 	public boolean getResult()
 	{
@@ -25,13 +27,12 @@ public abstract class GenericTest implements testIFace {
 	public abstract boolean doTest();
 	public boolean displayResults(boolean ans)
 	{
-		String testId = this.getClass().getName();
 		if (print)
 		{
 		System.out.println((ans ? "PASS_ " : "FAIL_ ") + testId);
 		}
 		success = ans;
 		return ans;
+		
 	}
-
 }

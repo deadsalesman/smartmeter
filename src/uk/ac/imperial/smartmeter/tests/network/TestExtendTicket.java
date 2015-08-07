@@ -1,5 +1,8 @@
 package uk.ac.imperial.smartmeter.tests.network;
 
+import java.util.Date;
+import java.util.UUID;
+
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
@@ -28,8 +31,8 @@ public class TestExtendTicket extends GenericTest {
 
 		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
 		req.setStartTime(req.getStartTime(), req.getDuration()*2);
-		
-		aClient.client.extendTicket(a.get(0),req);
+		ElectricityTicket dummy = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		aClient.client.extendTicket(a.get(0),req,dummy);
 		
 		aClient.client.wipe();
 		aClient.close();

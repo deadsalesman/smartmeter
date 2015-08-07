@@ -85,9 +85,9 @@ public class HLCServer {
 	{
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		String ret = "FAILURE,";
-		ElectricityTicket tkt;
+		
 		try {
-			tkt = new ElectricityTicket(
+			ElectricityTicket tkt = new ElectricityTicket(
 					df.parse(splitMsg.get(1)),
 					df.parse(splitMsg.get(2)),
 					Double.parseDouble(splitMsg.get(3)),
@@ -104,18 +104,27 @@ public class HLCServer {
 					splitMsg.get(12),
 					splitMsg.get(13)
 					);
+			ElectricityTicket tktOld = new ElectricityTicket(
+					df.parse(splitMsg.get(14)),
+					df.parse(splitMsg.get(15)),
+					Double.parseDouble(splitMsg.get(16)),
+					splitMsg.get(17),
+					splitMsg.get(18),
+					splitMsg.get(19)
+					);
 			Boolean success = false;
 			switch(splitMsg.get(0))
 			{
-			case("INT"): success = handler.intensifyTicket(tkt,req);
+			case("INT"): success = handler.intensifyTicket(tkt,req,tktOld);
 				break;
-			case("EXT"): success = handler.extendTicket(tkt, req);
+			case("EXT"): success = handler.extendTicket(tkt, req,tktOld);
 				break;
 			}
 			if(success)
 			{
 			ret = "SUCCESS,";
 			ret += tkt.toString();
+			ret += tktOld.toString();
 			}
 		} catch (Exception e) {
 		} 

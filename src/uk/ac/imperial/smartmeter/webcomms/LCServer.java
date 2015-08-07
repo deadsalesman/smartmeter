@@ -86,8 +86,9 @@ public class LCServer implements Runnable {
 					);
 			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(6));
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
-			Double newUtility = evaluateUtility(newtkt, oldReq);
-			Double oldUtility = evaluateUtility(oldtkt, oldReq);
+			Double newUtility = evaluateUtility(newtkt, oldReq, oldtkt);
+			Double oldUtility = evaluateUtility(oldtkt, oldReq, null); //third parameter not included here for convenience
+																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
 			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(4));
 			
 			if (result)
@@ -143,7 +144,7 @@ public class LCServer implements Runnable {
 		return false;
 	}
 
-	private Double evaluateUtility(ElectricityTicket newtkt, ElectricityRequirement r) {
+	private Double evaluateUtility(ElectricityTicket newtkt, ElectricityRequirement r, ElectricityTicket oldtkt) {
 		Double utility = 0.;
 		double duration;
 		duration = (newtkt.end.getTime() - newtkt.start.getTime()) / (double)QuantumNode.quanta;
@@ -154,14 +155,14 @@ public class LCServer implements Runnable {
 				// ticket is insufficient for this requirement
 				if (durationModifiable)
 				{
-				client.extendTicket(newtkt, r);
+				client.extendTicket(newtkt, r, oldtkt);
 				utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
 				}
 			}
 		} else {
 			if (amplitudeModifiable)
 			{
-			client.intensifyTicket(newtkt, r);
+			client.intensifyTicket(newtkt, r, oldtkt);
 			utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
 			}
 		}

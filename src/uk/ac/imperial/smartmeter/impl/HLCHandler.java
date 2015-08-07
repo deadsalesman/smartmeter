@@ -42,10 +42,10 @@ public class HLCHandler {
 	public Boolean clearAll(String string) {
 		return controller.clearAll(string);
 	}
-	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req) {
-		return controller.extendTicket(req, tkt);
+	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld) {
+		return controller.extendTicket(req, tkt,tktOld);
 	}
-	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req) {
-		return controller.intensifyTicket(req,tkt);
+	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld) {
+		return controller.intensifyTicket(req,tkt,tktOld);
 	}
 }
