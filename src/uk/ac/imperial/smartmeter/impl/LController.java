@@ -2,6 +2,7 @@ package uk.ac.imperial.smartmeter.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.db.ReqsDBManager;
@@ -167,5 +168,14 @@ public class LController {
 			}
 		}
 		return false;
+	}
+
+	public ElectricityRequirement findMatchingRequirement(ElectricityTicket tkt) {
+		for (Entry<ElectricityRequirement, ElectricityTicket> x : masterUser.getReqTktMap().entrySet()) {
+			if (tkt.id.toString().equals(x.getValue().id.toString())) {
+				return x.getKey();
+			}
+		}
+		return null;
 	}
 }

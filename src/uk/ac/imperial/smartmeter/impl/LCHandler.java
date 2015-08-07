@@ -35,6 +35,10 @@ private LController controller;
 	{
 		return controller.findMatchingTicket(req);
 	}
+	public ElectricityRequirement findMatchingRequirement(ElectricityTicket tkt)
+	{
+		return controller.findMatchingRequirement(tkt);
+	}
 	public String getId() {
 		return id;
 	}

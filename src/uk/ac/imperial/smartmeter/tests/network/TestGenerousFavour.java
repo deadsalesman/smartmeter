@@ -25,7 +25,7 @@ public class TestGenerousFavour extends GenericTest {
 		bClient.client.registerUser(0.,3.,0.);
 		
 		TicketTestHelper.bindRequirement(aClient.client,1.1, 2.3, 4,3.);
-		TicketTestHelper.bindRequirement(bClient.client,2.1, 6.3, 4,3.);
+		TicketTestHelper.bindRequirement(bClient.client,1.1, 2.3, 4,3.);
 		
 		aClient.client.GodModeCalcTKTS();
 		
@@ -44,7 +44,7 @@ public class TestGenerousFavour extends GenericTest {
 		aClient.client.wipe();
 		aClient.close();
 		bClient.close();
-		return ((c.get(0).getId().equals(aID.toString()))&&(d.get(0).getId().equals(bID.toString())));
+		return ((c.get(0).getId().equals(bID.toString()))&&(d.get(0).getId().equals(aID.toString())));
 	}
 
 }

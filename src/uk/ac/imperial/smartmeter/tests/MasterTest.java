@@ -31,5 +31,6 @@ public static void reportLog()
 		total += e.getValue();
 	}
 	System.out.println("There are " + total +  " failed tests overall.");
+	System.exit(0);
 }
 }

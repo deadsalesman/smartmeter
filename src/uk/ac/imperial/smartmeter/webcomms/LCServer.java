@@ -23,8 +23,13 @@ public class LCServer implements Runnable {
 	private Integer portNum;
 	private UserAddressBook addresses;
 	public LCClient client;
+	private boolean extendable = false;
 	Boolean active = true;
 	Thread t;
+	public void setExtendable(Boolean t)
+	{
+		extendable = t;
+	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
@@ -79,8 +84,9 @@ public class LCServer implements Runnable {
 					splitMsg.get(12)
 					);
 			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(6));
-			Double newUtility = evaluateUtility(newtkt);
-			Double oldUtility = evaluateUtility(oldtkt);
+			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
+			Double newUtility = evaluateUtility(newtkt, oldReq);
+			Double oldUtility = evaluateUtility(oldtkt, oldReq);
 			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(4));
 			
 			if (result)
@@ -126,33 +132,35 @@ public class LCServer implements Runnable {
 		// TODO implement different types of agent
 		Double history = 0.;
 		Double credit = 0.;
-		Double leeway = 0.;
+		Double leeway = 0.2;
 		history = addresses.getHistory(user);
 		
-		if ((history <= credit) && (newUtility >= (oldUtility + leeway))) {
+		if ((history <= credit) && (Math.abs(newUtility-oldUtility) <= leeway)) {
 			addresses.setHistory(user,history + (newUtility - oldUtility));
 			return true;
 		}
 		return false;
 	}
 
-	private Double evaluateUtility(ElectricityTicket newtkt) {
+	private Double evaluateUtility(ElectricityTicket newtkt, ElectricityRequirement r) {
 		Double utility = 0.;
 		double duration;
-		duration = (newtkt.end.getTime() - newtkt.start.getTime()) / QuantumNode.quanta;
-		for (ElectricityRequirement r : client.handler.getReqs()) {
-			if (r.getMaxConsumption() <= newtkt.magnitude) {
-				if (r.getDuration() <= duration) {
-					utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
-				} else {
-					// ticket is insufficient for this requirement
-					client.extendTicket(newtkt, r);
-					utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
-				}
+		duration = (newtkt.end.getTime() - newtkt.start.getTime()) / (double)QuantumNode.quanta;
+		if (r.getMaxConsumption() <= newtkt.magnitude) {
+			if (r.getDuration() <= duration) {
+				utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
 			} else {
-				// expand in power
+				// ticket is insufficient for this requirement
+				if (extendable)
+				{
+				client.extendTicket(newtkt, r);
+				utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+				}
 			}
+		} else {
+			// expand in power
 		}
+
 		return utility;
 	}
 
