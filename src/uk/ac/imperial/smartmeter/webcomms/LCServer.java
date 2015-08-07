@@ -139,16 +139,18 @@ public class LCServer implements Runnable {
 	private Double evaluateUtility(ElectricityTicket newtkt) {
 		Double utility = 0.;
 		double duration;
-		duration = (newtkt.end.getTime() - newtkt.start.getTime())/QuantumNode.quanta;
-		for (ElectricityRequirement r : client.handler.getReqs())
-		{
-			if ((r.getDuration() >= duration)&&(r.getMaxConsumption() <= newtkt.magnitude))
-				{
-				  utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+		duration = (newtkt.end.getTime() - newtkt.start.getTime()) / QuantumNode.quanta;
+		for (ElectricityRequirement r : client.handler.getReqs()) {
+			if (r.getMaxConsumption() <= newtkt.magnitude) {
+				if (r.getDuration() <= duration) {
+					utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+				} else {
+					// ticket is insufficient for this requirement
+					client.extendTicket(newtkt, r);
+					utility += client.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
 				}
-			else
-			{
-				//ticket is insufficient for this requirement
+			} else {
+				// expand in power
 			}
 		}
 		return utility;

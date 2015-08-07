@@ -37,6 +37,14 @@ public class ElectricityTicket implements UniqueIdentifierIFace{
 		ownerID = UUID.fromString(owner);
 		id = UUID.fromString(idString);
 	}
+	public ElectricityTicket(ElectricityTicket newtkt) {
+		start = DateHelper.clone(newtkt.start);
+		end = DateHelper.clone(newtkt.end);
+		magnitude = newtkt.magnitude;
+		reqID = UUID.fromString(newtkt.reqID.toString());
+		ownerID = UUID.fromString(newtkt.ownerID.toString());
+		id = UUID.fromString(newtkt.id.toString());
+	}
 	@Override
 	public String getId() {
 		return id.toString();

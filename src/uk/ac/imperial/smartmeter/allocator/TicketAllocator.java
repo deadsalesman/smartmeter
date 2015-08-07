@@ -236,6 +236,9 @@ public class TicketAllocator {
 		ElectricityRequirement req = new ElectricityRequirement(DateHelper.dPlus(t.start, edge),DateHelper.dPlus(t.end, -edge),new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
 		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(req);
 		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
+		
+		removeReqFromNodes(e, nodes);
+		
 		Date start = nodes.get(0).getStartTime();
 		Date end   = nodes.get(0).getEndTime();
 		int tally = 0;
@@ -257,7 +260,7 @@ public class TicketAllocator {
 				viableNodes = new ArrayList<QuantumNode>();
 			}
 			}
-			else
+			if (tally == numberNeeded)
 			{
 				t.start = start;
 				req.setStartTime(start, dur);
