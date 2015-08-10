@@ -3,6 +3,7 @@ package uk.ac.imperial.smartmeter.tests.network;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.tests.GenericTest;
+import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LCClient;
 
 public class TestConcurrentClients extends GenericTest {
@@ -10,9 +11,9 @@ public class TestConcurrentClients extends GenericTest {
 	@Override
 	public boolean doTest() {
 		String a = UUID.randomUUID().toString();
-		LCClient b = new LCClient("localHost", 9002, "localHost", 9001,a,"");
+		LCClient b = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,a,"");
 		String c = UUID.randomUUID().toString();
-		LCClient d = new LCClient("localHost", 9002, "localHost", 9001,c,"");
+		LCClient d = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,c,"");
 		
 		try {
 			b.addDevice(true, 1, a);

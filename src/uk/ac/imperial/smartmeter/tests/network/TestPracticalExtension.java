@@ -7,14 +7,15 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
+import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class TestPracticalExtension extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		LCServer aClient = new LCServer("localHost", 9002, "localHost", 9001,9010,TicketTestHelper.user1,"");
-		LCServer bClient = new LCServer("localHost", 9002, "localHost", 9001,9011,TicketTestHelper.user2,"");
+		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9010,TicketTestHelper.user1,"");
+		LCServer bClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9011,TicketTestHelper.user2,"");
 		
 		aClient.start();
 		bClient.start();

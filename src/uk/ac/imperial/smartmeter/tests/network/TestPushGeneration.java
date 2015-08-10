@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
+import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LContNode;
 
 public class TestPushGeneration extends GenericTest {
@@ -12,7 +13,7 @@ public class TestPushGeneration extends GenericTest {
 	@Override
 	public boolean doTest() {
 		String t = UUID.randomUUID().toString();
-        String[] parameters_lc = {"localHost", "9002", "localHost", "9001",t,""};
+        String[] parameters_lc = {DefaultTestClient.ipAddr, String.valueOf(DefaultTestClient.EDCPort), DefaultTestClient.ipAddr,String.valueOf(DefaultTestClient.HLCPort),t,""};
 		try {
 			LContNode.main(parameters_lc);
 		} catch (IOException e) {

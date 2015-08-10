@@ -4,6 +4,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
+import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LCClient;
 
 public class TestComplexTickets extends GenericTest {
@@ -13,12 +14,12 @@ public class TestComplexTickets extends GenericTest {
 		
 		
 		
-		LCClient aClient = new LCClient("localHost", 9002, "localHost", 9001,TicketTestHelper.user1,"");
-		LCClient bClient = new LCClient("localHost", 9002, "localHost", 9001,TicketTestHelper.user2,"");
-		LCClient cClient = new LCClient("localHost", 9002, "localHost", 9001,TicketTestHelper.user3,"");
-		LCClient dClient = new LCClient("localHost", 9002, "localHost", 9001,TicketTestHelper.user4,"");
-		LCClient eClient = new LCClient("localHost", 9002, "localHost", 9001,TicketTestHelper.user5,"");
-		LCClient fClient = new LCClient("localHost", 9002, "localHost", 9001,TicketTestHelper.user6,"");
+		LCClient aClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user1,"");
+		LCClient bClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user2,"");
+		LCClient cClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user3,"");
+		LCClient dClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user4,"");
+		LCClient eClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user5,"");
+		LCClient fClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user6,"");
 
 		aClient.wipe();
 		

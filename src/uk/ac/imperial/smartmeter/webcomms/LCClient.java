@@ -50,9 +50,13 @@ public class LCClient{
 
 	public ArrayList<String> connectServer(ArrayList<String> input, String host, int port) throws IOException {
 		ArrayList<String> ret =  new ArrayList<String>();
-		try (Socket kkSocket = new Socket(host, port);
-				PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
-				BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));) {
+		try (Socket kkSocket = new Socket();) {
+
+			kkSocket.connect(new InetSocketAddress(host, port), 1000);
+			try (
+					PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
+					BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));)
+			{
 			for (String s : input) {
 				out.println(s);
 			}
@@ -60,11 +64,17 @@ public class LCClient{
 			String fromServer;
 			while ((fromServer = in.readLine()) != null) {
 				ret.add(fromServer);
+				try {
+					Thread.sleep(15); //Hacky solution to RPI being slow. 
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				//System.out.println("Server: " + fromServer);
 				if (fromServer.equals("NUL"))
 					break;
 			}
-
+			}
 		} catch (UnknownHostException e) {
 			System.err.println("Don't know about host " + host);
 			System.exit(1);
