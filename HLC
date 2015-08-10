@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. ./updateCP
+
+java uk.ac.imperial.smartmeter.webcomms.HLContNode 6666
