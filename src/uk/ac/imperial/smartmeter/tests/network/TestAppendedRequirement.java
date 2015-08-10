@@ -6,6 +6,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
+import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LCClient;
 
 public class TestAppendedRequirement extends GenericTest {
@@ -13,7 +14,7 @@ public class TestAppendedRequirement extends GenericTest {
 	@Override
 	public boolean doTest() {
 		String t = UUID.randomUUID().toString();
-		LCClient elsie = new LCClient("localHost", 9002, "localHost", 9001,t,"");
+		LCClient elsie = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,t,"");
 
 		elsie.registerUser(0.,10.,0.,8999);
 		TicketTestHelper.bindRequirement(elsie,1.1, 6.3, 4,3.);

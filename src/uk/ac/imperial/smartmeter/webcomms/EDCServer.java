@@ -13,13 +13,14 @@ import uk.ac.imperial.smartmeter.impl.EDCHandler;
 import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 
 public class EDCServer{
-	public EDCServer(int parseInt) {
+	public EDCServer(int parseInt, Boolean verb) {
 		portNum = parseInt;
 		handler = new EDCHandler();
+		verbose = verb;
 	}
 
 	private EDCHandler handler;
-
+	private Boolean verbose;
 	private int portNum;
 	
 	private Boolean addDevice(List<String> splitMsg)
@@ -109,6 +110,11 @@ public class EDCServer{
 			while ((inputLine = in.readLine()) != null) {
 				outputLine = recvMsg(inputLine);
 				out.println(outputLine);
+                if (verbose)
+                {
+                	System.out.println("Input: " +inputLine);
+                	System.out.println("Output: " + outputLine);
+                }
 				if (outputLine.equals("NUL"))
 					return true;
 			}
