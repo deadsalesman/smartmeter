@@ -30,7 +30,7 @@ public class HLCServer {
 	private String recvMsg(String msg)
 	{
 		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
-		switch (splitMsg.get(0)) {
+		switch (splitMsg.get(1)) {
 		case ("CAL"):
 		{
 			return resultToStr(calculateTickets());
@@ -88,32 +88,32 @@ public class HLCServer {
 		
 		try {
 			ElectricityTicket tkt = new ElectricityTicket(
-					df.parse(splitMsg.get(1)),
 					df.parse(splitMsg.get(2)),
-					Double.parseDouble(splitMsg.get(3)),
-					splitMsg.get(4),
+					df.parse(splitMsg.get(3)),
+					Double.parseDouble(splitMsg.get(4)),
 					splitMsg.get(5),
-					splitMsg.get(6)
+					splitMsg.get(6),
+					splitMsg.get(7)
 					);
 			ElectricityRequirement req = new ElectricityRequirement(
-					df.parse(splitMsg.get(7)),
-					df.parse(splitMsg.get(8)),
-					new DecimalRating(Integer.parseInt(splitMsg.get(9))),
-					Integer.parseInt(splitMsg.get(10)),
-					Double.parseDouble(splitMsg.get(11)),
-					splitMsg.get(12),
-					splitMsg.get(13)
+					df.parse(splitMsg.get(9)),
+					df.parse(splitMsg.get(10)),
+					new DecimalRating(Integer.parseInt(splitMsg.get(11))),
+					Integer.parseInt(splitMsg.get(12)),
+					Double.parseDouble(splitMsg.get(13)),
+					splitMsg.get(14),
+					splitMsg.get(15)
 					);
 			ElectricityTicket tktOld = new ElectricityTicket(
-					df.parse(splitMsg.get(14)),
-					df.parse(splitMsg.get(15)),
-					Double.parseDouble(splitMsg.get(16)),
-					splitMsg.get(17),
-					splitMsg.get(18),
-					splitMsg.get(19)
+					df.parse(splitMsg.get(17)),
+					df.parse(splitMsg.get(18)),
+					Double.parseDouble(splitMsg.get(19)),
+					splitMsg.get(20),
+					splitMsg.get(21),
+					splitMsg.get(22)
 					);
 			Boolean success = false;
-			switch(splitMsg.get(0))
+			switch(splitMsg.get(1))
 			{
 			case("INT"): success = handler.intensifyTicket(tkt,req,tktOld);
 				break;
@@ -131,30 +131,30 @@ public class HLCServer {
 		return ret;
 	}
 	private Boolean wipe(List<String> splitMsg) {
-		return handler.clearAll(splitMsg.get(1));
+		return handler.clearAll(splitMsg.get(2));
 	}
 	private Boolean calculateTickets() {
 		return handler.calculateTickets();
 	}
 	private String getUID(List<String> splitMsg) {
-		return handler.getUUID(splitMsg.get(1));
+		return handler.getUUID(splitMsg.get(2));
 	}
 	private Boolean queryExistence(List<String> splitMsg) {
-		return handler.queryUserExistence(splitMsg.get(1));
+		return handler.queryUserExistence(splitMsg.get(2));
 	}
 	private Boolean setGen(List<String> splitMsg) {
-		return handler.setUserGeneration(splitMsg.get(1), new ElectricityGeneration(Double.parseDouble(splitMsg.get(2))));
+		return handler.setUserGeneration(splitMsg.get(2), new ElectricityGeneration(Double.parseDouble(splitMsg.get(3))));
 	}
 	private Boolean registerUserAgent(List<String> splitMsg) {
 		// TODO Verify user
 		return handler.addUserAgent(new UserAgent(
-				splitMsg.get(1),
 				splitMsg.get(2),
 				splitMsg.get(3),
 				splitMsg.get(4),
-				Double.parseDouble(splitMsg.get(5)),
-			    Double.parseDouble(splitMsg.get(6)),
-				Double.parseDouble(splitMsg.get(7))
+				splitMsg.get(5),
+				Double.parseDouble(splitMsg.get(6)),
+			    Double.parseDouble(splitMsg.get(7)),
+				Double.parseDouble(splitMsg.get(8))
 						));
 	}
 	private Boolean addReq(List<String> splitMsg) {
@@ -162,13 +162,13 @@ public class HLCServer {
 		ElectricityRequirement req;
 		try {
 			req = new ElectricityRequirement(
-					df.parse(splitMsg.get(1)),
 					df.parse(splitMsg.get(2)),
-					new DecimalRating(Integer.parseInt(splitMsg.get(3))),
-					Integer.parseInt(splitMsg.get(4)),
-					Double.parseDouble(splitMsg.get(5)),
-					splitMsg.get(6),
-					splitMsg.get(7)
+					df.parse(splitMsg.get(3)),
+					new DecimalRating(Integer.parseInt(splitMsg.get(4))),
+					Integer.parseInt(splitMsg.get(5)),
+					Double.parseDouble(splitMsg.get(6)),
+					splitMsg.get(7),
+					splitMsg.get(8)
 					);
 		} catch (Exception e) {
 		  return false;
@@ -176,7 +176,7 @@ public class HLCServer {
 		return handler.setRequirement(req);
 	}
 	private String getTkts(List<String> splitMsg) {
-		ArraySet<ElectricityTicket> tickets = handler.getTickets(splitMsg.get(1));
+		ArraySet<ElectricityTicket> tickets = handler.getTickets(splitMsg.get(0));
 		String ret = "";
 		if (tickets != null)
 		{
@@ -200,7 +200,12 @@ public class HLCServer {
 	{
 		return b ? "SUCCESS" : "FAILURE";
 	}
-	
+	private Boolean updateSender()
+	{
+		//TODO: implement
+		return null;
+		
+	}
 	public boolean listen() throws IOException
 	{
 

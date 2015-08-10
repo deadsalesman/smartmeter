@@ -63,7 +63,7 @@ public class EDController
 			return devices.get(index).getState();
 		}
 		catch (IndexOutOfBoundsException e){
-			System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
 		}
 		return null;
 	}
@@ -97,7 +97,7 @@ public class EDController
 			return devices.get(index).getType();
 		}
 		catch (IndexOutOfBoundsException e){
-			System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
 		}
 		return null;
 	}
@@ -113,7 +113,7 @@ public class EDController
 			return true;
 		}
 		catch (IndexOutOfBoundsException e){
-			System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
 			return false;
 		}
 	}

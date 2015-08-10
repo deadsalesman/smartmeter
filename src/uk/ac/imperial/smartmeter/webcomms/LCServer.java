@@ -42,7 +42,7 @@ public class LCServer implements Runnable {
 	}
 	private String recvMsg(String msg) {
 		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
-		switch (splitMsg.get(0)) {
+		switch (splitMsg.get(1)) {
 		case ("ADV"): {
 			return findCompetingTickets(splitMsg);
 		}
@@ -59,7 +59,7 @@ public class LCServer implements Runnable {
 	}
 
 	private String register(List<String> splitMsg) {
-		UserAddress u = new UserAddress(splitMsg.get(1), splitMsg.get(2),Integer.parseInt(splitMsg.get(3)));
+		UserAddress u = new UserAddress(splitMsg.get(2), splitMsg.get(3),Integer.parseInt(splitMsg.get(4)));
 		
 		if (addresses.addUser(u))
 		{
@@ -71,25 +71,25 @@ public class LCServer implements Runnable {
 
 	private String considerOffer(List<String> splitMsg) {
 
-		String traderId = splitMsg.get(10);
+		String traderId = splitMsg.get(0);
         if (addresses.queryUserExists(traderId))
         {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		try {
 			ElectricityTicket newtkt = new ElectricityTicket(
-					df.parse(splitMsg.get(7)),
-					df.parse(splitMsg.get(8)),
-					Double.parseDouble(splitMsg.get(9)),
+					df.parse(splitMsg.get(9)),
+					df.parse(splitMsg.get(10)),
+					Double.parseDouble(splitMsg.get(11)),
 					traderId,
-					splitMsg.get(11),
-					splitMsg.get(12)
+					splitMsg.get(13),
+					splitMsg.get(14)
 					);
-			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(6));
+			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(7));
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
 			Double newUtility = evaluateUtility(newtkt, oldReq, oldtkt);
 			Double oldUtility = evaluateUtility(oldtkt, oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
-			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(4));
+			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(5));
 			
 			if (result)
 			{
@@ -177,13 +177,13 @@ public class LCServer implements Runnable {
 	private String findCompetingTickets(List<String> splitMsg) {
 
 		String ret = "FAILURE";
-		if (addresses.queryUserExists(splitMsg.get(6))) {
+		if (addresses.queryUserExists(splitMsg.get(7))) {
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			ElectricityRequirement req;
 			try {
-				req = new ElectricityRequirement(df.parse(splitMsg.get(1)), df.parse(splitMsg.get(2)), new DecimalRating(
-						Integer.parseInt(splitMsg.get(3))), Integer.parseInt(splitMsg.get(4)),
-						Double.parseDouble(splitMsg.get(5)), splitMsg.get(6), splitMsg.get(7));
+				req = new ElectricityRequirement(df.parse(splitMsg.get(2)), df.parse(splitMsg.get(3)), new DecimalRating(
+						Integer.parseInt(splitMsg.get(4))), Integer.parseInt(splitMsg.get(5)),
+						Double.parseDouble(splitMsg.get(6)), splitMsg.get(7), splitMsg.get(8));
 				ArraySet<ElectricityTicket> tickets = client.findCompetingTickets(req);
 
 				if (tickets != null) {

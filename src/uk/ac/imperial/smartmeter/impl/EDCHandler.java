@@ -10,20 +10,32 @@ public class EDCHandler {
 		controller = new EDController();
 	}
 	public Boolean getState(String deviceID)
-	{
-		return controller.getDeviceState(controller.getDeviceIndex(deviceID));
+ {
+		try {
+			return controller.getDeviceState(controller.getDeviceIndex(deviceID));
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
-	public Boolean setState(String deviceID, Boolean newState)
-	{
-		return controller.setDeviceState(controller.getDeviceIndex(deviceID), newState);
+
+	public Boolean setState(String deviceID, Boolean newState) {
+		try {
+			return controller.setDeviceState(controller.getDeviceIndex(deviceID), newState);
+		} catch (IndexOutOfBoundsException e) {
+			return false;
+		}
 	}
 	public Boolean addDevice(ElectronicDevice newDevice)
 	{
 		return controller.addDevice(newDevice);
 	}
 	public Boolean removeDevice(String deviceID)
-	{
-		return controller.removeDevice(controller.getDeviceIndex(deviceID));
+ {
+		try {
+			return controller.removeDevice(controller.getDeviceIndex(deviceID));
+		} catch (IndexOutOfBoundsException e) {
+			return false;
+		}
 	}
 	public ElectronicDevice getDevice(String deviceID)
 	{

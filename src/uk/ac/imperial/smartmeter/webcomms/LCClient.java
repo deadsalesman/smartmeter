@@ -88,10 +88,10 @@ public class LCClient{
 
 	public Boolean addDevice(Boolean state, Integer type, String deviceID)
 	{
-		String inputLine = "ADD," + Boolean.toString(state) + "," + Integer.toString(type) + "," + deviceID;
+		String inputLine = formatMessage("ADD" , Boolean.toString(state) ,Integer.toString(type) , deviceID);
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectEDC(input);
 			if (ret.get(0).equals("SUCCESS"))
@@ -104,10 +104,10 @@ public class LCClient{
 	}
 	public Boolean GodModeCalcTKTS()
 	{
-		String inputLine = "CAL,";
+		String inputLine = formatMessage("CAL");
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			   ArrayList<String> ret = connectHLC(input);
 			   if (ret.get(0).equals("SUCCESS"))
@@ -121,12 +121,12 @@ public class LCClient{
 	}
 	public ArraySet<ElectricityTicket> getTickets()
 	{
-		String inputLine = "TKT," +  userId;
+		String inputLine = formatMessage("TKT");
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		ArrayList<String> input = new ArrayList<String>();
 		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> msg = connectHLC(input);
 			if (!msg.get(0).equals("FAILURE"))
@@ -163,11 +163,11 @@ public class LCClient{
 	}
 	public Boolean setRequirement(ElectricityRequirement req)
 	{
-		String inputLine = "REQ," + req.toString();
+		String inputLine = formatMessage("REQ" , req.toString());
 				
 	    ArrayList<String> input = new ArrayList<String>();
 	    input.add(inputLine);
-	    input.add("END");
+	    end(input);
 	    try {
 		   ArrayList<String> ret = connectHLC(input);
 		   if (ret.get(0).equals("SUCCESS"))
@@ -180,10 +180,10 @@ public class LCClient{
 	}
 	public Boolean setState(String deviceID, Boolean val)
 	{
-		String inputLine = "SET," + deviceID + "," + Boolean.toString(val);
+		String inputLine = formatMessage("SET" ,deviceID , Boolean.toString(val));
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectEDC(input);
 			if (ret.get(0).equals("SUCCESS"))
@@ -194,12 +194,22 @@ public class LCClient{
 		}
 		return false;
 	}
+	public String formatMessage(String ... args)
+	{
+		String ret = userId + ",";
+		for (String s : args)
+		{
+			ret += s + ",";
+		}
+		
+		return ret;
+	}
 	public Boolean getState(String deviceID)
 	{
-		String inputLine = "GETS," + deviceID;
+		String inputLine = formatMessage("GETS",deviceID);
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectEDC(input);
 			switch(ret.get(0))
@@ -213,12 +223,17 @@ public class LCClient{
 		}
 		return null;
 	}
+	public ArrayList<String> end(ArrayList<String> s)
+	{
+		s.add(userId + "," + "END");
+		return s;
+	}
 	public Boolean removeDevice(String deviceID)
 	{
-		String inputLine = "REM," + deviceID;
+		String inputLine = formatMessage("REM",deviceID);
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectEDC(input);
 			if (ret.get(0).equals("SUCCESS"))
@@ -231,10 +246,10 @@ public class LCClient{
 	}
 
 	public Boolean registerUser(Double worth, Double generation, Double economic) {
-		String inputLine = "USR," +  handler.getSalt()+ ","+  handler.getHash() + "," + userId + "," +userName +  ","+worth+","+generation+","+economic+",";
+		String inputLine = formatMessage("USR",  handler.getSalt(), handler.getHash() , userId ,userName ,worth.toString(),generation.toString(),economic.toString());
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectHLC(input);
 			if (ret.get(0).equals("SUCCESS"))
@@ -251,10 +266,10 @@ public class LCClient{
 	}
 	public boolean wipe()
 	{
-		String inputLine = "DEL," + "drop";
+		String inputLine = formatMessage("DEL" , "drop");
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectHLC(input);
 			if (ret.get(0).equals("SUCCESS"))
@@ -266,10 +281,10 @@ public class LCClient{
 		return false;
 	}
 	public boolean setGeneration(ElectricityGeneration i) {
-		String inputLine = "GEN," + userId + "," + i.getMaxOutput();
+		String inputLine = formatMessage("GEN", userId , String.valueOf(i.getMaxOutput()));
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectHLC(input);
 			if (ret.get(0).equals("SUCCESS"))
@@ -282,10 +297,10 @@ public class LCClient{
 	}
 
 	public boolean queryUserExists() {
-		String inputLine = "XST," + userName;
+		String inputLine = formatMessage("XST",userName);
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectHLC(input);
 			return (ret.get(0).equals("SUCCESS"));
@@ -295,10 +310,10 @@ public class LCClient{
 	}
 
 	public String getRegisteredUUID() {
-		String inputLine = "GID," + userName;
+		String inputLine = formatMessage("GID", userName);
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		try {
 			ArrayList<String> ret = connectHLC(input);
 		    return ret.get(0);
@@ -312,12 +327,12 @@ public class LCClient{
 	}
 
 	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
-		String inputLine = "ADV," + req.toString();
+		String inputLine = formatMessage("ADV" , req.toString());
 		ArrayList<String> input = new ArrayList<String>();
 		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		ArrayList<String> msg;
 		try {
 			msg = connectClient(input, location, port);
@@ -342,10 +357,10 @@ public class LCClient{
 		return output;
 	}
 	public boolean offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) {
-		String inputLine = "OFR," + tktOld.toString() + tktNew.toString();
+		String inputLine = formatMessage("OFR" , tktOld.toString() , tktNew.toString());
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		ArrayList<String> msg;
 		try {
 			msg = connectClient(input, location, port);
@@ -365,10 +380,10 @@ public class LCClient{
 	}
 	public Boolean registerClient(String location, int port, int ownPort)
 	{
-		String inputLine = "REG," + userId + "," + "localHost," + ownPort + ",";
+		String inputLine = formatMessage("REG" , userId , "localHost" , String.valueOf(ownPort));
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		ArrayList<String> msg;
 		try {
 			msg = connectClient(input, location, port);
@@ -402,10 +417,10 @@ public class LCClient{
 	}
 	public Boolean modifyTicket(String type,ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt)
 	{
-		String inputLine = type + "," + tkt.toString() + req.toString() + oldtkt.toString();
+		String inputLine = formatMessage(type,  tkt.toString() , req.toString() , oldtkt.toString());
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
-		input.add("END");
+		end(input);
 		ArrayList<String> msg;
 		try {
 			msg = connectHLC(input);

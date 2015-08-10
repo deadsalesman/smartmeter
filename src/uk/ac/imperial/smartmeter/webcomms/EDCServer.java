@@ -26,25 +26,25 @@ public class EDCServer{
 	{
 		return handler.addDevice(
 				new ElectronicDevice(
-						Boolean.parseBoolean(splitMsg.get(1)),
-						Integer.parseInt(splitMsg.get(2)),
-						splitMsg.get(3)
+						Boolean.parseBoolean(splitMsg.get(2)),
+						Integer.parseInt(splitMsg.get(3)),
+						splitMsg.get(4)
 						));
 	}
 	private Boolean setState(List<String> splitMsg)
 	{
 		return handler.setState(
-				splitMsg.get(1),
-				Boolean.parseBoolean(splitMsg.get(2))
+				splitMsg.get(2),
+				Boolean.parseBoolean(splitMsg.get(3))
 				);
 	}
 	private Boolean getState(List<String> splitMsg)
 	{
-		return handler.getState(splitMsg.get(1));
+		return handler.getState(splitMsg.get(2));
 	}
 	private Boolean removeDevice(List<String> splitMsg)
 	{
-		return handler.removeDevice(splitMsg.get(1));
+		return handler.removeDevice(splitMsg.get(2));
 	}
 	private String boolToStr(Boolean b)
 	{
@@ -62,7 +62,7 @@ public class EDCServer{
 
 	private String getDevice(List<String> splitMsg) {
 		String ret = "";
-		ElectronicDevice ed = handler.getDevice(splitMsg.get(1));
+		ElectronicDevice ed = handler.getDevice(splitMsg.get(2));
 		if (ed!= null)
 		{
 			ret = ed.getState() + ","+ed.getType().ordinal()+","+ed.getId();
@@ -71,7 +71,7 @@ public class EDCServer{
 	}
 	private String recvMsg(String msg) {
 		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
-		switch (splitMsg.get(0)) {
+		switch (splitMsg.get(1)) {
 		case ("ADD"): {
 			return resultToStr(addDevice(splitMsg));
 		}
