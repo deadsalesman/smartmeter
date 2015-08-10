@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export CLASSPATH=/home/pi/smartmeter/smartmeter/bin
+export CLASSPATH="/home/pi/smartmeter/smartmeter/src/uk/ac/imperial/smartmeter/db/sqlite-jdbc-3.8.10.1.jar":$CLASSPATH
+

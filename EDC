@@ -1,0 +1,2 @@
+. ./updateCP
+java uk.ac.imperial.smartmeter.webcomms.EDContNode 7777
