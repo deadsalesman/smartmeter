@@ -226,6 +226,7 @@ public class LCServer implements Runnable {
 		return false;
 	}
 	public void start() {
+		System.out.println("Client server listening.");
 		if (t == null)
 	      {
 	         t = new Thread (this, client.handler.getId());

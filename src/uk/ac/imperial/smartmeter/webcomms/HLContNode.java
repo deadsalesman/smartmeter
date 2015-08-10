@@ -12,6 +12,7 @@ public class HLContNode {
 			System.exit(1);
 		}
 		client = new HLCServer(Integer.parseInt(args[0]));
+		System.out.println("High Level Server listening on" + args[0]);
 		while(client.listen()){}
 	}
 }
