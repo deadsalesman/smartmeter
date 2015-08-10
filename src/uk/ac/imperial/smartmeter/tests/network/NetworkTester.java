@@ -21,6 +21,7 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestExtendTicket());
 		testLog.add(new TestPracticalExtension());
 		testLog.add(new TestPracticalIntensify());
+		testLog.add(new TestQueryAddresses());
 		return reportLog();
 	}
 }

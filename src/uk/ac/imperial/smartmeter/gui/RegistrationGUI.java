@@ -8,13 +8,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
-import uk.ac.imperial.smartmeter.webcomms.LCClient;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class RegistrationGUI {
 	
 	String result;
 	
-	public RegistrationGUI(final LCClient lc){
+	public RegistrationGUI(final LCServer lc){
 	
 	final JFrame parent = new JFrame();
 	JButton button = new JButton();
@@ -26,10 +26,10 @@ public class RegistrationGUI {
 		public void actionPerformed(ActionEvent evt)
 		{
 			result = JOptionPane.showInputDialog(parent, "Please enter your password below.", null);
-			lc.registerUser(0.,0.,0.);
-			lc.setGeneration(new ElectricityGeneration(3.));
+			lc.client.registerUser(0.,0.,0.,lc.getPort());
+			lc.client.setGeneration(new ElectricityGeneration(3.));
 			parent.setVisible(false);
-			lc.queryUserExists();
+			lc.client.queryUserExists();
 		}
 	});
 	}

@@ -4,12 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.impl.HLCHandler;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -22,14 +27,17 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 public class HLCServer {
 	private int portNum;
 	private HLCHandler handler;
-	
+	private Map<String, InetSocketAddress> clients;
+	private InetAddress tempAddress;
 	public HLCServer(int parseInt) {
 		portNum = parseInt;
 		handler = new HLCHandler();
+		clients = new HashMap<String, InetSocketAddress>();
 	}
 	private String recvMsg(String msg)
 	{
 		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
+		updateSender(splitMsg.get(0));
 		switch (splitMsg.get(1)) {
 		case ("CAL"):
 		{
@@ -67,6 +75,10 @@ public class HLCServer {
 		{
 			return "CON";
 		}
+		case ("ADR"):
+		{
+			return getAddresses(splitMsg);
+		}
 		case ("TKT"):
 		{
 			return getTkts(splitMsg);
@@ -80,6 +92,18 @@ public class HLCServer {
 			return "NUL";
 		}
 		}
+	}
+	private String getAddresses(List<String> splitMsg) {
+		String ret = "";
+		if(clients.size()!=0)
+		{
+			ret = "SUCCESS,";
+			for (Entry<String, InetSocketAddress> e : clients.entrySet())
+			{
+				ret += e.getKey() + "," + e.getValue().getHostName() + "," + e.getValue().getPort() + ",";
+			}
+		}
+		return ret;
 	}
 	private String modifyTicket(List<String> splitMsg)
 	{
@@ -147,6 +171,7 @@ public class HLCServer {
 	}
 	private Boolean registerUserAgent(List<String> splitMsg) {
 		// TODO Verify user
+		clients.put(splitMsg.get(0), new InetSocketAddress(tempAddress,Integer.parseInt(splitMsg.get(9))));
 		return handler.addUserAgent(new UserAgent(
 				splitMsg.get(2),
 				splitMsg.get(3),
@@ -200,10 +225,16 @@ public class HLCServer {
 	{
 		return b ? "SUCCESS" : "FAILURE";
 	}
-	private Boolean updateSender()
+	private Boolean updateSender(String user)
 	{
-		//TODO: implement
-		return null;
+		Boolean ret = false;
+		if (clients.containsKey(user))
+		{
+			clients.put(user, new InetSocketAddress(tempAddress,clients.get(user).getPort()));
+			return true;
+		}
+		
+		return ret;
 		
 	}
 	public boolean listen() throws IOException
@@ -221,11 +252,12 @@ public class HLCServer {
         ) {
          
             String inputLine, outputLine;
-             
+             tempAddress = clientSocket.getInetAddress();
             while ((inputLine = in.readLine()) != null) {
                 outputLine = recvMsg(inputLine);
                 out.println(outputLine);
                 if (outputLine.equals("NUL"))
+                	tempAddress = null;
                     return true;
             }
         } catch (IOException e) {

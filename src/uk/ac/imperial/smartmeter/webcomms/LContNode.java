@@ -48,9 +48,9 @@ public class LContNode {
 	public static Boolean removeDevice(String id) {
 		return client.removeDevice(id);
 	}
-	public static Boolean registerUser(Double worth, Double generation, Double economic)
+	public static Boolean registerUser(Double worth, Double generation, Double economic, int port)
 	{
-		return client.registerUser(worth, generation, economic);
+		return client.registerUser(worth, generation, economic, port);
 	}
 	public static Boolean setRequirement(ElectricityRequirement req) {
 		return client.setRequirement(req);

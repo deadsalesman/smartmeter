@@ -22,12 +22,12 @@ public class TestComplexTickets extends GenericTest {
 
 		aClient.wipe();
 		
-		aClient.registerUser(0.,10.,0.);
-		bClient.registerUser(0.,10.,0.);
-		cClient.registerUser(0.,10.,0.);
-		dClient.registerUser(0.,10.,0.);
-		eClient.registerUser(0.,10.,0.);
-		fClient.registerUser(0.,10.,0.);
+		aClient.registerUser(0.,10.,0.,8000);
+		bClient.registerUser(0.,10.,0.,8000);
+		cClient.registerUser(0.,10.,0.,8000);
+		dClient.registerUser(0.,10.,0.,8000);
+		eClient.registerUser(0.,10.,0.,8000);
+		fClient.registerUser(0.,10.,0.,8000);
 		
 		TicketTestHelper.bindRequirement(aClient,1.1, 6.3, 4,3.);
 		TicketTestHelper.bindRequirement(aClient,1.1, 6.3, 4,3.);

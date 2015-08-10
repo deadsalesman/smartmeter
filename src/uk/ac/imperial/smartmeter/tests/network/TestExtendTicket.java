@@ -20,7 +20,7 @@ public class TestExtendTicket extends GenericTest {
 		aClient.start();
 		
 		String locationOfB = "localHost";
-		aClient.client.registerUser(0.,10.,0.);
+		aClient.client.registerUser(0.,10.,0.,aClient.getPort());
 		
 		TicketTestHelper.bindRequirement(aClient.client,6.1, 9.3, 4,3.);
 		

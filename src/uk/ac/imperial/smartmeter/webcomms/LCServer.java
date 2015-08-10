@@ -36,6 +36,10 @@ public class LCServer implements Runnable {
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
 		addresses = new UserAddressBook();
 	}
+	public Integer getPort()
+	{
+		return portNum;
+	}
 	public void close()
 	{
 		active = false;

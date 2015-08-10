@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
@@ -12,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -245,8 +247,8 @@ public class LCClient{
 		return false;
 	}
 
-	public Boolean registerUser(Double worth, Double generation, Double economic) {
-		String inputLine = formatMessage("USR",  handler.getSalt(), handler.getHash() , userId ,userName ,worth.toString(),generation.toString(),economic.toString());
+	public Boolean registerUser(Double worth, Double generation, Double economic, int port) {
+		String inputLine = formatMessage("USR",  handler.getSalt(), handler.getHash() , userId ,userName ,worth.toString(),generation.toString(),economic.toString(),String.valueOf(port));
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
 		end(input);
@@ -451,5 +453,32 @@ public class LCClient{
 	}
 	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
 		return modifyTicket("INT",tkt,req,oldtkt);
+	}
+	public HashMap<String, InetSocketAddress> getPeers() {
+		String inputLine = formatMessage("ADR");
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		end(input);
+		ArrayList<String> msg;
+		HashMap<String, InetSocketAddress> ret = null;
+		try {
+			msg = connectHLC(input);
+			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			if (splitMsg.get(0).equals("SUCCESS")) {
+				ret = new HashMap<String, InetSocketAddress>();
+				int size = splitMsg.size() / 3;
+				int offset = 0;
+				for (int i = 0; i < size; i++) {
+					try {
+						ret.put(splitMsg.get(1+offset), new InetSocketAddress(splitMsg.get(2+offset), Integer.parseInt(splitMsg.get(3+offset))));
+					} catch (Exception e) {
+						System.out.println("Invalid address");
+					}
+					offset += 3;
+				}
+			}
+		} catch (IOException e1) {
+		} 
+		return ret;
 	}
 }

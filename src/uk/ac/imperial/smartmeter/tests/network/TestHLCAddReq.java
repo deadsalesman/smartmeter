@@ -26,7 +26,7 @@ public class TestHLCAddReq extends GenericTest {
 					UUID.randomUUID().toString()
 					);
 			
-			elsie.registerUser(0.,0.,0.);
+			elsie.registerUser(0.,0.,0.,8000);
 			return elsie.setRequirement(e);
 			
 	}

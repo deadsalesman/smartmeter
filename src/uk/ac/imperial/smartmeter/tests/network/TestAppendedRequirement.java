@@ -15,7 +15,7 @@ public class TestAppendedRequirement extends GenericTest {
 		String t = UUID.randomUUID().toString();
 		LCClient elsie = new LCClient("localHost", 9002, "localHost", 9001,t,"");
 
-		elsie.registerUser(0.,10.,0.);
+		elsie.registerUser(0.,10.,0.,8999);
 		TicketTestHelper.bindRequirement(elsie,1.1, 6.3, 4,3.);
 		elsie.GodModeCalcTKTS();
 		ArraySet<ElectricityTicket> tkt1 = elsie.getTickets();

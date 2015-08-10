@@ -19,7 +19,7 @@ public class TestPushGeneration extends GenericTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		LContNode.registerUser(0.,0.,0.);
+		LContNode.registerUser(0.,0.,0.,8000);
 		return LContNode.setGeneration(new ElectricityGeneration(10.));
 		
 	}

@@ -21,7 +21,7 @@ import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.DeviceType;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.webcomms.LCClient;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class ViewManager extends JPanel implements ActionListener{
 
@@ -42,27 +42,27 @@ public class ViewManager extends JPanel implements ActionListener{
 	private JComboBox<Integer> endDay;
 	private JComboBox<String> devices;
 	private JButton submit;
-	private LCClient client;
+	private LCServer server;
 	private String userName;
-	public ViewManager(String user, LCClient lc)
+	public ViewManager(String user, LCServer lc)
 	{
 		userName = user;
-		client = lc;
+		server = lc;
 		initialiseReqComponents();
 		setupView();
-		if (!client.queryUserExists())
+		if (!server.client.queryUserExists())
 		{
 			promptRegistration();
 		}
 		else
 		{
-			lc.setID(UUID.fromString(client.getRegisteredUUID()));
+			lc.client.setID(UUID.fromString(server.client.getRegisteredUUID()));
 		}
 		
 		
 	}
 	private void promptRegistration() {
-		RegistrationGUI rG = new RegistrationGUI(client);
+		RegistrationGUI rG = new RegistrationGUI(server);
 	}
 	private void initialiseReqComponents() {
 		// TODO Auto-generated method stub
@@ -197,11 +197,11 @@ public class ViewManager extends JPanel implements ActionListener{
 				new DecimalRating((Integer)9),
 				DeviceType.valueOf(devices.getSelectedItem().toString()).ordinal(),
 				new Double(3.),
-				client.getId()
+				server.client.getId()
 				);
 
-		client.setRequirement(er);
-		ArraySet<ElectricityTicket> tkt = client.getTickets();
+		server.client.setRequirement(er);
+		ArraySet<ElectricityTicket> tkt = server.client.getTickets();
 		
 		GroupLayout gl = new GroupLayout(this);
 		this.setLayout(gl);

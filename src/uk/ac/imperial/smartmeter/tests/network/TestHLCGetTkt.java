@@ -25,7 +25,7 @@ public class TestHLCGetTkt extends GenericTest {
 				elsie.getId(),
 				UUID.randomUUID().toString()
 				);
-		elsie.registerUser(0.,10.,0.);
+		elsie.registerUser(0.,10.,0.,8000);
 		elsie.setRequirement(e);
 		elsie.GodModeCalcTKTS();
 		ArraySet<ElectricityTicket> tkt = elsie.getTickets();

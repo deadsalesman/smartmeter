@@ -17,7 +17,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import uk.ac.imperial.smartmeter.webcomms.LCClient;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class MainGUIClass extends JPanel
 
@@ -46,7 +46,7 @@ implements ActionListener {
 		super(new BorderLayout());
 
 		// Create the toolbar.
-		LCClient lc = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4], args[5]);
+		LCServer lc = new LCServer(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), Integer.parseInt(args[4]), args[5],args[6]);
 		view = new ViewManager(args[4],lc);
 		menu = new MenuManager(view);
 		//JToolBar toolBar = new JToolBar("Still draggable");
@@ -268,8 +268,8 @@ implements ActionListener {
 		// Schedule a job for the event dispatch thread:
 
 		// creating and showing this application's GUI.
-		if (args.length != 5) {
-			System.err.println("Usage: java LContNode <host name> <port number> <host name> <port number> <username>");
+		if (args.length != 6) {
+			System.err.println("Usage: java LContNode <host name> <port number> <host name> <port number> <username> <own port number>");
 			System.exit(1);
 		}
 		SwingUtilities.invokeLater(new Runnable() {

@@ -23,8 +23,8 @@ public class TestFavourExchange extends GenericTest {
 		
 		String locationOfB = "localHost";
 		int portOfB = 9003;
-		aClient.client.registerUser(0.,10.,0.);
-		bClient.client.registerUser(0.,10.,0.);
+		aClient.client.registerUser(0.,10.,0.,aClient.getPort());
+		bClient.client.registerUser(0.,10.,0.,bClient.getPort());
 		
 		TicketTestHelper.bindRequirement(aClient.client,1.1, 6.3, 4,3.);
 		TicketTestHelper.bindRequirement(bClient.client,1.1, 6.3, 4,3.);
