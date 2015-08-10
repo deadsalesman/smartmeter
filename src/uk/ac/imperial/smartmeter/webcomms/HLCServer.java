@@ -29,10 +29,12 @@ public class HLCServer {
 	private HLCHandler handler;
 	private Map<String, InetSocketAddress> clients;
 	private InetAddress tempAddress;
-	public HLCServer(int parseInt) {
+	private Boolean verbose;
+	public HLCServer(int parseInt, Boolean verb) {
 		portNum = parseInt;
 		handler = new HLCHandler();
 		clients = new HashMap<String, InetSocketAddress>();
+		verbose = verb;
 	}
 	private String recvMsg(String msg)
 	{
@@ -256,6 +258,11 @@ public class HLCServer {
             while ((inputLine = in.readLine()) != null) {
                 outputLine = recvMsg(inputLine);
                 out.println(outputLine);
+                if (verbose)
+                {
+                	System.out.println("Input: " +inputLine);
+                	System.out.println("Output: " + outputLine);
+                }
                 if (outputLine.equals("NUL"))
                 	tempAddress = null;
                     return true;

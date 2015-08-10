@@ -2,7 +2,6 @@ package uk.ac.imperial.smartmeter.tests.network;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
@@ -18,11 +17,11 @@ public class TestQueryAddresses extends GenericTest {
 		aClient.client.registerUser(1., 2., 3., port);
 		HashMap<String, InetSocketAddress> ret = aClient.client.getPeers();
 		
-		for (Entry<String, InetSocketAddress> e : ret.entrySet())
+		/*for (Entry<String, InetSocketAddress> e : ret.entrySet())
 		{
 			System.out.println(e.getKey());
 			System.out.println(e.getValue());
-		}
+		}*/
 		InetSocketAddress exists = ret.get(aClient.client.getId());
 		return ret.get(aClient.client.getId()).getPort()==port;
 	}
