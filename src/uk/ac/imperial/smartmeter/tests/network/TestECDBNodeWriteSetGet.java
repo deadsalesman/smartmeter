@@ -14,7 +14,7 @@ public class TestECDBNodeWriteSetGet extends GenericTest {
 	        String[] parameters_lc = {DefaultTestClient.ipAddr, String.valueOf(DefaultTestClient.EDCPort), DefaultTestClient.ipAddr,String.valueOf(DefaultTestClient.HLCPort),UUID.randomUUID().toString(),""};
 			try {
 				LContNode.main(parameters_lc);
-				LContNode.addDevice(true, 1, t);
+				LContNode.addDevice(true, 1, t,3);
 				LContNode.setState(t, false);
 				return (LContNode.getState(t)==false);
 				

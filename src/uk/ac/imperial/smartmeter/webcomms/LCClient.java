@@ -98,9 +98,9 @@ public class LCClient{
 		return handler.findCompetingTickets(req);
 	}
 
-	public Boolean addDevice(Boolean state, Integer type, String deviceID)
+	public Boolean addDevice(Boolean state, Integer type, String deviceID, Integer pin)
 	{
-		String inputLine = formatMessage("ADD" , Boolean.toString(state) ,Integer.toString(type) , deviceID);
+		String inputLine = formatMessage("ADD" , Boolean.toString(state) ,Integer.toString(type) , deviceID, Integer.toString(pin));
 		ArrayList<String> input = new ArrayList<String>();
 		input.add(inputLine);
 		end(input);

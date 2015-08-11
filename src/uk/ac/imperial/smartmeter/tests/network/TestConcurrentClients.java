@@ -16,8 +16,8 @@ public class TestConcurrentClients extends GenericTest {
 		LCClient d = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,c,"");
 		
 		try {
-			b.addDevice(true, 1, a);
-			d.addDevice(true, 1, c);
+			b.addDevice(true, 1, a, 3);
+			d.addDevice(true, 1, c, 5);
 			b.setState(a, false);
 			d.setState(c, false);
 			return ((b.getState(a)==false) && (d.getState(c)==false));

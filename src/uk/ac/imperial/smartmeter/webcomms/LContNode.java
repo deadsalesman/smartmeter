@@ -32,8 +32,8 @@ public class LContNode {
 	{
 		return client.getId();
 	}
-	public static Boolean addDevice(boolean b, int i, String id) {
-		return client.addDevice(b, i, id);
+	public static Boolean addDevice(Boolean b, Integer i, String id, Integer pin) {
+		return client.addDevice(b, i, id, pin);
 	}
 
 	public static Boolean getState(String id) {
