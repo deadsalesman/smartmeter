@@ -14,7 +14,7 @@ public class TestECDBNodeRemove extends GenericTest {
 	        String[] parameters_lc = {DefaultTestClient.ipAddr, String.valueOf(DefaultTestClient.EDCPort), DefaultTestClient.ipAddr,String.valueOf(DefaultTestClient.HLCPort),UUID.randomUUID().toString(),""};
 			try {
 				LContNode.main(parameters_lc);
-				LContNode.addDevice(true, 1, t);
+				LContNode.addDevice(true, 1, t,3);
 				Boolean temp1 = LContNode.getState(t);
 				LContNode.removeDevice(t);
 				Boolean temp2 = LContNode.getState(t);

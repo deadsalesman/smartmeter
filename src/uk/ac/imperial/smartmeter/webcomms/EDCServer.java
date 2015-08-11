@@ -30,7 +30,9 @@ public class EDCServer{
 						Boolean.parseBoolean(splitMsg.get(2)),
 						Integer.parseInt(splitMsg.get(3)),
 						splitMsg.get(4)
-						));
+						), 
+						Integer.parseInt(splitMsg.get(5))
+						);
 	}
 	private Boolean setState(List<String> splitMsg)
 	{

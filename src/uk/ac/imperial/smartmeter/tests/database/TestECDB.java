@@ -15,10 +15,10 @@ public class TestECDB extends GenericTest {
 		
 		EDController b = new EDController();
 		
-		b.addDevice(new ElectronicDevice(true,0));
-		b.addDevice(new ElectronicDevice(true,1));
-		b.addDevice(new ElectronicDevice(true,2));
-		b.addDevice(new ElectronicDevice(true,3));
+		b.addDevice(new ElectronicDevice(true,0),3);
+		b.addDevice(new ElectronicDevice(true,1),5);
+		b.addDevice(new ElectronicDevice(true,2),7);
+		b.addDevice(new ElectronicDevice(true,3),8);
 		b.pushToDB();
 		
 		DeviceType t = DeviceType.LED;

@@ -13,7 +13,7 @@ public class TestECDBNode extends GenericTest {
 		String[] parameters_lc = {DefaultTestClient.ipAddr, String.valueOf(DefaultTestClient.EDCPort), DefaultTestClient.ipAddr,String.valueOf(DefaultTestClient.HLCPort),UUID.randomUUID().toString(),""};
 		try {
 			LContNode.main(parameters_lc);
-			return LContNode.addDevice(true, 1, UUID.randomUUID().toString());
+			return LContNode.addDevice(true, 1, UUID.randomUUID().toString(),3);
 		} catch (Exception e) {
 		}
 		

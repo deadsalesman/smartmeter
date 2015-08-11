@@ -25,9 +25,9 @@ public class EDCHandler {
 			return false;
 		}
 	}
-	public Boolean addDevice(ElectronicDevice newDevice)
+	public Boolean addDevice(ElectronicDevice newDevice, Integer pin)
 	{
-		return controller.addDevice(newDevice);
+		return controller.addDevice(newDevice, pin);
 	}
 	public Boolean removeDevice(String deviceID)
  {
