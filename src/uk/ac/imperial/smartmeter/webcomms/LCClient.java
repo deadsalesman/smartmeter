@@ -32,6 +32,10 @@ public class LCClient{
 	public LCHandler handler;
 	private String userId; 
 	private String userName;
+	public boolean newReqs;
+	public boolean newTickets;
+	public boolean unHappyTkts;
+	public ArraySet<ElectricityTicket> unhappyTickets;
 	
 	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name,String password) {
 		eDCHost = eDCHostName;

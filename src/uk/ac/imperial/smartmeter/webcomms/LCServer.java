@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,14 +29,24 @@ public class LCServer implements Runnable {
 	private boolean amplitudeModifiable = false;
 	Boolean active = true;
 	Thread t;
+	private int pollingTime;
+	private int interval;
+	private int timeSinceLastTickets;
+	private int timeSinceLastBulletin;
+	private Bulletin bulletin;
+	private Boolean testing;
 	public void setTicketDurationModifiable(Boolean t)
 	{
 		durationModifiable = t;
 	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
+		this(eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,  name, password, true);
+	}
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password, Boolean test) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
 		addresses = new UserAddressBook();
+		testing = test;
 	}
 	public Integer getPort()
 	{
@@ -236,13 +248,76 @@ public class LCServer implements Runnable {
 	@Override
 	public void run() {
 		try {
-			while(listen()&&active){}
+
+			int reasonableBulletinTime = 100;
+			int reasonableTicketTime = 100;
+			int attempts = 3;
+			
+			while(listen()&&active&&!testing)
+			{/*
+				if (interval > pollingTime)
+				{
+					interval = 0;
+				if (client.newReqs&&(timeSinceLastTickets>reasonableTicketTime))
+				{
+					//attempt to get tickets from the central server
+					client.getTickets();
+					if (client.newTickets)
+					{
+					timeSinceLastTickets = 0;
+					}
+					else
+					{
+						timeSinceLastTickets += pollingTime;
+					}
+				}
+				if (timeSinceLastBulletin > reasonableBulletinTime)
+				{
+					timeSinceLastBulletin = requestBulletin() ? 0 : (timeSinceLastBulletin + pollingTime);
+				}
+				if (client.unHappyTkts)
+				{
+					//attempt to exchange tickets with other clients
+					for (ElectricityTicket t : client.unhappyTickets)
+					{
+						int i = 0;
+						Boolean successfulTrade = false;
+						while (i < attempts && !successfulTrade)
+						{
+							InetSocketAddress addr = bulletin.getNextAddress();
+							String location = addr.getHostName();
+							int port = addr.getPort();
+						ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, client.handler.findMatchingRequirement(t));
+						for (ElectricityTicket e : tkts)
+						{
+						successfulTrade = client.offer(location, port, t, e);
+						}
+						}
+					}
+				}
+				}
+				else
+				{
+					interval ++;
+				}*/
+				
+				
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	private Boolean requestBulletin() {
+		HashMap<String, InetSocketAddress> x = client.getPeers();
+		if (x!=null)
+		{
+			bulletin.set(client.getPeers());
+			return true;
+		}
+		return false;
+	}
 	public Boolean registerClient(String locationOfB, int portOfB) {
 		return client.registerClient(locationOfB, portOfB, portNum);
 	}

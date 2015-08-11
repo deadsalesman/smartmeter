@@ -18,8 +18,9 @@ public class TestECDBNodeRemove extends GenericTest {
 				Boolean temp1 = aClient.client.getState(t);
 				aClient.client.removeDevice(t);
 				Boolean temp2 = aClient.client.getState(t);
+				Boolean temp3 = aClient.client.addDevice(false, 1, t,3);
 				aClient.client.wipeEDC();
-				return ((temp1 != null) &&(temp2==null));
+				return (temp1 &&(temp2==null) && temp3);
 	}
 
 }
