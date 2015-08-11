@@ -87,6 +87,9 @@ public class EDCServer{
 		case ("GETS"): {
 			return boolToStr(getState(splitMsg));
 		}
+		case ("DEL"): {
+			return boolToStr(wipe());
+		}
 		case ("GETD"): {
 			return getDevice(splitMsg);
 		}
@@ -96,6 +99,9 @@ public class EDCServer{
 		}
 	}
 
+	private Boolean wipe() {
+		return handler.wipe();
+	}
 	public Boolean listen() throws IOException {
 
 		try (ServerSocket serverSocket = new ServerSocket(portNum);

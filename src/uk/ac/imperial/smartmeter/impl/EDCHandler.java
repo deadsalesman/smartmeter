@@ -41,4 +41,7 @@ public class EDCHandler {
 	{
 		return controller.getDevice(deviceID);
 	}
+	public Boolean wipe() {
+		return controller.wipe();
+	}
 }

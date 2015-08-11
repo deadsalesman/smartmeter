@@ -35,7 +35,7 @@ public class TestExtendTicket extends GenericTest {
 		ElectricityTicket dummy = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
 		aClient.client.extendTicket(a.get(0),req,dummy);
 		
-		aClient.client.wipe();
+		aClient.client.wipeHLC();
 		aClient.close();
 		double o = a.get(0).getDuration();
 		double e = req.getDuration();

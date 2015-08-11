@@ -31,29 +31,31 @@ public class EDController
 		devices = new ArraySet<ElectronicDevice>();
 		db = new DevicesDBManager("jdbc:sqlite:edc.db");
 		pinouts = new HashMap<ElectronicDevice, Integer>();
-		availablePins = new HashSet<Integer>();
+		availablePins = setAvailablePins();
 		pullFromDB();
 		setAvailablePins();
 	}
-	private void setAvailablePins()
+	private Set<Integer> setAvailablePins()
 	{
-		availablePins.add(3);
-		availablePins.add(5);
-		availablePins.add(7);
-		availablePins.add(8);
-		availablePins.add(10);
-		availablePins.add(11);
-		availablePins.add(12);
-		availablePins.add(13);
-		availablePins.add(15);
-		availablePins.add(16);
-		availablePins.add(18);
-		availablePins.add(19);
-		availablePins.add(21);
-		availablePins.add(22);
-		availablePins.add(23);
-		availablePins.add(24);
-		availablePins.add(26);
+		HashSet<Integer> pins = new HashSet<Integer>();
+		pins.add(3);
+		pins.add(5);
+		pins.add(7);
+		pins.add(8);
+		pins.add(10);
+		pins.add(11);
+		pins.add(12);
+		pins.add(13);
+		pins.add(15);
+		pins.add(16);
+		pins.add(18);
+		pins.add(19);
+		pins.add(21);
+		pins.add(22);
+		pins.add(23);
+		pins.add(24);
+		pins.add(26);
+		return pins;
 		
 	}
 	public String getId()
@@ -109,6 +111,14 @@ public class EDController
 			}
 		}
 		return false;
+	}
+	public Boolean wipe()
+	{
+		db.wipe();
+		devices = new ArraySet<ElectronicDevice>();
+		pinouts = new HashMap<ElectronicDevice, Integer>();
+		availablePins = setAvailablePins();
+		return true;
 	}
    public Boolean removeDevice(int index)
    {

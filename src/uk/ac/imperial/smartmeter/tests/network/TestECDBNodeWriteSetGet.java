@@ -16,7 +16,9 @@ public class TestECDBNodeWriteSetGet extends GenericTest {
 				DefaultTestClient.HLCPort, 9003, TicketTestHelper.user1, "");
 		aClient.client.addDevice(true, 1, t, 3);
 		aClient.client.setState(t, false);
-		return (aClient.client.getState(t) == false);
+		Boolean ret = (aClient.client.getState(t) == false);
+		aClient.client.wipeEDC();
+		return ret;
 	}
 
 }

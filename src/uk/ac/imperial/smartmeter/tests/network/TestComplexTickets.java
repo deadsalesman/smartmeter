@@ -21,7 +21,7 @@ public class TestComplexTickets extends GenericTest {
 		LCClient eClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user5,"");
 		LCClient fClient = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,TicketTestHelper.user6,"");
 
-		aClient.wipe();
+		aClient.wipeHLC();
 		
 		aClient.registerUser(0.,10.,0.,8000);
 		bClient.registerUser(0.,10.,0.,8000);
@@ -61,7 +61,7 @@ public class TestComplexTickets extends GenericTest {
 		ArraySet<ElectricityTicket> tktsA = aClient.getTickets();
 		
 
-		aClient.wipe();
+		aClient.wipeHLC();
 		return (tktsA.getSize()==3);
 	}
 

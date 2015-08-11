@@ -276,7 +276,23 @@ public class LCClient{
 	public String getId() {
 		return userId;
 	}
-	public boolean wipe()
+	public boolean wipeEDC()
+	{
+		String inputLine = formatMessage("DEL" , "drop");
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		end(input);
+		try {
+			ArrayList<String> ret = connectEDC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+	public boolean wipeHLC()
 	{
 		String inputLine = formatMessage("DEL" , "drop");
 		ArrayList<String> input = new ArrayList<String>();
