@@ -65,7 +65,7 @@ public class LCClient{
 			while ((fromServer = in.readLine()) != null) {
 				ret.add(fromServer);
 				try {
-					Thread.sleep(15); //Hacky solution to RPI being slow. 
+					Thread.sleep(30); //Hacky solution to RPI being slow. 
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
