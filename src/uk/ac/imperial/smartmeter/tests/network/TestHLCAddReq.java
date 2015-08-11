@@ -28,7 +28,10 @@ public class TestHLCAddReq extends GenericTest {
 					);
 			
 			elsie.registerUser(0.,0.,0.,8000);
-			return elsie.setRequirement(e);
+			Boolean ret = elsie.setRequirement(e);
+			
+			elsie.wipeAll();
+			return ret;
 			
 	}
 

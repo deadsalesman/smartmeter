@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.tests.allocator.AllocatorTester;
+import uk.ac.imperial.smartmeter.tests.autonomous.AutonTester;
 import uk.ac.imperial.smartmeter.tests.database.DBTester;
 import uk.ac.imperial.smartmeter.tests.network.NetworkTester;
 
@@ -15,6 +16,7 @@ public static void main(String[] args)
 	addToLog(new DBTester());
 	addToLog(new AllocatorTester());
 	addToLog(new NetworkTester());
+	addToLog(new AutonTester());
 	
 	reportLog();
 }

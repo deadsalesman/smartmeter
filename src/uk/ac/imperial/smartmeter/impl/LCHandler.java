@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.impl;
 
+import java.util.ArrayList;
+
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -54,5 +56,15 @@ private LController controller;
 	public ArraySet<ElectricityTicket> getTkts()
 	{
 		return controller.getTkts();
+	}
+	public Boolean queryUnsatisfiedReqs() {
+		return controller.queryUnsatisfiedReqs();
+	}
+	public ArrayList<ElectricityTicket> getUnhappyTickets() {
+		
+		return controller.getUnhappyTickets();
+	}
+	public boolean queryUnhappyTickets() {
+		return controller.queryUnhappyTickets();
 	}
 }

@@ -20,7 +20,6 @@ public class TestExtendTicket extends GenericTest {
 		
 		aClient.start();
 		
-		String locationOfB = "localHost";
 		aClient.client.registerUser(0.,10.,0.,aClient.getPort());
 		
 		TicketTestHelper.bindRequirement(aClient.client,6.1, 9.3, 4,3.);
@@ -35,7 +34,7 @@ public class TestExtendTicket extends GenericTest {
 		ElectricityTicket dummy = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
 		aClient.client.extendTicket(a.get(0),req,dummy);
 		
-		aClient.client.wipeHLC();
+		aClient.client.wipeAll();
 		aClient.close();
 		double o = a.get(0).getDuration();
 		double e = req.getDuration();

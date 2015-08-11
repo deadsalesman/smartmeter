@@ -1,8 +1,9 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
 public class DefaultTestClient {
-	public static String ipAddr = "155.198.117.240";
-	public static int HLCPort = 6666;
-	public static int EDCPort = 7777;
+	public static Boolean localOverride = true;
+	public static String ipAddr = localOverride?"155.198.117.240":LocalTestClient.ipAddr;
+	public static int HLCPort = localOverride?6666:LocalTestClient.HLCPort;
+	public static int EDCPort = localOverride?7777:LocalTestClient.EDCPort;
 
 }

@@ -13,7 +13,7 @@ public class TestECDBNode extends GenericTest {
 	public boolean doTest(){
 		 LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort, 9003, TicketTestHelper.user1,"");
 		 Boolean ret = aClient.client.addDevice(true, 1, UUID.randomUUID().toString(),11);
-		 aClient.client.wipeEDC();
+		 aClient.client.wipeAll();
 		 return ret;
 	}
 

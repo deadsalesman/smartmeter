@@ -53,7 +53,7 @@ public class TestPracticalIntensify extends GenericTest {
 		
 		Boolean temp2 = (e.get(0).getId().equals(bID.toString()))&&(f.get(0).getId().equals(aID.toString()));
 		
-		aClient.client.wipeHLC();
+		aClient.client.wipeAll();
 		aClient.close();
 		bClient.close();
 		return temp1&&temp2;

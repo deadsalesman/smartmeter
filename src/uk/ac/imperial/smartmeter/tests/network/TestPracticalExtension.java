@@ -16,9 +16,11 @@ public class TestPracticalExtension extends GenericTest {
 	public boolean doTest() {
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9010,TicketTestHelper.user1,"");
 		LCServer bClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9011,TicketTestHelper.user2,"");
-		
+
 		aClient.start();
 		bClient.start();
+
+		aClient.client.wipeAll();
 		
 		String locationOfB = "localHost";
 		int portOfB = 9011;
@@ -53,7 +55,7 @@ public class TestPracticalExtension extends GenericTest {
 		
 		Boolean temp2 = (e.get(0).getId().equals(bID.toString()))&&(f.get(0).getId().equals(aID.toString()));
 		
-		aClient.client.wipeHLC();
+		aClient.client.wipeAll();
 		aClient.close();
 		bClient.close();
 		return temp1&&temp2;

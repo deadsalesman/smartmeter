@@ -32,10 +32,6 @@ public class LCClient{
 	public LCHandler handler;
 	private String userId; 
 	private String userName;
-	public boolean newReqs;
-	public boolean newTickets;
-	public boolean unHappyTkts;
-	public ArraySet<ElectricityTicket> unhappyTickets;
 	
 	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name,String password) {
 		eDCHost = eDCHostName;
@@ -46,12 +42,23 @@ public class LCClient{
 		handler = new LCHandler(name,password,0.,0.,0.); //TODO: make not naughty. 
 		userId = handler.getId();
 	}
+	public boolean queryUnhappyTickets()
+	{
+		return handler.queryUnhappyTickets();
+	}
+	public ArrayList<ElectricityTicket> getUnhappyTickets()
+	{
+		return handler.getUnhappyTickets();
+	}
 	public ArrayList<String> connectEDC(String input) throws IOException {
 		ArrayList<String> inputArr = new ArrayList<String>();
 		inputArr.add(input);
 		return connectEDC(inputArr);
 	}
-
+	public Boolean queryUnsatisfiedReqs()
+	{
+		return handler.queryUnsatisfiedReqs();
+	}
 	public ArrayList<String> connectServer(ArrayList<String> input, String host, int port) throws IOException {
 		ArrayList<String> ret =  new ArrayList<String>();
 		try (Socket kkSocket = new Socket();) {
@@ -69,7 +76,7 @@ public class LCClient{
 			while ((fromServer = in.readLine()) != null) {
 				ret.add(fromServer);
 				try {
-					Thread.sleep(30); //Hacky solution to RPI being slow. 
+					Thread.sleep(10); //Hacky solution to RPI being slow. 
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -280,6 +287,10 @@ public class LCClient{
 	public String getId() {
 		return userId;
 	}
+	public boolean wipeAll()
+	{
+		return wipeEDC()&&wipeHLC();
+	}
 	public boolean wipeEDC()
 	{
 		String inputLine = formatMessage("DEL" , "drop");
@@ -428,7 +439,7 @@ public class LCClient{
 		} 
 		return false;
 	}
-	public Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
+	public static Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
 		Double ret = 0.;
 		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.
 		//However, it is a good starting point. Propose adding a flexibility measure to requirements? Integrating may be tricky.

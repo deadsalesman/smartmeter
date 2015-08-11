@@ -12,6 +12,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.UserAgent;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 //LocalController
 public class LController {
@@ -19,6 +20,7 @@ public class LController {
 	public ReqsDBManager dbReq;
 	private double maxEleConsumption;
 	private UserAgent masterUser;
+	private ArrayList<ElectricityTicket> unhappyTickets;
 	
 	
 	public LController(String username,String password,Double social, Double generation, Double economic)
@@ -177,5 +179,30 @@ public class LController {
 			}
 		}
 		return null;
+	}
+	public Boolean queryUnsatisfiedReqs() {
+		Boolean ret = true;
+		
+		for (ElectricityTicket e : masterUser.getReqTktMap().values())
+		{
+			ret &= (e!=null);
+		}
+		
+		return ret;
+	}
+	public ArrayList<ElectricityTicket> getUnhappyTickets() {
+		return unhappyTickets;
+	}
+	public boolean queryUnhappyTickets() {
+		unhappyTickets = new ArrayList<ElectricityTicket>();
+		double threshold = 0.5;
+		for (Entry<ElectricityRequirement, ElectricityTicket> e : masterUser.getReqTktMap().entrySet())
+		{
+			if (LCServer.calcUtilityNoExtension(e.getValue(),e.getKey()) > threshold)
+			{
+				unhappyTickets.add(e.getValue());
+			}
+		}
+		return unhappyTickets.size()!=0;
 	}
 }

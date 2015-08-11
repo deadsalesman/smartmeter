@@ -28,7 +28,7 @@ public class TestRQDB extends GenericTest {
 
 		LController p = new LController(l.getSalt(),l.getHash(),l.getId(),"Samuel Jackson", 0., 0., 0.);
 
-		l.dbReq.genericDBUpdate("DROP TABLE REQUIREMENT_TABLE");
+		l.dbReq.wipe();
 		return (l.getReqCount()==p.getReqCount());
 	}
 

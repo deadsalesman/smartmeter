@@ -31,7 +31,9 @@ public class TestHLCGetTkt extends GenericTest {
 		elsie.GodModeCalcTKTS();
 		ArraySet<ElectricityTicket> tkt = elsie.getTickets();
 		try{
-		return (tkt.get(0).ownerID.toString().equals(elsie.getId()));
+		Boolean ret = tkt.get(0).ownerID.toString().equals(elsie.getId());
+		elsie.wipeAll();
+		return ret;
 		}
 		catch (NullPointerException ex){
 			return false;

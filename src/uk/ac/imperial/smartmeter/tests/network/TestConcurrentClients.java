@@ -20,7 +20,9 @@ public class TestConcurrentClients extends GenericTest {
 			d.addDevice(true, 1, c, 5);
 			b.setState(a, false);
 			d.setState(c, false);
-			return ((b.getState(a)==false) && (d.getState(c)==false));
+			Boolean e =  ((b.getState(a)==false) && (d.getState(c)==false));
+			b.wipeAll();
+			return e;
 			
 		} catch (Exception e) {
 			return false;

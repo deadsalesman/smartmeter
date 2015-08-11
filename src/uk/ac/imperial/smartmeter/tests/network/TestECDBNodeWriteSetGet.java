@@ -17,7 +17,7 @@ public class TestECDBNodeWriteSetGet extends GenericTest {
 		aClient.client.addDevice(true, 1, t, 3);
 		aClient.client.setState(t, false);
 		Boolean ret = (aClient.client.getState(t) == false);
-		aClient.client.wipeEDC();
+		aClient.client.wipeAll();
 		return ret;
 	}
 

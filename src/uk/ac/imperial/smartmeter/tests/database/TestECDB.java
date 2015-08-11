@@ -10,6 +10,7 @@ public class TestECDB extends GenericTest {
 	@Override
 	public boolean doTest() {
 
+		
 		EDController a = new EDController();
 		a.db.genericDBUpdate("DROP TABLE DEVICE_TABLE");
 
@@ -26,6 +27,8 @@ public class TestECDB extends GenericTest {
 		b.pushToDB();
 		b.setDevicesOfType(t, false);
 		c.pullFromDB();
+
+		a.db.wipe();
 		return (b.getDeviceCount()==c.getDeviceCount());
 	}
 

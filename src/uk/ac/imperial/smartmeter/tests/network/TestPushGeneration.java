@@ -1,27 +1,22 @@
 package uk.ac.imperial.smartmeter.tests.network;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
-import uk.ac.imperial.smartmeter.webcomms.LContNode;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class TestPushGeneration extends GenericTest {
 
 	@Override
 	public boolean doTest() {
 		String t = UUID.randomUUID().toString();
-        String[] parameters_lc = {DefaultTestClient.ipAddr, String.valueOf(DefaultTestClient.EDCPort), DefaultTestClient.ipAddr,String.valueOf(DefaultTestClient.HLCPort),t,""};
-		try {
-			LContNode.main(parameters_lc);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		LContNode.registerUser(0.,0.,0.,8000);
-		return LContNode.setGeneration(new ElectricityGeneration(10.));
+		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,8999,t,"");
+		aClient.client.registerUser(0.,0.,0.,8000);
+		Boolean ret = aClient.client.setGeneration(new ElectricityGeneration(10.));
+		aClient.client.wipeAll();
+		return ret;
 		
 	}
 

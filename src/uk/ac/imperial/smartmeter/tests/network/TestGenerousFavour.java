@@ -42,7 +42,7 @@ public class TestGenerousFavour extends GenericTest {
 		
 		ArraySet<ElectricityTicket> c = aClient.client.getTickets();
 		ArraySet<ElectricityTicket> d = bClient.client.getTickets();
-		aClient.client.wipeHLC();
+		aClient.client.wipeAll();
 		aClient.close();
 		bClient.close();
 		return ((c.get(0).getId().equals(bID.toString()))&&(d.get(0).getId().equals(aID.toString())));

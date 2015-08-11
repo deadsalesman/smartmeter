@@ -26,7 +26,7 @@ public class TestECDBNodeToggle extends GenericTest {
 					}
 				}
 				Boolean ret = aClient.client.getState(t)==state;
-				aClient.client.wipeEDC();
+				aClient.client.wipeAll();
 				return ret;
 				
 	}
