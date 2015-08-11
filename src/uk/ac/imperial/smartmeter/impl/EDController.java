@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class EDController
 		devices = new ArraySet<ElectronicDevice>();
 		db = new DevicesDBManager("jdbc:sqlite:edc.db");
 		pinouts = new HashMap<ElectronicDevice, Integer>();
+		availablePins = new HashSet<Integer>();
 		pullFromDB();
 		setAvailablePins();
 	}
