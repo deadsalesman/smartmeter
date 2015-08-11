@@ -10,7 +10,7 @@ public class QuantumNode implements TimeNode {
 	private Double currentCapacity;
 	private Double maxCapacity;
 	private Date startTime;
-	public static final Integer quanta = 3600; //ms, MUST be a factor of 3600 (seconds in an hour)
+	public static final Integer quanta = 360000; //ms, MUST be a factor of 3600 (seconds in an hour)
 	private Date endTime;
 	public QuantumNode(Double cap, Date start)
 	{

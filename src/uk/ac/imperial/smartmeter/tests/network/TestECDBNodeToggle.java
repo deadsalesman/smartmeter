@@ -12,8 +12,9 @@ public class TestECDBNodeToggle extends GenericTest {
 	@Override
 	public boolean doTest() {
 		  String t = UUID.randomUUID().toString();
-		  LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9003,TicketTestHelper.user1,"");
-				aClient.client.addDevice(true, 1, t, 3);
+		  LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort, 9003, TicketTestHelper.user1,"");
+		  //LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9003,TicketTestHelper.user1,"");
+				aClient.client.addDevice(true, 1, t, 10);
 				Boolean state = false;
 				for (int i = 0; i < 7; i++)
 				{

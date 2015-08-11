@@ -12,7 +12,8 @@ public class TestECDB extends GenericTest {
 
 		EDController a = new EDController();
 		a.db.genericDBUpdate("DROP TABLE DEVICE_TABLE");
-		
+
+		EDController c = new EDController();
 		EDController b = new EDController();
 		
 		b.addDevice(new ElectronicDevice(true,0),3);
@@ -24,8 +25,8 @@ public class TestECDB extends GenericTest {
 		DeviceType t = DeviceType.LED;
 		b.pushToDB();
 		b.setDevicesOfType(t, false);
-		a.pullFromDB();
-		return (b.getDeviceCount()==a.getDeviceCount());
+		c.pullFromDB();
+		return (b.getDeviceCount()==c.getDeviceCount());
 	}
 
 }
