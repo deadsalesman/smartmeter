@@ -17,7 +17,7 @@ public abstract class GenericTest implements testIFace {
 		displayResults(doTest());
 		} catch (Exception e)
 		{
-		System.out.println("EXCEPTION THROWN IN " + testId);
+		System.out.println("EXCEPTION THROWN IN " + testId + " " + e.getMessage());
 		}
 	}
 	public boolean getResult()

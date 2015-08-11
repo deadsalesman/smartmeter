@@ -1,18 +1,12 @@
 package uk.ac.imperial.smartmeter.gpio;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
  
 class GpioTest{
 public static void main(String a[]){
 try{
  
-String prg = "import sys\nprint int(sys.argv[1])+int(sys.argv[2])\n";
-BufferedWriter out = new BufferedWriter(new FileWriter("test1.py"));
-out.write(prg);
-out.close();
 int number1 = 10;
 int number2 = 32;
  
