@@ -16,10 +16,11 @@ public static void main(String[] args)
 {
 
 	DateHelper.initialise();
+
+	addToLog(new AutonTester());
 	addToLog(new DBTester());
 	addToLog(new AllocatorTester());
 	addToLog(new NetworkTester());
-	addToLog(new AutonTester());
 	
 	reportLog();
 }

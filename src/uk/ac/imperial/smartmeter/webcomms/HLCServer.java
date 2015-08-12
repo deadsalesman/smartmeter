@@ -158,6 +158,7 @@ public class HLCServer {
 		return ret;
 	}
 	private Boolean wipe(List<String> splitMsg) {
+		clients = new HashMap<String, InetSocketAddress>();
 		return handler.clearAll(splitMsg.get(2));
 	}
 	private Boolean calculateTickets() {

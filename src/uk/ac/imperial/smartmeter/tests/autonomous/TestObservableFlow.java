@@ -11,7 +11,7 @@ public class TestObservableFlow extends GenericTest {
 		LCStandalone a = new LCStandalone(9300, TicketTestHelper.user1);
 		LCStandalone b = new LCStandalone(9301, TicketTestHelper.user2);
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(200000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
