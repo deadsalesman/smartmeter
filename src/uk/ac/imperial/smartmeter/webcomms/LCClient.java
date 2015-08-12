@@ -263,6 +263,22 @@ public class LCClient{
 		}
 		return false;
 	}
+	public Boolean unjamServer()
+	{
+		String inputLine = formatMessage("BOP");
+		ArrayList<String> input = new ArrayList<String>();
+		input.add(inputLine);
+		end(input);
+		try {
+			ArrayList<String> ret = connectEDC(input);
+			if (ret.get(0).equals("SUCCESS"))
+			{
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
 
 	public Boolean registerUser(Double worth, Double generation, Double economic, int port) {
 		String inputLine = formatMessage("USR",  handler.getSalt(), handler.getHash() , userId ,userName ,worth.toString(),generation.toString(),economic.toString(),String.valueOf(port));

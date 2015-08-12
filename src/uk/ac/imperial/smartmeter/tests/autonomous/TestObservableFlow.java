@@ -8,8 +8,8 @@ public class TestObservableFlow extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		LCStandalone a = new LCStandalone(9300, TicketTestHelper.user1);
-		LCStandalone b = new LCStandalone(9301, TicketTestHelper.user2);
+		LCStandalone a = new LCStandalone(9300, TicketTestHelper.user1,1.,2.,3.);
+		LCStandalone b = new LCStandalone(9301, TicketTestHelper.user2,2.,1.,2.);
 		try {
 			Thread.sleep(200000);
 		} catch (InterruptedException e) {
@@ -18,6 +18,7 @@ public class TestObservableFlow extends GenericTest {
 		}
 		a.stop();
 		b.stop();
+		a.wipe();
 		return false;
 	}
 

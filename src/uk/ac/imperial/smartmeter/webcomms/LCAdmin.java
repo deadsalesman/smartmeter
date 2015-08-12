@@ -2,6 +2,7 @@ package uk.ac.imperial.smartmeter.webcomms;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
@@ -30,11 +31,16 @@ public class LCAdmin implements Runnable{
 	}
 	private Boolean requestBulletin() {
 		HashMap<String, InetSocketAddress> x = client.getPeers();
-		if (x!=null)
+		if (x!= null) {
+		for (Entry<String, InetSocketAddress> e : x.entrySet())
 		{
-			bulletin.set(x);
-			return true;
+			if (e.getValue()!=null)
+			{
+				bulletin.add(new NamedSocket(e.getKey(),e.getValue()));
+			}
 		}
+		}
+		bulletin.sociallyAwah = true;
 		return false;
 	}
 	public void start() {
