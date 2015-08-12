@@ -7,9 +7,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,8 +81,8 @@ public class LCServer implements Runnable {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		try {
 			ElectricityTicket newtkt = new ElectricityTicket(
-					df.parse(splitMsg.get(9)),
-					df.parse(splitMsg.get(10)),
+					new Date(Long.parseLong(splitMsg.get(9))),
+					new Date(Long.parseLong(splitMsg.get(10))),
 					Double.parseDouble(splitMsg.get(11)),
 					traderId,
 					splitMsg.get(13),
@@ -105,9 +105,6 @@ public class LCServer implements Runnable {
 				return "FAILURE";
 			}
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -194,9 +191,14 @@ public class LCServer implements Runnable {
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			ElectricityRequirement req;
 			try {
-				req = new ElectricityRequirement(df.parse(splitMsg.get(2)), df.parse(splitMsg.get(3)), new DecimalRating(
-						Integer.parseInt(splitMsg.get(4))), Integer.parseInt(splitMsg.get(5)),
-						Double.parseDouble(splitMsg.get(6)), splitMsg.get(7), splitMsg.get(8));
+				req = new ElectricityRequirement(
+						new Date(Long.parseLong(splitMsg.get(2))),
+						new Date(Long.parseLong(splitMsg.get(3))),
+						new DecimalRating(Integer.parseInt(splitMsg.get(4))),
+						Integer.parseInt(splitMsg.get(5)),
+						Double.parseDouble(splitMsg.get(6)),
+						splitMsg.get(7),
+						splitMsg.get(8));
 				ArraySet<ElectricityTicket> tickets = client.findCompetingTickets(req);
 
 				if (tickets != null) {

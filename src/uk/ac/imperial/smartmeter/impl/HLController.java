@@ -71,6 +71,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		if (pass.equals("drop"))
 		{
 			agents = new ArraySet<UserAgent> ();
+			alloc = new TicketAllocator(agents,new Date(), true);
 			return (dbReq.wipe() && dbAgt.wipe());
 		}
 		return false;

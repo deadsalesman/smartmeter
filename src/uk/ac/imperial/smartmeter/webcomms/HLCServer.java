@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,16 +115,16 @@ public class HLCServer {
 		
 		try {
 			ElectricityTicket tkt = new ElectricityTicket(
-					df.parse(splitMsg.get(2)),
-					df.parse(splitMsg.get(3)),
+					new Date(Long.parseLong(splitMsg.get(2))),
+					new Date(Long.parseLong(splitMsg.get(3))),
 					Double.parseDouble(splitMsg.get(4)),
 					splitMsg.get(5),
 					splitMsg.get(6),
 					splitMsg.get(7)
 					);
 			ElectricityRequirement req = new ElectricityRequirement(
-					df.parse(splitMsg.get(9)),
-					df.parse(splitMsg.get(10)),
+					new Date(Long.parseLong(splitMsg.get(9))),
+					new Date(Long.parseLong(splitMsg.get(10))),
 					new DecimalRating(Integer.parseInt(splitMsg.get(11))),
 					Integer.parseInt(splitMsg.get(12)),
 					Double.parseDouble(splitMsg.get(13)),
@@ -131,8 +132,8 @@ public class HLCServer {
 					splitMsg.get(15)
 					);
 			ElectricityTicket tktOld = new ElectricityTicket(
-					df.parse(splitMsg.get(17)),
-					df.parse(splitMsg.get(18)),
+					new Date(Long.parseLong(splitMsg.get(17))),
+					new Date(Long.parseLong(splitMsg.get(18))),
 					Double.parseDouble(splitMsg.get(19)),
 					splitMsg.get(20),
 					splitMsg.get(21),
@@ -185,12 +186,11 @@ public class HLCServer {
 						));
 	}
 	private Boolean addReq(List<String> splitMsg) {
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		ElectricityRequirement req;
 		try {
 			req = new ElectricityRequirement(
-					df.parse(splitMsg.get(2)),
-					df.parse(splitMsg.get(3)),
+					new Date(Long.parseLong(splitMsg.get(2))),
+					new Date(Long.parseLong(splitMsg.get(3))),
 					new DecimalRating(Integer.parseInt(splitMsg.get(4))),
 					Integer.parseInt(splitMsg.get(5)),
 					Double.parseDouble(splitMsg.get(6)),

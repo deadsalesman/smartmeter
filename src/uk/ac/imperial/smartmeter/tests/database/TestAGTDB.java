@@ -10,8 +10,8 @@ public class TestAGTDB extends GenericTest {
 	public boolean doTest() {
 
 		HLController d = new HLController();
-		d.dbAgt.dropHostedTable();
-		d.dbReq.dropHostedTable();
+		d.dbAgt.wipe();
+		d.dbReq.wipe();
 		
 		HLController l = new HLController();
 		
@@ -21,8 +21,8 @@ public class TestAGTDB extends GenericTest {
 		
 
 		HLController p = new HLController();
-		p.dbAgt.dropHostedTable();
-		p.dbReq.dropHostedTable();
+		p.dbAgt.wipe();
+		p.dbReq.wipe();
 		return (p.getAgtCount()==l.getAgtCount());
 	}
 

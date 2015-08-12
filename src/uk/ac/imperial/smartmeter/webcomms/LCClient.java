@@ -7,9 +7,6 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -145,7 +142,6 @@ public class LCClient{
 	public ArraySet<ElectricityTicket> getTickets()
 	{
 		String inputLine = formatMessage("TKT");
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		ArrayList<String> input = new ArrayList<String>();
 		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
 		input.add(inputLine);
@@ -161,8 +157,8 @@ public class LCClient{
 			{
 				try {
 					output.add(new ElectricityTicket(
-							df.parse(splitMsg.get(0+offset)),
-							df.parse(splitMsg.get(1+offset)),
+							new Date(Long.parseLong(splitMsg.get(0+offset))),
+							new Date(Long.parseLong(splitMsg.get(1+offset))),
 							Double.parseDouble(splitMsg.get(2+offset)),
 							splitMsg.get(3+offset),
 							splitMsg.get(4+offset),
@@ -289,7 +285,9 @@ public class LCClient{
 	}
 	public boolean wipeAll()
 	{
-		return wipeEDC()&&wipeHLC();
+		Boolean h = wipeHLC();
+		Boolean e = wipeEDC();
+		return e&&h;
 	}
 	public boolean wipeEDC()
 	{
@@ -373,7 +371,6 @@ public class LCClient{
 		String inputLine = formatMessage("ADV" , req.toString());
 		ArrayList<String> input = new ArrayList<String>();
 		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		input.add(inputLine);
 		end(input);
 		ArrayList<String> msg;
@@ -385,8 +382,13 @@ public class LCClient{
 				int offset = 0;
 				for (int i = 0; i < size; i++) {
 					try {
-						output.add(new ElectricityTicket(df.parse(splitMsg.get(1 + offset)), df.parse(splitMsg.get(2 + offset)),
-								Double.parseDouble(splitMsg.get(3 + offset)), splitMsg.get(4 + offset), splitMsg.get(5 + offset), splitMsg.get(6 + offset)));
+						output.add(new ElectricityTicket(
+								new Date(Long.parseLong(splitMsg.get(1+offset))),
+								new Date(Long.parseLong(splitMsg.get(2+offset))),
+								Double.parseDouble(splitMsg.get(3 + offset)),
+								splitMsg.get(4 + offset),
+								splitMsg.get(5 + offset),
+								splitMsg.get(6 + offset)));
 					} catch (Exception e) {
 						System.out.println("Invalid ticket");
 					}
@@ -409,15 +411,18 @@ public class LCClient{
 			msg = connectClient(input, location, port);
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
 			if (splitMsg.get(0).equals("SUCCESS")) {
-				DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-				tktOld = new ElectricityTicket(df.parse(splitMsg.get(1)), df.parse(splitMsg.get(2)),
-						Double.parseDouble(splitMsg.get(3)), splitMsg.get(4), splitMsg.get(5), splitMsg.get(6));
+				tktOld = new ElectricityTicket(
+						new Date(Long.parseLong(splitMsg.get(1))),
+						new Date(Long.parseLong(splitMsg.get(2))),
+						Double.parseDouble(splitMsg.get(3)),
+						splitMsg.get(4),
+						splitMsg.get(5),
+						splitMsg.get(6));
 				handler.forceNewTicket(tktOld);
 				return true;
 				
 			}
 		} catch (IOException e1) {
-		} catch (ParseException e1) {
 		}
 		return false;
 	}
@@ -470,18 +475,14 @@ public class LCClient{
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
 			if (splitMsg.get(0).equals("SUCCESS")) {
 
-				DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-				try {
-					tkt.start = df.parse(splitMsg.get(1));
-					tkt.end   = df.parse(splitMsg.get(2));
-					tkt.magnitude = Double.parseDouble(splitMsg.get(3));
-					
-					oldtkt.start = df.parse(splitMsg.get(7));
-					oldtkt.end   = df.parse(splitMsg.get(8));
-					oldtkt.magnitude = Double.parseDouble(splitMsg.get(9));
-					return true;
-				} catch (ParseException e) {
-				}
+				tkt.start = new Date(Long.parseLong(splitMsg.get(1)));
+				tkt.end   = new Date(Long.parseLong(splitMsg.get(2)));
+				tkt.magnitude = Double.parseDouble(splitMsg.get(3));
+				
+				oldtkt.start = new Date(Long.parseLong(splitMsg.get(7)));
+				oldtkt.end   = new Date(Long.parseLong(splitMsg.get(8)));
+				oldtkt.magnitude = Double.parseDouble(splitMsg.get(9));
+				return true;
 				
 			}
 		} catch (IOException e1) {

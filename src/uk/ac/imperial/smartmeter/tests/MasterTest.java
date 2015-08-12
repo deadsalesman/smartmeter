@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.tests.allocator.AllocatorTester;
 import uk.ac.imperial.smartmeter.tests.autonomous.AutonTester;
 import uk.ac.imperial.smartmeter.tests.database.DBTester;
@@ -13,6 +14,8 @@ public class MasterTest {
 	static Map<GenericTester, Integer> log = new HashMap<GenericTester, Integer>();;
 public static void main(String[] args)
 {
+
+	DateHelper.initialise();
 	addToLog(new DBTester());
 	addToLog(new AllocatorTester());
 	addToLog(new NetworkTester());

@@ -11,19 +11,18 @@ public class DateHelper {
 	//dates are deprecated
 	//this adds extensions to date
 	//I am very sorry
+	public static Date init;
 	public static Date clone(Date d)
 	{
 		return new Date(d.getTime());
 	}
 	public static Date os(Long offset)
 	{
-		Date now = new Date();
-		return new Date(now.getTime()+offset);
+		return new Date(init.getTime()+offset);
 	}
 	public static Date os(Double offset)
 	{
-		Date now = new Date();
-		return new Date(now.getTime()+(long)(offset*QuantumNode.quanta));
+		return new Date(init.getTime()+(long)(offset*QuantumNode.quanta));
 	}
 	public static Date dPlus(Date d, Double offset)
 	{
@@ -52,5 +51,8 @@ public class DateHelper {
 	}
 	public static Date incrementHour(Integer i) {
 		return DateHelper.incrementHour(new Date(), i);
+	}
+	public static void initialise() {
+		init = new Date();
 	}
 }
