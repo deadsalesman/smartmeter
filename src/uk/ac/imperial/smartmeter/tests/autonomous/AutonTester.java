@@ -6,7 +6,7 @@ public class AutonTester extends GenericTester {
 
 	@Override
 	public Integer main(String[] args) {
-		testLog.add(new TestObservableFlow());
+		//testLog.add(new TestObservableFlow());
 		return reportLog();
 	}
 

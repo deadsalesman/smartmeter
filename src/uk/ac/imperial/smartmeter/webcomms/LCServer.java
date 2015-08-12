@@ -214,8 +214,9 @@ public class LCServer implements Runnable {
 	}
 
 	public boolean listen() throws IOException {
-
-		try (ServerSocket serverSocket = new ServerSocket(portNum);
+		try (ServerSocket serverSocket = new ServerSocket(portNum);){
+		serverSocket.setSoTimeout(3000);
+				try(
 				Socket clientSocket = serverSocket.accept();
 				@SuppressWarnings("resource")
 				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -230,6 +231,7 @@ public class LCServer implements Runnable {
 				if (outputLine.equals("NUL"))
 					return true;
 			}
+				}
 		} catch (IOException e) {
 			System.out.println("Exception caught when trying to listen on port " + portNum + " or listening for a connection");
 			System.out.println(e.getMessage());
