@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -94,16 +93,17 @@ public class LCServer implements Runnable {
 			if (oldtkt!= null)
 			{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
-
-			Double oldUtility = evaluateUtility(oldtkt, oldReq, null); //third parameter not included here for convenience
+			ElectricityTicket tempOld = new ElectricityTicket(oldtkt);
+			ElectricityTicket tempNew = new ElectricityTicket(newtkt);
+			Double oldUtility = evaluateUtility(new ElectricityTicket(oldtkt), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
-			Double newUtility = evaluateUtility(newtkt, oldReq, oldtkt);
+			Double newUtility = evaluateUtility(tempNew, oldReq, tempOld);
 			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(5));
 			
 			if (result)
 			{
 				
-				return modifyTickets(oldtkt,newtkt);
+				return modifyTickets(oldtkt,newtkt, tempOld, tempNew);
 			}
 			}
 			else
@@ -118,21 +118,17 @@ public class LCServer implements Runnable {
 		return "FAILURE";
 	}
 
-	private String modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt) {
+	private String modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt, ElectricityTicket tempOld, ElectricityTicket tempNew) {
 		// TODO Auto-generated method stub
 		//change the owners of the tickets around
 		//format as string suitable for transfer
-		UUID oldReq = UUID.fromString(newtkt.reqID.toString());
-		UUID oldOwner = UUID.fromString(newtkt.ownerID.toString());
-		
-		newtkt.ownerID = UUID.fromString(oldtkt.ownerID.toString());
-		newtkt.reqID = UUID.fromString(oldtkt.reqID.toString());
-		
-		oldtkt.ownerID = oldOwner;
-		oldtkt.reqID = oldReq;
+		newtkt.modifyTimings(tempOld);
+		newtkt.modifyID(tempNew);
+		oldtkt.modifyTimings(tempNew);
+		oldtkt.modifyID(tempOld);
 		String ret = "SUCCESS,";
-		ret += oldtkt.toString();
-		client.handler.forceNewTicket(newtkt);
+		ret += newtkt.toString();
+		client.handler.forceNewTicket(oldtkt);
 		return ret;
 	}
 

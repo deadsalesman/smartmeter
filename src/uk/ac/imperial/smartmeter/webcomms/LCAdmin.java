@@ -107,6 +107,8 @@ public class LCAdmin implements Runnable{
 					{
 						i++;
 						InetSocketAddress addr = bulletin.getNextAddress();
+						if (addr!=null)
+						{
 						String location = addr.getHostName();
 						int port = addr.getPort();
 						client.registerClient(location, port,ownPort);
@@ -118,7 +120,12 @@ public class LCAdmin implements Runnable{
 					{
 						if(!successfulTrade)
 						{
-					successfulTrade = client.offer(location, port, e,t);
+							if (LCServer.calcUtilityNoExtension(e, req) >= LCServer.calcUtilityNoExtension(t, req))
+							{
+
+								successfulTrade = client.offer(location, port, e,t);
+							}
+						}
 						}
 					}
 					}

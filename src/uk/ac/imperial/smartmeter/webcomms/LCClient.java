@@ -392,7 +392,11 @@ public class LCClient{
 		ArrayList<String> msg;
 		try {
 			msg = connectClient(input, location, port);
+			if (msg.size()!=0)
+			{
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
+			if (splitMsg.size()!=0)
+			{
 			if (splitMsg.get(0).equals("SUCCESS")) {
 				int size = splitMsg.size() / 6;
 				int offset = 0;
@@ -405,11 +409,13 @@ public class LCClient{
 								splitMsg.get(4 + offset),
 								splitMsg.get(5 + offset),
 								splitMsg.get(6 + offset)));
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						System.out.println("Invalid ticket");
 					}
 					offset += 6;
 				}
+			}}
 			}
 		} catch (IOException e1) {
 			return null;
@@ -498,10 +504,16 @@ public class LCClient{
 				tkt.setStart(new Date(Long.parseLong(splitMsg.get(1))));
 				tkt.setEnd(new Date(Long.parseLong(splitMsg.get(2))));
 				tkt.magnitude = Double.parseDouble(splitMsg.get(3));
+				tkt.ownerID  = UUID.fromString(splitMsg.get(4));
+				tkt.reqID = UUID.fromString(splitMsg.get(5));
+				tkt.id = UUID.fromString(splitMsg.get(6));
 				
 				oldtkt.setStart(new Date(Long.parseLong(splitMsg.get(7))));
 				oldtkt.setEnd(new Date(Long.parseLong(splitMsg.get(8))));
 				oldtkt.magnitude = Double.parseDouble(splitMsg.get(9));
+				oldtkt.ownerID  = UUID.fromString(splitMsg.get(10));
+				oldtkt.reqID = UUID.fromString(splitMsg.get(11));
+				oldtkt.id = UUID.fromString(splitMsg.get(12));
 				return true;
 				
 			}
