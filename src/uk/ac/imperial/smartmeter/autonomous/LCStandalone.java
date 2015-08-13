@@ -5,14 +5,16 @@ import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
 import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class LCStandalone {
-	LCServer server;
-	LCAdmin admin;
+	public LCServer server;
+	public LCAdmin admin;
 	Thread s;
 	Thread a;
 	
 	public LCStandalone(int port, String name,Double worth, Double generation, Double economic)
 	{
 		initialise(port, name,worth, generation, economic);
+		server.setTicketDurationModifiable(true);
+		server.setTicketAmplitudeModifiable(true);
 	}
 	public void stop()
 	{
@@ -31,7 +33,7 @@ public class LCStandalone {
 	public void initialise(int port, String name, Double worth, Double generation, Double economic)
 	{
 		server = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,port,name,"");
-		admin = new LCAdmin(server.client);
+		admin = new LCAdmin(server.client,port);
 		server.client.registerUser(worth, generation, economic, port);
 		s = new Thread(server);
 		a = new Thread(admin);

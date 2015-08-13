@@ -461,7 +461,6 @@ public class LCClient{
 		return false;
 	}
 	public static Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
-		Double ret = 0.;
 		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.
 		//However, it is a good starting point. Propose adding a flexibility measure to requirements? Integrating may be tricky.
 		double hrsOffset = 4.;

@@ -4,7 +4,8 @@ import uk.ac.imperial.smartmeter.tests.GenericTester;
 
 public class NetworkTester extends GenericTester{
 
-	public Integer main(String[] args)
+	@Override
+	public Integer main()
 	{
 
 		testLog.add(new TestECDBNode());
@@ -24,5 +25,11 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestPracticalIntensify());
 		testLog.add(new TestQueryAddresses());
 		return reportLog();
+	}
+	
+	public static void main(String[] args)
+	{
+		NetworkTester a = new NetworkTester();
+		a.main();
 	}
 }

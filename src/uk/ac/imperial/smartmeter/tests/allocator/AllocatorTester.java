@@ -4,7 +4,9 @@ import uk.ac.imperial.smartmeter.tests.GenericTester;
 
 public class AllocatorTester extends GenericTester{
 
-	public Integer main(String[] args)
+
+	@Override
+	public Integer main()
 	{
 		testLog.add(new TestDSort());
 		testLog.add(new TestESort());
@@ -28,5 +30,10 @@ public class AllocatorTester extends GenericTester{
 		testLog.add(new TestTrickyAllocConstantGenerationProfile());
 		
 		return reportLog();
+	}
+
+	public static void main(String[]args){
+	AllocatorTester a = new AllocatorTester();
+	a.main();
 	}
 }

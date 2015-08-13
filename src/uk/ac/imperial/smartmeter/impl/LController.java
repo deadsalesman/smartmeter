@@ -195,12 +195,14 @@ public class LController {
 	}
 	public boolean queryUnhappyTickets() {
 		unhappyTickets = new ArrayList<ElectricityTicket>();
-		double threshold = 0.5;
+		double threshold = 1.1; //TODO: set a reasonable value. current is for debug, would normally be lower obviously
 		for (Entry<ElectricityRequirement, ElectricityTicket> e : masterUser.getReqTktMap().entrySet())
 		{
-			if (LCServer.calcUtilityNoExtension(e.getValue(),e.getKey()) > threshold)
+			if (e.getValue()!=null){
+			if (LCServer.calcUtilityNoExtension(e.getValue(),e.getKey()) < threshold)
 			{
 				unhappyTickets.add(e.getValue());
+			}
 			}
 		}
 		return unhappyTickets.size()!=0;

@@ -8,8 +8,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,7 +108,6 @@ public class HLCServer {
 	}
 	private String modifyTicket(List<String> splitMsg)
 	{
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		String ret = "FAILURE,";
 		
 		try {
@@ -246,10 +243,8 @@ public class HLCServer {
         try ( 
             ServerSocket serverSocket = new ServerSocket(portNum);
             Socket clientSocket = serverSocket.accept();
-            @SuppressWarnings("resource")
 			PrintWriter out =
                 new PrintWriter(clientSocket.getOutputStream(), true);
-            @SuppressWarnings("resource")
 			BufferedReader in = new BufferedReader(
                 new InputStreamReader(clientSocket.getInputStream()));
         ) {

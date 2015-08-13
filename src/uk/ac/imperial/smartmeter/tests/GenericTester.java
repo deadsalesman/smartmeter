@@ -2,18 +2,21 @@ package uk.ac.imperial.smartmeter.tests;
 
 import java.util.ArrayList;
 
+import uk.ac.imperial.smartmeter.res.DateHelper;
+
 public abstract class GenericTester {
 	protected ArrayList<GenericTest> testLog;
 
-	public abstract Integer main(String[] args);
+	public abstract Integer main();
 	private Boolean print = true;
 	
 	public GenericTester() {
-		testLog = new ArrayList<GenericTest>();
+		this(true);
 	}
 	public GenericTester(Boolean b) {
 		testLog = new ArrayList<GenericTest>();
 		print = b;
+		DateHelper.initialise();
 	}
 
 	protected Integer reportLog() {

@@ -26,7 +26,7 @@ public static void main(String[] args)
 }
 public static void addToLog(GenericTester g)
 {
-	log.put(g, g.main(null));
+	log.put(g, g.main());
 }
 public static void reportLog()
 {

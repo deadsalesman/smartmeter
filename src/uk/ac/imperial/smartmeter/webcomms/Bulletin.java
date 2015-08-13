@@ -21,8 +21,8 @@ public class Bulletin {
 		{
 			
 			ret =  users.get(index).socket;
+			index = (index + 1) % users.size();
 		}
-		index = (index + 1) % users.size();
 		return ret;
 	}
 	public void add(NamedSocket e)

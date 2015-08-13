@@ -13,13 +13,22 @@ public class LCAdmin implements Runnable{
 	private int interval;
 	private Double timeSinceLastTickets=0.;
 	private Double timeSinceLastBulletin=0.;
+	private Double timeSinceLastNegotiation=0.;
+
+	private Double reasonableBulletinTime = Math.pow(10., 7.5);
+	private Double reasonableTicketTime = Math.pow(10., 7.5);
+	private Double reasonableNegotiationTime = Math.pow(10.,7.6);
+	private Double pollingTime = Math.pow(10., 6);
+	
 	private Bulletin bulletin;
 	public LCClient client;
+	private int ownPort;
 	private Boolean active = true;
-	public LCAdmin(LCClient lc)
+	public LCAdmin(LCClient lc, int port)
 	{
 		client = lc;
 		bulletin = new Bulletin();
+		ownPort = port;
 	}
 	public void activate()
 	{
@@ -34,9 +43,13 @@ public class LCAdmin implements Runnable{
 		if (x!= null) {
 		for (Entry<String, InetSocketAddress> e : x.entrySet())
 		{
+			
 			if (e.getValue()!=null)
 			{
+				if (!e.getKey().equals(client.getId())) 
+				{
 				bulletin.add(new NamedSocket(e.getKey(),e.getValue()));
+			}
 			}
 		}
 		}
@@ -54,9 +67,6 @@ public class LCAdmin implements Runnable{
 	@Override
 	public void run() {
 
-		Double reasonableBulletinTime = Math.pow(10., 8.5);
-		Double reasonableTicketTime = Math.pow(10., 8.5);
-		Double pollingTime = Math.pow(10., 7);
 		int attempts = 3;
 		
 	
@@ -68,6 +78,7 @@ public class LCAdmin implements Runnable{
 
 				timeSinceLastTickets += pollingTime;
 				timeSinceLastBulletin += pollingTime;
+				timeSinceLastNegotiation += pollingTime;
 				
 			if (client.queryUnsatisfiedReqs()&&(timeSinceLastTickets>reasonableTicketTime))
 			{
@@ -80,8 +91,12 @@ public class LCAdmin implements Runnable{
 				requestBulletin();
 				timeSinceLastBulletin =0.;
 			}
-			if (client.queryUnhappyTickets())
+			if ((bulletin.sociallyAwah)
+					&&(timeSinceLastNegotiation > reasonableNegotiationTime)
+					&&(client.queryUnhappyTickets()))
 			{
+
+				timeSinceLastNegotiation =0.;
 				//attempt to exchange tickets with other clients
 				for (ElectricityTicket t : client.getUnhappyTickets())
 				{
@@ -89,17 +104,26 @@ public class LCAdmin implements Runnable{
 					Boolean successfulTrade = false;
 					while (i < attempts && !successfulTrade)
 					{
+						i++;
 						InetSocketAddress addr = bulletin.getNextAddress();
 						String location = addr.getHostName();
 						int port = addr.getPort();
+						client.registerClient(location, port,ownPort);
 					ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, client.handler.findMatchingRequirement(t));
+					if (tkts != null)
+					{
 					for (ElectricityTicket e : tkts)
 					{
-					successfulTrade = client.offer(location, port, t, e);
+						if(!successfulTrade)
+						{
+					successfulTrade = client.offer(location, port, e,t);
+						}
+					}
 					}
 					}
 				}
-			}
+				}
+			
 			}
 			else
 			{

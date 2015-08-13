@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -27,14 +25,19 @@ public class LCServer implements Runnable {
 	private boolean amplitudeModifiable = false;
 	Boolean active = true;
 	Thread t;
+	private boolean verbose;
 	public void setTicketDurationModifiable(Boolean t)
 	{
 		durationModifiable = t;
 	}
-	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password,Boolean loud) {
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
 		addresses = new UserAddressBook();
+		verbose = loud;
+	}
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
+		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,  name, password, true);
 	}
 	public Integer getPort()
 	{
@@ -78,7 +81,6 @@ public class LCServer implements Runnable {
 		String traderId = splitMsg.get(0);
         if (addresses.queryUserExists(traderId))
         {
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		try {
 			ElectricityTicket newtkt = new ElectricityTicket(
 					new Date(Long.parseLong(splitMsg.get(9))),
@@ -89,6 +91,8 @@ public class LCServer implements Runnable {
 					splitMsg.get(14)
 					);
 			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(7));
+			if (oldtkt!= null)
+			{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
 			Double newUtility = evaluateUtility(newtkt, oldReq, oldtkt);
 			Double oldUtility = evaluateUtility(oldtkt, oldReq, null); //third parameter not included here for convenience
@@ -99,6 +103,7 @@ public class LCServer implements Runnable {
 			{
 				
 				return modifyTickets(oldtkt,newtkt);
+			}
 			}
 			else
 			{
@@ -188,7 +193,6 @@ public class LCServer implements Runnable {
 
 		String ret = "FAILURE";
 		if (addresses.queryUserExists(splitMsg.get(7))) {
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			ElectricityRequirement req;
 			try {
 				req = new ElectricityRequirement(
@@ -214,13 +218,12 @@ public class LCServer implements Runnable {
 	}
 
 	public boolean listen() throws IOException {
+		while(active){
 		try (ServerSocket serverSocket = new ServerSocket(portNum);){
 		serverSocket.setSoTimeout(3000);
 				try(
 				Socket clientSocket = serverSocket.accept();
-				@SuppressWarnings("resource")
 				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-				@SuppressWarnings("resource")
 				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
 
 			String inputLine, outputLine;
@@ -228,13 +231,20 @@ public class LCServer implements Runnable {
 			while (((inputLine = in.readLine()) != null)&&active) {
 				outputLine = recvMsg(inputLine);
 				out.println(outputLine);
+
+                if (verbose)
+                {
+                	System.out.println("Input: " +inputLine);
+                	System.out.println("Output: " + outputLine);
+                }
 				if (outputLine.equals("NUL"))
 					return true;
 			}
 				}
 		} catch (IOException e) {
-			System.out.println("Exception caught when trying to listen on port " + portNum + " or listening for a connection");
-			System.out.println(e.getMessage());
+			//System.out.println("Exception caught when trying to listen on port " + portNum + " or listening for a connection");
+			//System.out.println(e.getMessage());
+		}
 		}
 		return false;
 	}
