@@ -230,24 +230,22 @@ public class TicketAllocator {
 		}
 		return usrArray;
 	}
-	public Boolean expandToFit(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket oldTkt, ElectricityRequirement r) {
-		double dur = e.getDuration();
-		double edge = t.getDuration() - dur;
-		ElectricityRequirement req = new ElectricityRequirement(DateHelper.dPlus(t.start, edge),DateHelper.dPlus(t.end, -edge),new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
-		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(req);
-		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
+	public Boolean fitIntoSpace(ElectricityTicket t, ElectricityRequirement r, int numberNeeded)
+	{
+		double durB = r.getDuration();
+		double edgeB = t.getQuantisedDuration() - durB;
 		
-		removeReqFromNodes(e, nodes);
+		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(r);
+		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
 		
 		Date start = nodes.get(0).getStartTime();
 		Date end   = nodes.get(0).getEndTime();
 		int tally = 0;
-		int numberNeeded = (int)Math.ceil(dur);
 		for (QuantumNode q: nodes)
 		{
 			if (tally < numberNeeded)
 			{
-			if ((q.getCapacity() >= e.getConsumption(q.getStartTime())))
+			if ((q.getCapacity() >= r.getConsumption(q.getStartTime())))
 			{
 				tally++;
 				end = q.getEndTime();
@@ -262,19 +260,43 @@ public class TicketAllocator {
 			}
 			if (tally == numberNeeded)
 			{
-				shrink(oldTkt, r);
-				t.start = start;
-				req.setStartTime(start, dur);
-				t.end = end;
-				return addReqToNodes(req, viableNodes);
+				t.setStart(start);
+				r.setStartTime(start, durB);
+				t.setEnd(end);
+				return addReqToNodes(r, viableNodes);
 			}
 		}
-		
 		return false;
+	}
+	public Boolean expandToFit(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket oldTkt, ElectricityRequirement r) {
+		double durB = e.getDuration();
+		double edgeB = oldTkt.getQuantisedDuration() - durB;
+		double durA = r.getDuration();
+		double edgeA = t.getQuantisedDuration() - durA;
+		ElectricityRequirement reqNewA = new ElectricityRequirement(DateHelper.dPlus(t.getStart(), edgeA),DateHelper.dPlus(t.getEnd(), -edgeA),new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
+		ElectricityRequirement reqNewB = new ElectricityRequirement(DateHelper.dPlus(oldTkt.getStart(), edgeB),DateHelper.dPlus(oldTkt.getEnd(), -edgeB),new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		ElectricityRequirement reqA = new ElectricityRequirement(t.getStart(),t.getEnd(),new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
+		ElectricityRequirement reqB = new ElectricityRequirement(oldTkt.getStart(),oldTkt.getEnd(),new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		
+
+		removeReqFromNodes(reqB, queue.findIntersectingNodes(reqB));
+		removeReqFromNodes(reqA, queue.findIntersectingNodes(reqA));
+		
+		
+		Boolean ret = false;
+		if (reqNewB.getStartTime().before(reqNewA.getStartTime()))
+		{
+			ret = fitIntoSpace(t, reqNewB,(int)Math.ceil(durB))&&fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA));
+		}
+		else
+		{
+			ret = fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA))&&fitIntoSpace(t, reqNewB,(int)Math.ceil(durB));
+		}
+		return ret; 
 	}
 	public Boolean extendTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r) {
 
-		double metric = e.getDuration() - t.getDuration();
+		double metric = e.getDuration() - t.getQuantisedDuration();
 		
 		if (metric > 0) {
 			return expandToFit(t, e, tktOld,r);
@@ -292,28 +314,19 @@ public class TicketAllocator {
 	}
 	private Boolean intensify(ElectricityTicket t, ElectricityRequirement e, ElectricityRequirement match, ElectricityTicket tktOld, ElectricityRequirement r) {
 		ElectricityRequirement proxy = new ElectricityRequirement(match);
-		proxy.setStartTime(t.start, t.getDuration());
+		proxy.setStartTime(t.getStart(), t.getQuantisedDuration());
 		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(proxy);
 		removeReqFromNodes(proxy, nodes);  //removes the old requirement that has the same id as the new one
 		e.setStartTime(proxy.getStartTime());
 		nodes = queue.findIntersectingNodes(e);
 		if(addReqToNodes(e,nodes)){ //adds the new consumption requirement
-			shrink(tktOld,r);
-			t.start = e.getStartTime();
-			t.end = e.getEndTime();
+			t.setStart(e.getStartTime());
+			t.setEnd(e.getEndTime());
 			t.magnitude = e.getMaxConsumption();
 			return true;
 		}
 		return false;
 	
 	}
-	private void shrink(ElectricityTicket tktOld, ElectricityRequirement r) {
-		if (r!=null)
-		{
-		ElectricityRequirement proxy = new ElectricityRequirement(r);
-		proxy.setStartTime(tktOld.start, tktOld.getDuration());
-		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(proxy);
-		}
-		
-	}
+	
 }

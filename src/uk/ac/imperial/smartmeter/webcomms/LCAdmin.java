@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
+import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
 public class LCAdmin implements Runnable{
@@ -109,7 +110,8 @@ public class LCAdmin implements Runnable{
 						String location = addr.getHostName();
 						int port = addr.getPort();
 						client.registerClient(location, port,ownPort);
-					ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, client.handler.findMatchingRequirement(t));
+						ElectricityRequirement req = client.handler.findMatchingRequirement(t);
+					ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, req);
 					if (tkts != null)
 					{
 					for (ElectricityTicket e : tkts)

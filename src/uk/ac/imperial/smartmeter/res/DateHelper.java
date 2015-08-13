@@ -18,15 +18,20 @@ public class DateHelper {
 	}
 	public static Date os(Long offset)
 	{
+		initialise();
 		return new Date(init.getTime()+offset);
 	}
 	public static Date os(Double offset)
 	{
+		initialise();
 		return new Date(init.getTime()+(long)(offset*QuantumNode.quanta));
 	}
 	public static Date dPlus(Date d, Double offset)
 	{
-		return new Date(d.getTime()+(long)(offset*QuantumNode.quanta));
+		long off = (long)(offset*QuantumNode.quanta);
+		long time =d.getTime() + off;
+		Date n = new Date(time);
+		return n;
 	}
 	public static Date dPlus(Date d, Integer offset)
 	{

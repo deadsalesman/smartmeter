@@ -17,7 +17,7 @@ public class Bulletin {
 	public InetSocketAddress getNextAddress() {
 		InetSocketAddress ret = null;
 		
-		if (sociallyAwah)
+		if ((sociallyAwah)&&(users!=null))
 		{
 			
 			ret =  users.get(index).socket;

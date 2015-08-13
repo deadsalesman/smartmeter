@@ -23,22 +23,23 @@ public class TestExtendTicket extends GenericTest {
 		aClient.client.registerUser(0.,10.,0.,aClient.getPort());
 		
 		TicketTestHelper.bindRequirement(aClient.client,6.1, 9.3, 4,3.);
+		TicketTestHelper.bindRequirement(aClient.client,6.1, 9.3, 4,3.);
 		
 		aClient.client.GodModeCalcTKTS();
 		
 		final ArraySet<ElectricityTicket> a = aClient.client.getTickets();
-		
+		aClient.setTicketDurationModifiable(true);
 
 		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
 		req.setStartTime(req.getStartTime(), req.getDuration()*2);
 		ElectricityTicket dummy = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
-		aClient.client.extendTicket(a.get(0),req,dummy);
+		aClient.client.extendTicket(a.get(0),req,a.get(1));
 		
 		aClient.client.wipeAll();
 		aClient.close();
-		double o = a.get(0).getDuration();
+		double o = a.get(0).getQuantisedDuration();
 		double e = req.getDuration();
-		return (Math.abs(o-e)<1);
+		return (Math.abs(o-e)<2);
 	}
 
 }

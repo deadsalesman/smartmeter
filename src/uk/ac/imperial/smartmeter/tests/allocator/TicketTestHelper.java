@@ -65,7 +65,7 @@ public class TicketTestHelper {
 		{
 			for (ElectricityTicket t : e.getValue())
 			{
-				System.out.println(e.getKey().getName() + " " + t.magnitude +" " +  t.start.getTime() + " " + t.end.getTime());
+				System.out.println(e.getKey().getName() + " " + t.magnitude +" " +  t.getStart().getTime() + " " + t.getEnd().getTime());
 			}
 		}
 	}
@@ -81,7 +81,7 @@ public class TicketTestHelper {
 			{
 				if (t!= null)
 				{
-					System.out.println(u.getName() + ", " + t.magnitude +", " +  normaliseTime(t.start,d) + ", " + normaliseTime(t.end,d));
+					System.out.println(u.getName() + ", " + t.magnitude +", " +  normaliseTime(t.getStart(),d) + ", " + normaliseTime(t.getEnd(),d));
 				}
 			}
 		}

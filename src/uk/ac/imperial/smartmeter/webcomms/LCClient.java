@@ -425,6 +425,8 @@ public class LCClient{
 		ArrayList<String> msg;
 		try {
 			msg = connectClient(input, location, port);
+			if (msg.size()!=0)
+			{
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
 			if (splitMsg.get(0).equals("SUCCESS")) {
 				tktOld = new ElectricityTicket(
@@ -437,6 +439,7 @@ public class LCClient{
 				handler.forceNewTicket(tktOld);
 				return true;
 				
+			}
 			}
 		} catch (IOException e1) {
 		}
@@ -451,10 +454,12 @@ public class LCClient{
 		ArrayList<String> msg;
 		try {
 			msg = connectClient(input, location, port);
+			if (msg.size()!=0)
+			{
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
 			if (splitMsg.get(0).equals("SUCCESS")) {
 				return true;
-				
+			}
 			}
 		} catch (IOException e1) {
 		} 
@@ -490,12 +495,12 @@ public class LCClient{
 			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
 			if (splitMsg.get(0).equals("SUCCESS")) {
 
-				tkt.start = new Date(Long.parseLong(splitMsg.get(1)));
-				tkt.end   = new Date(Long.parseLong(splitMsg.get(2)));
+				tkt.setStart(new Date(Long.parseLong(splitMsg.get(1))));
+				tkt.setEnd(new Date(Long.parseLong(splitMsg.get(2))));
 				tkt.magnitude = Double.parseDouble(splitMsg.get(3));
 				
-				oldtkt.start = new Date(Long.parseLong(splitMsg.get(7)));
-				oldtkt.end   = new Date(Long.parseLong(splitMsg.get(8)));
+				oldtkt.setStart(new Date(Long.parseLong(splitMsg.get(7))));
+				oldtkt.setEnd(new Date(Long.parseLong(splitMsg.get(8))));
 				oldtkt.magnitude = Double.parseDouble(splitMsg.get(9));
 				return true;
 				

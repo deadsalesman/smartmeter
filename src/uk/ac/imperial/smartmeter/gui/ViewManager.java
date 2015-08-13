@@ -214,7 +214,7 @@ public class ViewManager extends JPanel implements ActionListener{
 		for (ElectricityTicket et : tkt)
 		{
 			//this is going to be hacky :(
-			text.append(df.format(et.start) + ",\n" + df.format(et.end) + ",\n" + et.magnitude + ",\n" + et.ownerID.toString() + ",\n" + et.getId() + ",\n");
+			text.append(df.format(et.getStart()) + ",\n" + df.format(et.getEnd()) + ",\n" + et.magnitude + ",\n" + et.ownerID.toString() + ",\n" + et.getId() + ",\n");
 		}
 
 		}

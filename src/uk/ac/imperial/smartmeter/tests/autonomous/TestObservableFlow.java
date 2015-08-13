@@ -33,14 +33,15 @@ public class TestObservableFlow extends GenericTest {
 			e.printStackTrace();
 		}
 		
+
+		a.stop();
+		b.stop();
 		
 		ArraySet<ElectricityTicket> p = a.server.client.getTickets();
 		ArraySet<ElectricityTicket> q = b.server.client.getTickets();
 		
 		Boolean temp = (p.get(0).getId().equals(mID.toString()))&&(q.get(0).getId().equals(lID.toString()));
 		
-		a.stop();
-		b.stop();
 		a.wipe();
 		return temp;
 	}

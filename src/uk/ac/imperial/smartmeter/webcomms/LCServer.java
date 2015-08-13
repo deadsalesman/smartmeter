@@ -94,9 +94,10 @@ public class LCServer implements Runnable {
 			if (oldtkt!= null)
 			{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
-			Double newUtility = evaluateUtility(newtkt, oldReq, oldtkt);
+
 			Double oldUtility = evaluateUtility(oldtkt, oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
+			Double newUtility = evaluateUtility(newtkt, oldReq, oldtkt);
 			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(5));
 			
 			if (result)
@@ -152,33 +153,33 @@ public class LCServer implements Runnable {
 			{
 		Double utility = 0.;
 		double duration;
-		duration = (newtkt.end.getTime() - newtkt.start.getTime()) / (double)QuantumNode.quanta;
+		duration = (newtkt.getEnd().getTime() - newtkt.getStart().getTime()) / (double)QuantumNode.quanta;
 		if (r.getMaxConsumption() <= newtkt.magnitude) {
 			if (r.getDuration() <= duration) {
-				utility += LCClient.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			}
 		}
 		return utility;
 			}
 	private Double evaluateUtility(ElectricityTicket newtkt, ElectricityRequirement r, ElectricityTicket oldtkt) {
 		Double utility = 0.;
-		double duration = (newtkt.end.getTime() - newtkt.start.getTime()) / (double)QuantumNode.quanta;
+		double duration = (newtkt.getEnd().getTime() - newtkt.getStart().getTime()) / (double)QuantumNode.quanta;
 		if (r.getMaxConsumption() <= newtkt.magnitude) {
 			if (r.getDuration() <= duration) {
-				utility += LCClient.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			} else {
 				// ticket is insufficient for this requirement
 				if (durationModifiable)
 				{
 				client.extendTicket(newtkt, r, oldtkt);
-				utility += LCClient.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 				}
 			}
 		} else {
 			if (amplitudeModifiable)
 			{
 			client.intensifyTicket(newtkt, r, oldtkt);
-			utility += LCClient.evalTimeGap(newtkt.start, newtkt.end, r.getStartTime(), r.getEndTime());
+			utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			}
 		}
 

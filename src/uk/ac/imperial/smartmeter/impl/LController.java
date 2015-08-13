@@ -114,16 +114,16 @@ public class LController {
 	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req) {
 		ArraySet<ElectricityTicket> ret = new ArraySet<ElectricityTicket>();
 		for (ElectricityTicket t : masterUser.getReqTktMap().values()){
-			if (t.start.compareTo(req.getStartTime())<0)
+			if (t.getStart().compareTo(req.getStartTime())<0)
 			{
-				if (t.end.compareTo(req.getStartTime())>=0)
+				if (t.getEnd().compareTo(req.getStartTime())>=0)
 				{
 					ret.add(t);
 				}
 			}
 			else
 			{
-				if (t.start.compareTo(req.getEndTime())<=0)
+				if (t.getStart().compareTo(req.getEndTime())<=0)
 				{
 					ret.add(t);
 				}

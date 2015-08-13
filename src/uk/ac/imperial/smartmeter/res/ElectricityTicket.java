@@ -7,13 +7,39 @@ import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ElectricityTicket implements UniqueIdentifierIFace{
-	public Date start;
-	public Date end;
+	private Date start;
+	private Date end;
 	public double magnitude;
-	public double duration;
+	private double duration;
 	public UUID ownerID;
 	public UUID id;
 	public UUID reqID;
+	public Date getStart()
+	{
+		return start;
+	}
+	public Date getEnd()
+	{
+		return end;
+	}
+	public void setStart(Date d)
+	{
+		start = d;
+		setDuration();
+	}
+	public void setEnd(Date d)
+	{
+		end = d;
+		setDuration();
+	}
+	public double getDuratison()
+	{
+		return duration;
+	}
+	public void setDuration()
+	{
+		duration= end.getTime() - start.getTime();
+	}
 	public ElectricityTicket(Date s, Date e, Double m, String owner, String reqId)
 	{
 		this(s,e,m,owner, reqId, UUID.randomUUID().toString());
@@ -22,7 +48,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace{
 	{
 		return String.valueOf(this.start.getTime()) + "," + String.valueOf(this.end.getTime()) + "," + this.magnitude + "," + this.ownerID.toString() + "," + this.reqID.toString() + "," + this.getId() + ",";
 	}
-	public double getDuration()
+	public double getQuantisedDuration()
 	{
 		return (end.getTime() - start.getTime())/QuantumNode.quanta;
 	}

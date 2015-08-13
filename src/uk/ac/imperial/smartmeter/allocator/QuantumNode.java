@@ -46,7 +46,7 @@ public class QuantumNode implements TimeNode {
 			if (r.getId().equals(id))
 			{
 				reqs.remove(r);
-				currentCapacity += r.getConsumption(startTime);
+				currentCapacity += Math.max(r.getConsumption(startTime),r.getConsumption(endTime));
 				return true;
 			}
 		}
