@@ -27,7 +27,7 @@ public class TestObservableFlow extends GenericTest {
 		UUID lID = UUID.fromString(l.get(0).id.toString());
 		UUID mID = UUID.fromString(m.get(0).id.toString());
 		try {
-			Thread.sleep(20000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

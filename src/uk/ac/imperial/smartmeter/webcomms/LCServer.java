@@ -36,7 +36,7 @@ public class LCServer implements Runnable {
 		verbose = loud;
 	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
-		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,  name, password, true);
+		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,  name, password, false);
 	}
 	public Integer getPort()
 	{
@@ -167,8 +167,10 @@ public class LCServer implements Runnable {
 				// ticket is insufficient for this requirement
 				if (durationModifiable)
 				{
-				client.extendTicket(newtkt, r, oldtkt);
+				if (client.extendTicket(newtkt, r, oldtkt))
+				{
 				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
+				}
 				}
 			}
 		} else {
