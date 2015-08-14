@@ -27,7 +27,7 @@ public class TestObservableFlow extends GenericTest {
 		UUID lID = UUID.fromString(l.get(0).id.toString());
 		UUID mID = UUID.fromString(m.get(0).id.toString());
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -41,7 +41,6 @@ public class TestObservableFlow extends GenericTest {
 		ArraySet<ElectricityTicket> q = b.server.client.getTickets();
 		
 		Boolean temp = (p.get(0).getId().equals(mID.toString()))&&(q.get(0).getId().equals(lID.toString()));
-		
 		a.wipe();
 		return temp;
 	}

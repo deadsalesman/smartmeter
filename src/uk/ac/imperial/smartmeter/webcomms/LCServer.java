@@ -97,7 +97,7 @@ public class LCServer implements Runnable {
 			ElectricityTicket tempNew = new ElectricityTicket(newtkt);
 			Double oldUtility = evaluateUtility(new ElectricityTicket(oldtkt), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
-			Double newUtility = evaluateUtility(tempNew, oldReq, tempOld);
+			Double newUtility = evaluateUtility(new ElectricityTicket(newtkt), oldReq, new ElectricityTicket(oldtkt));
 			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(5));
 			
 			if (result)

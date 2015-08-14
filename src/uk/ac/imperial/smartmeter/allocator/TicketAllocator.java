@@ -230,17 +230,16 @@ public class TicketAllocator {
 		}
 		return usrArray;
 	}
-	public Boolean fitIntoSpace(ElectricityTicket t, ElectricityRequirement r, int numberNeeded, boolean mutable, ArrayList<QuantumNode> nodes)
+	public Boolean fitIntoSpace(ElectricityTicket t, ElectricityRequirement r, int numberNeeded, double duration, boolean mutable, ArrayList<QuantumNode> nodes)
 	{
 		double durB = r.getDuration();
-		double edgeB = t.getQuantisedDuration() - durB;
-		ArrayList<QuantumNode> rNodes = queue.findIntersectingNodes(r);
+		ArrayList<QuantumNode> rNodes = queue.findIntersectingNodes(r,nodes);
 		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
 		
 		Date start = rNodes.get(0).getStartTime();
 		Date end   = rNodes.get(0).getEndTime();
 		int tally = 0;
-		for (QuantumNode q: nodes)
+		for (QuantumNode q: rNodes)
 		{
 			if (tally < numberNeeded)
 			{
@@ -260,7 +259,7 @@ public class TicketAllocator {
 			if (tally == numberNeeded)
 			{
 				t.setStart(start);
-				r.setStartTime(start, durB);
+				r.setStartTime(start, duration);
 				t.setEnd(end);
 				return addReqToNodes(r, viableNodes);
 			}
@@ -272,6 +271,9 @@ public class TicketAllocator {
 		double edgeB = oldTkt.getQuantisedDuration() - durB;
 		double durA = r.getDuration();
 		double edgeA = t.getQuantisedDuration() - durA;
+		edgeA = (edgeA <= 0.) ? edgeA : 0;
+		edgeB = (edgeB <= 0.) ? edgeB : 0;
+		
 		ElectricityRequirement reqNewA = new ElectricityRequirement(DateHelper.dPlus(t.getStart(), edgeA),
 				DateHelper.dPlus(t.getEnd(), -edgeA),
 				new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
@@ -306,11 +308,11 @@ public class TicketAllocator {
 		Boolean ret = false;
 		if (reqNewB.getStartTime().before(reqNewA.getStartTime()))
 		{
-			ret = fitIntoSpace(t, reqNewB,(int)Math.ceil(durB),mutable,nodes)&&fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),mutable,nodes);
+			ret = fitIntoSpace(t, reqNewB,(int)Math.ceil(durB),durB,mutable,nodes)&&fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),durA,mutable,nodes);
 		}
 		else
 		{
-			ret = fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),mutable,nodes)&&fitIntoSpace(t, reqNewB,(int)Math.ceil(durB),mutable,nodes);
+			ret = fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),durA,mutable,nodes)&&fitIntoSpace(t, reqNewB,(int)Math.ceil(durB),durB,mutable,nodes);
 		}
 		return ret; 
 	}
