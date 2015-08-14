@@ -522,11 +522,17 @@ public class LCClient{
 		return false;
 	}
 
-	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
+	public Boolean extendMutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
 		return modifyTicket("EXT",tkt,req,oldtkt);
 	}
-	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
+	public Boolean extendImmutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
+		return modifyTicket("EXF",tkt,req,oldtkt);
+	}
+	public Boolean intensifyMutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
 		return modifyTicket("INT",tkt,req,oldtkt);
+	}
+	public Boolean intensifyImmutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
+		return modifyTicket("INF",tkt,req,oldtkt);
 	}
 	public HashMap<String, InetSocketAddress> getPeers() {
 		String inputLine = formatMessage("ADR");

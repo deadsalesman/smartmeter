@@ -122,10 +122,10 @@ public class LCAdmin implements Runnable{
 						{
 							if (LCServer.calcUtilityNoExtension(e, req) > LCServer.calcUtilityNoExtension(t, req))
 							{
-							System.out.println(LCServer.calcUtilityNoExtension(e, req)+" : " + LCServer.calcUtilityNoExtension(t, req));
+							//System.out.println(LCServer.calcUtilityNoExtension(e, req)+" : " + LCServer.calcUtilityNoExtension(t, req));
 
 								successfulTrade = client.offer(location, port, e,t);
-								if (successfulTrade){System.out.println(e.toString()+" " + t.toString());}
+								if (successfulTrade){}//System.out.println(e.toString()+" " + t.toString());}
 							}
 						}
 						}

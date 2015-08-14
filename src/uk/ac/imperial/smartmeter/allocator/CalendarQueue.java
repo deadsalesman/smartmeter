@@ -26,6 +26,28 @@ public class CalendarQueue {
 		 calendar.add(new DayNode(startTime, i, conglom));
 	 }
  }
+ public ArrayList<QuantumNode> findIntersectingNodes(ElectricityRequirement req, ArrayList<QuantumNode> nodes)
+ {
+	 ArrayList<QuantumNode> ret = new ArrayList<QuantumNode>();
+	 for (QuantumNode q : nodes)
+	 {
+		 if (q.getEndTime().before(req.getStartTime())){
+				
+			}
+			else
+			{
+				if (q.getStartTime().after(req.getEndTime()))
+				{
+			      //break; //unsafe optimisation given the state of nodes is unknown and ordering cannot be relied upon.
+				}
+				else
+				{
+					ret.add(q);
+				}
+			}
+	 }
+	 return ret;
+ }
  public ArrayList<QuantumNode> findIntersectingNodes(ElectricityRequirement req)
  {
 	 ArrayList<QuantumNode> ret = new ArrayList<QuantumNode>();
@@ -49,6 +71,17 @@ public class CalendarQueue {
 			}
 		}
 	}
+	 return ret;
+ }
+ public ArrayList<QuantumNode> copyIntersectingNodes(ElectricityRequirement req)
+ {
+	 ArrayList<QuantumNode> originalNodes = findIntersectingNodes(req);
+	 ArrayList<QuantumNode> ret = new ArrayList<QuantumNode>();
+	 
+	 for (QuantumNode q : originalNodes)
+	 {
+		 ret.add(new QuantumNode(q));
+	 }
 	 return ret;
  }
  public boolean findDayNode(DayNode d)

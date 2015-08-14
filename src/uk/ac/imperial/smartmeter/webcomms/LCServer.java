@@ -102,7 +102,7 @@ public class LCServer implements Runnable {
 			
 			if (result)
 			{
-				
+				client.extendMutableTicket(tempNew, oldReq, tempOld);
 				return modifyTickets(oldtkt,newtkt, tempOld, tempNew);
 			}
 			}
@@ -122,6 +122,7 @@ public class LCServer implements Runnable {
 		// TODO Auto-generated method stub
 		//change the owners of the tickets around
 		//format as string suitable for transfer
+		
 		newtkt.modifyTimings(tempOld);
 		newtkt.modifyID(tempNew);
 		oldtkt.modifyTimings(tempNew);
@@ -167,7 +168,7 @@ public class LCServer implements Runnable {
 				// ticket is insufficient for this requirement
 				if (durationModifiable)
 				{
-				if (client.extendTicket(newtkt, r, oldtkt))
+				if (client.extendImmutableTicket(newtkt, r, oldtkt))
 				{
 				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 				}
@@ -176,7 +177,7 @@ public class LCServer implements Runnable {
 		} else {
 			if (amplitudeModifiable)
 			{
-			client.intensifyTicket(newtkt, r, oldtkt);
+			client.intensifyMutableTicket(newtkt, r, oldtkt);
 			utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			}
 		}

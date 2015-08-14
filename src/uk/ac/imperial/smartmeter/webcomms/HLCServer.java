@@ -52,6 +52,14 @@ public class HLCServer {
 		{
 			return modifyTicket(splitMsg);
 		}
+		case ("INF"):
+		{
+			return modifyTicket(splitMsg);
+		}
+		case ("EXF"):
+		{
+			return modifyTicket(splitMsg);
+		}
 		case ("REQ"):
 		{
 			return resultToStr(addReq(splitMsg));
@@ -139,9 +147,13 @@ public class HLCServer {
 			Boolean success = false;
 			switch(splitMsg.get(1))
 			{
-			case("INT"): success = handler.intensifyTicket(tkt,req,tktOld);
+			case("INT"): success = handler.intensifyTicket(tkt,req,tktOld,true);
 				break;
-			case("EXT"): success = handler.extendTicket(tkt, req,tktOld);
+			case("INF"): success = handler.intensifyTicket(tkt,req,tktOld,false);
+				break;
+			case("EXT"): success = handler.extendTicket(tkt, req,tktOld,true);
+				break;
+			case("EXF"): success = handler.extendTicket(tkt, req,tktOld,false);
 				break;
 			}
 			if(success)

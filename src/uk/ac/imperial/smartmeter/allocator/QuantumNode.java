@@ -20,6 +20,13 @@ public class QuantumNode implements TimeNode {
 		currentCapacity = cap;
 		maxCapacity = cap;
 	}
+	public QuantumNode(QuantumNode q) {
+		startTime = q.startTime;
+		endTime = q.endTime;
+		currentCapacity = q.currentCapacity;
+		maxCapacity = q.maxCapacity;
+		reqs = new ArraySet<ElectricityRequirement>(q.reqs);
+	}
 	public Integer getQuanta()
 	{
 		return quanta;

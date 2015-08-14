@@ -18,6 +18,14 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	{
 		arr = new ArrayList<T>();
 	}
+	public ArraySet(ArraySet<T> t)
+	{
+		arr = new ArrayList<T>();
+		for (T q : t)
+		{
+			arr.add(q);
+		}
+	}
 	public ArraySet(T t)
 	{
 		arr = new ArrayList<T>();

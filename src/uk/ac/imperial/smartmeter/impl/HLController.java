@@ -37,9 +37,9 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		pullAgtFromDB();
 		pullReqsFromDB();
 	}
-	public Boolean extendTicket(ElectricityRequirement e, ElectricityTicket t, ElectricityTicket tktOld)
+	public Boolean extendTicket(ElectricityRequirement e, ElectricityTicket t, ElectricityTicket tktOld, boolean mutable)
 	{
-	return alloc.extendTicket(t, e, tktOld,findMatchingRequirement(t));
+	return alloc.extendTicket(t, e, tktOld,findMatchingRequirement(t),mutable);
 		
 	}
 	public Boolean addRequirement(ElectricityRequirement e) {
