@@ -32,7 +32,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace{
 		end = d;
 		setDuration();
 	}
-	public double getDuratison()
+	public double getDuration()
 	{
 		return duration;
 	}

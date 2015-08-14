@@ -165,8 +165,12 @@ public class LController {
 		{
 			if (r.getId().equals(t.reqID.toString()))
 			{
-				masterUser.getReqTktMap().put(r, t);
-				return true;
+				if ((r.getMaxConsumption()<= t.magnitude)&&(r.getDuration()<=t.getDuration()))
+				{
+					masterUser.getReqTktMap().put(r, t);
+					return true;
+				}
+				else{return false;}
 			}
 		}
 		return false;
