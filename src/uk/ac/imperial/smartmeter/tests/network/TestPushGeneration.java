@@ -10,7 +10,7 @@ import uk.ac.imperial.smartmeter.webcomms.LCServer;
 public class TestPushGeneration extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest()  throws Exception{
 		String t = UUID.randomUUID().toString();
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,8999,t,"");
 		aClient.client.registerUser(0.,0.,0.,8000);

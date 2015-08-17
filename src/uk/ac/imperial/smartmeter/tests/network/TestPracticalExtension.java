@@ -13,7 +13,7 @@ import uk.ac.imperial.smartmeter.webcomms.LCServer;
 public class TestPracticalExtension extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest()  throws Exception{
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9010,TicketTestHelper.user1,"");
 		LCServer bClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9011,TicketTestHelper.user2,"");
 

@@ -41,7 +41,7 @@ implements ActionListener {
 	private ViewManager view;
 	private MenuManager menu;
 
-	public MainGUIClass(String[] args) {
+	public MainGUIClass(String[] args) throws Exception{
 
 		super(new BorderLayout());
 
@@ -249,17 +249,24 @@ implements ActionListener {
 		frame.getContentPane().setSize(800, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		MainGUIClass swinger = new MainGUIClass(args);
-		swinger.createLayout(frame, swinger.getButtons());
-		// Add content to the window.
+		MainGUIClass swinger;
+		try {
+			swinger = new MainGUIClass(args);
+			swinger.createLayout(frame, swinger.getButtons());
+			// Add content to the window.
 
-		// frame.add(swinger);
+			// frame.add(swinger);
 
-		// Display the window.
-		frame.setPreferredSize(new Dimension(900,600));
-		frame.pack();
+			// Display the window.
+			frame.setPreferredSize(new Dimension(900,600));
+			frame.pack();
 
-		frame.setVisible(true);
+			frame.setVisible(true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 

@@ -14,7 +14,7 @@ import uk.ac.imperial.smartmeter.webcomms.LCServer;
 public class TestExtendTicket extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest()  throws Exception{
 		
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9009,TicketTestHelper.user1,"");
 		

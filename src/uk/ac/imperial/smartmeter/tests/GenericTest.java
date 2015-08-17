@@ -24,7 +24,7 @@ public abstract class GenericTest implements testIFace {
 	{
 		return success;
 	}
-	public abstract boolean doTest();
+	public abstract boolean doTest() throws Exception;
 	public boolean displayResults(boolean ans)
 	{
 		if (print)

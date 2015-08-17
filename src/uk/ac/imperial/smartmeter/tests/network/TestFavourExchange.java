@@ -13,7 +13,7 @@ import uk.ac.imperial.smartmeter.webcomms.LCServer;
 public class TestFavourExchange extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest()  throws Exception{
 		//a will get the ticket in the preferred slot, and then exchange it with b for a favour.
 		
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9004,TicketTestHelper.user1,"");

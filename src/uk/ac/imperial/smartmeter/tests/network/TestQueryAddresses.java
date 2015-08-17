@@ -11,7 +11,7 @@ import uk.ac.imperial.smartmeter.webcomms.LCServer;
 public class TestQueryAddresses extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest()  throws Exception{
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9023,TicketTestHelper.user1,"");
 		aClient.start();
 		int port = 4000;

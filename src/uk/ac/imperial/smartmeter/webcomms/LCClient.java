@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,6 +20,7 @@ import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.DayNode;
 import uk.ac.imperial.smartmeter.impl.LCHandler;
+import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -88,6 +93,17 @@ public class LCClient{
 			System.exit(1);
 		}
 		return ret;
+	}
+	public void getMsg(String name)
+	{
+		try {
+			LCServerIFace srv = (LCServerIFace)Naming.lookup(name);
+			System.out.println(srv.getMessage());
+		} catch (MalformedURLException | RemoteException | NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	public ArrayList<String> connectClient(ArrayList<String> input,String clientHost, int clientPort) throws IOException {
 		return connectServer(input, clientHost, clientPort);

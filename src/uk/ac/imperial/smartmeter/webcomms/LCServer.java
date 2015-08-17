@@ -4,19 +4,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
+import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
-public class LCServer implements Runnable {
+public class LCServer extends UnicastRemoteObject implements Runnable, LCServerIFace{
 	private Integer portNum;
 	private UserAddressBook addresses;
 	public LCClient client;
@@ -29,13 +35,28 @@ public class LCServer implements Runnable {
 	{
 		durationModifiable = t;
 	}
-	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password,Boolean loud) {
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password,Boolean loud) throws RemoteException 
+	{
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
 		addresses = new UserAddressBook();
 		verbose = loud;
+		
+		try {
+			LocateRegistry.createRegistry(1099);
+		}
+		catch (RemoteException e)
+		{
+			
+		}
+		try {
+			Naming.rebind("//localhost/LCServer", this);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) {
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) throws RemoteException {
 		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,  name, password, false);
 	}
 	public Integer getPort()
@@ -276,6 +297,10 @@ public class LCServer implements Runnable {
 	}
 	public void stop() {
 		active = false;
+	}
+	@Override
+	public String getMessage() throws RemoteException {
+		return "RMI YAY";
 	}
 
 }

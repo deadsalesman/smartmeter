@@ -9,7 +9,7 @@ import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 public class TestManyStandaloneClients extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest()  throws Exception{
 		LCStandalone a = new LCStandalone(9304, TicketTestHelper.user1,1.,2.,3.);
 		LCStandalone b = new LCStandalone(9305, TicketTestHelper.user2,2.,1.,2.);
 		LCStandalone c = new LCStandalone(9306, TicketTestHelper.user3,2.,1.,3.);

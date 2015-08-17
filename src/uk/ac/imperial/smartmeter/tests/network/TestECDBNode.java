@@ -10,7 +10,7 @@ import uk.ac.imperial.smartmeter.webcomms.LCServer;
 public class TestECDBNode extends GenericTest {
 
 	@Override
-	public boolean doTest(){
+	public boolean doTest() throws Exception{
 		 LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort, 9003, TicketTestHelper.user1,"");
 		 Boolean ret = aClient.client.addDevice(true, 1, UUID.randomUUID().toString(),11);
 		 aClient.client.wipeAll();

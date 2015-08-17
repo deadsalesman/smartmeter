@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.tests.autonomous;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public class TestArbitraryClientNumber extends GenericTest {
 		Integer nClients = 100;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		ArrayList<ArraySet<ElectricityTicket>> tickets = new ArrayList<ArraySet<ElectricityTicket>>();
-		
+		try{
 		for (int i = 0; i < nClients; i++)
 		{
 			LCStandalone newLC = new LCStandalone(9400+i, UUID.randomUUID().toString(),1.,200.,3.);
@@ -29,7 +30,10 @@ public class TestArbitraryClientNumber extends GenericTest {
 				e.printStackTrace();
 			}
 		}
-		
+		}catch(RemoteException e)
+		{
+			
+		}
 		
 		clients.get(0).server.client.GodModeCalcTKTS();
 

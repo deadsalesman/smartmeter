@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.autonomous;
 
+import java.rmi.RemoteException;
+
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
@@ -11,7 +13,7 @@ public class LCStandalone {
 	Thread s;
 	Thread a;
 	
-	public LCStandalone(int port, String name,Double worth, Double generation, Double economic)
+	public LCStandalone(int port, String name,Double worth, Double generation, Double economic) throws RemoteException
 	{
 		initialise(port, name,worth, generation, economic);
 		server.setTicketDurationModifiable(true);
@@ -31,7 +33,7 @@ public class LCStandalone {
 			e.printStackTrace();
 		}
 	}
-	public void initialise(int port, String name, Double worth, Double generation, Double economic)
+	public void initialise(int port, String name, Double worth, Double generation, Double economic) throws RemoteException
 	{
 		server = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,port,name,"");
 		admin = new LCAdmin(server.client,port);
@@ -43,7 +45,12 @@ public class LCStandalone {
 	}
 	public static void main(String[] args)
 	{
-		LCStandalone s = new LCStandalone(Integer.parseInt(args[0]),args[1],Double.parseDouble(args[2]),Double.parseDouble(args[3]),Double.parseDouble(args[4]));
+		try {
+			LCStandalone s = new LCStandalone(Integer.parseInt(args[0]),args[1],Double.parseDouble(args[2]),Double.parseDouble(args[3]),Double.parseDouble(args[4]));
+		} catch (NumberFormatException | RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public void wipe() {
 		server.client.wipeAll();
