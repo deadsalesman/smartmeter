@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.autonomous;
 
+import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
 import uk.ac.imperial.smartmeter.webcomms.LCServer;
@@ -46,6 +47,14 @@ public class LCStandalone {
 	}
 	public void wipe() {
 		server.client.wipeAll();
+	}
+	public void printTkts() {
+
+		System.out.println(server.client.handler.getId() + " is printing: ");
+		for (ElectricityTicket t : server.client.getTickets())
+		{
+			System.out.println(t.toString());
+		}
 	}
 	
 }

@@ -3,6 +3,7 @@ package uk.ac.imperial.smartmeter.webcomms;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -16,10 +17,10 @@ public class LCAdmin implements Runnable{
 	private Double timeSinceLastBulletin=0.;
 	private Double timeSinceLastNegotiation=0.;
 
-	private Double reasonableBulletinTime = Math.pow(10., 7.5);
-	private Double reasonableTicketTime = Math.pow(10., 7.5);
-	private Double reasonableNegotiationTime = Math.pow(10.,7.6);
-	private Double pollingTime = Math.pow(10., 6);
+	private Double reasonableBulletinTime;
+	private Double reasonableTicketTime;
+	private Double reasonableNegotiationTime;
+	private Double pollingTime = Math.pow(10., 8);
 	
 	private Bulletin bulletin;
 	public LCClient client;
@@ -30,6 +31,10 @@ public class LCAdmin implements Runnable{
 		client = lc;
 		bulletin = new Bulletin();
 		ownPort = port;
+		Random rn = new Random();
+		reasonableBulletinTime = Math.pow(10., 8.8) + rn.nextInt(30);
+		reasonableTicketTime = Math.pow(10., 8.8)+ rn.nextInt(30);
+		reasonableNegotiationTime = Math.pow(10.,8.9)+ rn.nextInt(30);
 	}
 	public void activate()
 	{

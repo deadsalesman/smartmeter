@@ -289,6 +289,7 @@ public class LCClient{
 			ArrayList<String> ret = connectHLC(input);
 			if (ret.get(0).equals("SUCCESS"))
 			{
+				handler.setGeneration(new ElectricityGeneration(generation));
 				return true;
 			}
 		} catch (IOException e) {
