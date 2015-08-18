@@ -66,15 +66,11 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		}
 		return ret;
 	}
-	public Boolean clearAll(String pass)
+	public Boolean clearAll()
 	{
-		if (pass.equals("drop"))
-		{
 			agents = new ArraySet<UserAgent> ();
 			alloc = new TicketAllocator(agents,new Date(), true);
 			return (dbReq.wipe() && dbAgt.wipe());
-		}
-		return false;
 	}
 	public Boolean calculateTickets()
 	{

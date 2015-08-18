@@ -24,7 +24,6 @@ public class LCStandalone {
 		server.stop();
 
 		admin.stop();
-		server.client.unjamServer();
 		try {
 			s.join();
 			a.join();

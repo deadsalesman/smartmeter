@@ -16,7 +16,7 @@ public class TestQueryAddresses extends GenericTest {
 		aClient.start();
 		int port = 4000;
 		aClient.client.registerUser(1., 2., 3., port);
-		HashMap<String, InetSocketAddress> ret = aClient.client.getPeers();
+		HashMap<String, InetSocketAddress> ret = aClient.client.getAddresses();
 		
 		Boolean e =  ret.get(aClient.client.getId()).getPort()==port;
 		aClient.client.wipeAll();

@@ -1,30 +1,19 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
-import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
 public class LCServer implements Runnable, LCServerIFace{
 	private Integer portNum;
-	private String ownIP;
 	private UserAddressBook addresses;
 	public LCClient client;
 	private boolean durationModifiable = false;
@@ -36,13 +25,17 @@ public class LCServer implements Runnable, LCServerIFace{
 	{
 		durationModifiable = t;
 	}
-	public void RMISetup()
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password,Boolean loud) throws RemoteException 
 	{
+		portNum = ownPort;
+		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
+		addresses = new UserAddressBook();
+		verbose = loud;
 		 if (System.getSecurityManager() == null) {
 	            System.setSecurityManager(new RMISecurityManager());
 	        }
 		try {
-			LocateRegistry.createRegistry(1099);
+			LocateRegistry.createRegistry(portNum);
 		}
 		catch (RemoteException e)
 		{
@@ -52,25 +45,16 @@ public class LCServer implements Runnable, LCServerIFace{
 		{
 
 			LCServerIFace stub = (LCServerIFace) UnicastRemoteObject.exportObject(this, 0);
-		String urlString = ("rmi://"+ownIP+ "/LCServer");
-  Registry registry = LocateRegistry.getRegistry();
-  registry.rebind("LCServer", stub);
+			Registry registry = LocateRegistry.getRegistry(portNum);
+			registry.rebind("LCServer", stub);
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
 		}
-	}
-	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String ownIPVal, String name,String password,Boolean loud) throws RemoteException 
-	{
-		portNum = ownPort;
-		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
-		addresses = new UserAddressBook();
-		verbose = loud;
-		ownIP = ownIPVal;
 		
 	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) throws RemoteException {
-		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,("127.0.0.1:"+ownPort), name, password, false);
+		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort, name, password, false);
 	}
 	public Integer getPort()
 	{
@@ -79,77 +63,6 @@ public class LCServer implements Runnable, LCServerIFace{
 	public void close()
 	{
 		active = false;
-	}
-	private String recvMsg(String msg) {
-		List<String> splitMsg = Arrays.asList(msg.split(",[ ]*"));
-		switch (splitMsg.get(1)) {
-		case ("ADV"): {
-			return findCompetingTickets(splitMsg);
-		}
-		case ("OFR"): {
-			return considerOffer(splitMsg);
-		}
-		case ("REG"): {
-			return register(splitMsg);
-		}
-		default: {
-			return "NUL";
-		}
-		}
-	}
-
-	private String register(List<String> splitMsg) {
-		UserAddress u = new UserAddress(splitMsg.get(2), splitMsg.get(3),Integer.parseInt(splitMsg.get(4)));
-		
-		if (addresses.addUser(u))
-		{
-			return "SUCCESS,";
-		}
-		
-		return "FAILURE,";
-	}
-
-	private String considerOffer(List<String> splitMsg) {
-
-		String traderId = splitMsg.get(0);
-        if (addresses.queryUserExists(traderId))
-        {
-		try {
-			ElectricityTicket newtkt = new ElectricityTicket(
-					new Date(Long.parseLong(splitMsg.get(9))),
-					new Date(Long.parseLong(splitMsg.get(10))),
-					Double.parseDouble(splitMsg.get(11)),
-					traderId,
-					splitMsg.get(13),
-					splitMsg.get(14)
-					);
-			ElectricityTicket oldtkt = findOwnTicket(splitMsg.get(7));
-			if (oldtkt!= null)
-			{
-			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(oldtkt);
-			ElectricityTicket tempOld = new ElectricityTicket(oldtkt);
-			ElectricityTicket tempNew = new ElectricityTicket(newtkt);
-			Double oldUtility = evaluateUtility(new ElectricityTicket(oldtkt), oldReq, null); //third parameter not included here for convenience
-																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
-			Double newUtility = evaluateUtility(new ElectricityTicket(newtkt), oldReq, new ElectricityTicket(oldtkt));
-			Boolean result = decideUtility(newUtility, oldUtility,splitMsg.get(5));
-			
-			if (result)
-			{
-				client.extendMutableTicket(tempNew, oldReq, tempOld);
-				return modifyTickets(oldtkt,newtkt, tempOld, tempNew);
-			}
-			}
-			else
-			{
-				return "FAILURE";
-			}
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        }
-		return "FAILURE";
 	}
 
 	private String modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt, ElectricityTicket tempOld, ElectricityTicket tempNew) {
@@ -202,7 +115,7 @@ public class LCServer implements Runnable, LCServerIFace{
 				// ticket is insufficient for this requirement
 				if (durationModifiable)
 				{
-				if (client.extendImmutableTicket(newtkt, r, oldtkt))
+				if (client.extendImmutableTicket(newtkt, oldtkt, r))
 				{
 				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 				}
@@ -211,7 +124,7 @@ public class LCServer implements Runnable, LCServerIFace{
 		} else {
 			if (amplitudeModifiable)
 			{
-			client.intensifyMutableTicket(newtkt, r, oldtkt);
+			client.intensifyMutableTicket(newtkt, oldtkt, r);
 			utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			}
 		}
@@ -219,69 +132,6 @@ public class LCServer implements Runnable, LCServerIFace{
 		return utility;
 	}
 
-	private ElectricityTicket findOwnTicket(String string) {
-		return client.getTickets().findFromID(string);
-	}
-
-	private String findCompetingTickets(List<String> splitMsg) {
-
-		String ret = "FAILURE";
-		if (addresses.queryUserExists(splitMsg.get(7))) {
-			ElectricityRequirement req;
-			try {
-				req = new ElectricityRequirement(
-						new Date(Long.parseLong(splitMsg.get(2))),
-						new Date(Long.parseLong(splitMsg.get(3))),
-						new DecimalRating(Integer.parseInt(splitMsg.get(4))),
-						Integer.parseInt(splitMsg.get(5)),
-						Double.parseDouble(splitMsg.get(6)),
-						splitMsg.get(7),
-						splitMsg.get(8));
-				ArraySet<ElectricityTicket> tickets = client.findCompetingTickets(req);
-
-				if (tickets != null) {
-					ret = "SUCCESS,";
-					for (ElectricityTicket et : tickets) {
-						ret += et.toString();
-					}
-				}
-			} catch (Exception e) {
-			}
-		}
-		return ret;
-	}
-
-	public boolean listen() throws IOException {
-		while(active){
-		try (ServerSocket serverSocket = new ServerSocket(portNum);){
-		serverSocket.setSoTimeout(3000);
-				try(
-				Socket clientSocket = serverSocket.accept();
-				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
-
-			String inputLine, outputLine;
-
-			while (((inputLine = in.readLine()) != null)&&active) {
-				outputLine = recvMsg(inputLine);
-				out.println(outputLine);
-
-                if (verbose)
-                {
-                	System.out.println("Input: " +inputLine);
-                	System.out.println("Output: " + outputLine);
-                }
-				if (outputLine.equals("NUL"))
-					return true;
-			}
-				}
-		} catch (IOException e) {
-			//System.out.println("Exception caught when trying to listen on port " + portNum + " or listening for a connection");
-			//System.out.println(e.getMessage());
-		}
-		}
-		return false;
-	}
 	public void start() {
 		//System.out.println("Client server listening.");
 		if (t == null)
@@ -293,10 +143,11 @@ public class LCServer implements Runnable, LCServerIFace{
 	@Override
 	public void run() {
 			try {
-				while(listen()&&active)
+				while(active)
 				{
+					Thread.sleep(1);
 				}
-			} catch (IOException e) {
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -312,8 +163,60 @@ public class LCServer implements Runnable, LCServerIFace{
 		active = false;
 	}
 	@Override
-	public String getMessage() throws RemoteException {
+	public String getMessage(String name, int port) throws RemoteException {
 		return "RMI YAY";
+	}
+	@Override
+	public Boolean registerClient(String location, int port, int ownPort,String userId, String ipAddr) {
+	UserAddress u = new UserAddress(userId, ipAddr,ownPort);
+		
+		return addresses.addUser(u);
+	}
+	@Override
+	public Boolean offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) {
+
+		String traderId = tktNew.ownerID.toString();
+        if (addresses.queryUserExists(traderId))
+        {
+			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktOld);
+			ElectricityTicket tempOld = new ElectricityTicket(tktOld);
+			ElectricityTicket tempNew = new ElectricityTicket(tktNew);
+			Double oldUtility = evaluateUtility(new ElectricityTicket(tktOld), oldReq, null); //third parameter not included here for convenience
+																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
+			Double newUtility = evaluateUtility(new ElectricityTicket(tktNew), oldReq, new ElectricityTicket(tktOld));
+			Boolean result = decideUtility(newUtility, oldUtility,traderId);
+			
+			if (result)
+			{
+				client.extendMutableTicket(tempNew, oldReq, tempOld);
+				modifyTickets(tktOld,tktNew, tempOld, tempNew);
+				return true;
+			}
+			}
+			else
+			{
+			}
+		return false;
+	}
+	@Override
+	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
+
+		ArraySet<ElectricityTicket> ret = new ArraySet<ElectricityTicket>();
+		if (addresses.queryUserExists(req.getUserID())) {
+			
+				ArraySet<ElectricityTicket> tickets = client.findCompetingTickets(req);
+
+				if (tickets != null) {
+					for (ElectricityTicket et : tickets) 
+					{
+						if (et!=null)
+						{
+							ret.add(et);
+						}
+					}
+				}
+		}
+		return ret;
 	}
 
 }

@@ -45,7 +45,7 @@ public class LCAdmin implements Runnable{
 		active = false;
 	}
 	private Boolean requestBulletin() {
-		HashMap<String, InetSocketAddress> x = client.getPeers();
+		HashMap<String, InetSocketAddress> x = client.getAddresses();
 		if (x!= null) {
 		for (Entry<String, InetSocketAddress> e : x.entrySet())
 		{
