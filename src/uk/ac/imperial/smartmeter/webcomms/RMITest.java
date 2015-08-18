@@ -16,7 +16,15 @@ public class RMITest {
 		try {
 			LCServer srv = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,1099,TicketTestHelper.user1,"");
 			srv.RMISetup();
-			srv.client.getMsg("rmi://155.198.117.20:1099/LCServer");
+			//while(true)
+			{
+				try{
+					Thread.sleep(100);
+				}
+				catch(Exception e)
+				{}
+			}
+			srv.client.getMsg("155.198.117.20");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
