@@ -19,13 +19,15 @@ public class TestECDBNodeToggle extends GenericTest {
 				{
 					state = !state;
 					aClient.client.setState(t, state);
+					
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException e) {
 						// don't sleep, I suppose. Be that way.
 					}
 				}
-				Boolean ret = aClient.client.getState(t)==state;
+
+				Boolean ret = aClient.client.getState(t).equals(state);
 				aClient.client.wipeAll();
 				return ret;
 				

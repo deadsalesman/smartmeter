@@ -14,7 +14,7 @@ public class TestArbitraryClientNumber extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		Integer nClients = 100;
+		Integer nClients = 30;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		ArrayList<ArraySet<ElectricityTicket>> tickets = new ArrayList<ArraySet<ElectricityTicket>>();
 		try{

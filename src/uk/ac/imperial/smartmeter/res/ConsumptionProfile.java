@@ -17,6 +17,8 @@ public abstract class ConsumptionProfile {
 		amplitude = amp;
 		duration = dur;
 	}
+	public ConsumptionProfile() {
+	}
 	public double getConsumption(Date start, Date offset)
 	{
 		Long time = offset.getTime() - start.getTime();

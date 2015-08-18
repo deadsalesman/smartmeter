@@ -13,5 +13,15 @@ public class HLContNode {
 		}
 		client = new HLCServer(Integer.parseInt(args[0]));
 		System.out.println("High Level Server listening on " + args[0]);
+		
+		while(true)
+		{
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }

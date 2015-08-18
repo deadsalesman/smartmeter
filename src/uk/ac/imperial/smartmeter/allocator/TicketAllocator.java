@@ -196,7 +196,7 @@ public class TicketAllocator {
 			{
 				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
 				rankings.put(max, newRank);
-				if (newRank ==0)
+				if ((newRank ==0)||(Double.isNaN(newRank)))
 				{
 					userFinished.put(max, true);
 				}

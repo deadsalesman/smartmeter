@@ -88,7 +88,10 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 
 				for (ElectricityTicket t : a.getReqTktMap().values())
 				{
+					if (t!=null)
+					{
 					ret.add(t);
+					}
 				}
 			}
 		}

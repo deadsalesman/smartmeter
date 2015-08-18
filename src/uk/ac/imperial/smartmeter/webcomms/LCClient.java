@@ -108,10 +108,14 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	public Boolean setRequirement(ElectricityRequirement req)
 	{
 		try {
-			return lookupHLCServer().setRequirement(req);
+			if (lookupHLCServer().setRequirement(req))
+			{
+				return handler.setRequirement(req);
+			}
 		} catch (RemoteException e) {
-			return false;
 		}
+
+		return false;
 	}
 	public Boolean setState(String deviceID, Boolean val)
 	{
@@ -247,15 +251,39 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	}
 	private LCServerIFace lookupLCServer(String name, int port)
 	{
-		return (LCServerIFace)lookupServer(name,port, "LCServer");
+		//return (LCServerIFace)lookupServer(name,port, "LCServer");
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(name, port);
+			return (LCServerIFace) registry.lookup("LCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
 	}
 	private HLCServerIFace lookupHLCServer()
 	{
-		return (HLCServerIFace)lookupServer(hLCHost,hLCPort, "HLCServer");
+		//return (HLCServerIFace)lookupServer(hLCHost,hLCPort, "HLCServer");
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(hLCHost,hLCPort);
+			return (HLCServerIFace) registry.lookup("HLCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
 	}
 	private EDCServerIFace lookupEDCServer()
 	{
-		return (EDCServerIFace)lookupServer(eDCHost,eDCPort, "EDCServer");
+		//return (EDCServerIFace)lookupServer(eDCHost,eDCPort, "EDCServer");
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(eDCHost,eDCPort);
+			return (EDCServerIFace) registry.lookup("EDCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
 	}
 	@Override
 	public String getMessage(String name, int port) throws RemoteException {

@@ -1,6 +1,13 @@
 package uk.ac.imperial.smartmeter.res;
 
-public class DecimalRating {
+import java.io.Serializable;
+
+public class DecimalRating implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4558720313332129703L;
+	
 	private int value;
 	
 	public DecimalRating(int i)

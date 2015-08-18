@@ -6,8 +6,8 @@ public class AutonTester extends GenericTester {
 
 	@Override
 	public Integer main() {
-		//testLog.add(new TestObservableFlow());
-		//testLog.add(new TestManyStandaloneClients());
+		testLog.add(new TestObservableFlow());
+		testLog.add(new TestManyStandaloneClients());
 		testLog.add(new TestArbitraryClientNumber());
 		return reportLog();
 	}

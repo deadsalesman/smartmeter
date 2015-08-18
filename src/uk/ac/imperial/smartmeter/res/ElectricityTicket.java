@@ -1,12 +1,17 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
-public class ElectricityTicket implements UniqueIdentifierIFace{
+public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7182591298140167129L;
 	private Date start;
 	private Date end;
 	public double magnitude;
