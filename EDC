@@ -1,2 +1,2 @@
 . ./updateCP
-java uk.ac.imperial.smartmeter.webcomms.EDContNode 7777 true
+java uk.ac.imperial.smartmeter.webcomms.EDContNode 7777 $1
