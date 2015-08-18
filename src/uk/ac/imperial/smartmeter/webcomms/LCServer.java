@@ -4,12 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,8 +22,9 @@ import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 
-public class LCServer extends UnicastRemoteObject implements Runnable, LCServerIFace{
+public class LCServer implements Runnable, LCServerIFace{
 	private Integer portNum;
+	private String ownIP;
 	private UserAddressBook addresses;
 	public LCClient client;
 	private boolean durationModifiable = false;
@@ -35,13 +36,11 @@ public class LCServer extends UnicastRemoteObject implements Runnable, LCServerI
 	{
 		durationModifiable = t;
 	}
-	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password,Boolean loud) throws RemoteException 
+	public void RMISetup()
 	{
-		portNum = ownPort;
-		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
-		addresses = new UserAddressBook();
-		verbose = loud;
-		
+		 if (System.getSecurityManager() == null) {
+	            System.setSecurityManager(new RMISecurityManager());
+	        }
 		try {
 			LocateRegistry.createRegistry(1099);
 		}
@@ -49,15 +48,29 @@ public class LCServer extends UnicastRemoteObject implements Runnable, LCServerI
 		{
 			
 		}
-		try {
-			Naming.rebind("//localhost/LCServer", this);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		try
+		{
+
+			LCServerIFace stub = (LCServerIFace) UnicastRemoteObject.exportObject(this, 0);
+		String urlString = ("rmi://"+ownIP+ "/LCServer");
+  Registry registry = LocateRegistry.getRegistry();
+  registry.rebind("LCServer", stub);
+		}catch (RemoteException e)
+		{
+			System.out.println(e.getMessage());
 		}
 	}
+	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String ownIPVal, String name,String password,Boolean loud) throws RemoteException 
+	{
+		portNum = ownPort;
+		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
+		addresses = new UserAddressBook();
+		verbose = loud;
+		ownIP = ownIPVal;
+		
+	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) throws RemoteException {
-		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,  name, password, false);
+		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort,("127.0.0.1:"+ownPort), name, password, false);
 	}
 	public Integer getPort()
 	{

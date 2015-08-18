@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,6 +44,9 @@ public class LCClient{
 		userName = name;
 		handler = new LCHandler(name,password,0.,0.,0.); //TODO: make not naughty. 
 		userId = handler.getId();
+		 if (System.getSecurityManager() == null) {
+	            System.setSecurityManager(new RMISecurityManager());
+	        }
 	}
 	public boolean queryUnhappyTickets()
 	{
@@ -97,9 +101,10 @@ public class LCClient{
 	public void getMsg(String name)
 	{
 		try {
-			LCServerIFace srv = (LCServerIFace)Naming.lookup(name);
+			Registry registry = LocateRegistry.getRegistry(name);
+			LCServerIFace srv = (LCServerIFace) registry.lookup("LCServer");
 			System.out.println(srv.getMessage());
-		} catch (MalformedURLException | RemoteException | NotBoundException e) {
+		} catch (RemoteException | NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
