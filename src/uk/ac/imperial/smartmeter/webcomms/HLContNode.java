@@ -12,6 +12,8 @@ public class HLContNode {
 			System.exit(1);
 		}
 		client = new HLCServer(Integer.parseInt(args[0]));
+
+		System.setProperty("java.rmi.server.hostname", DefaultTestClient.ipAddr); 
 		System.out.println("High Level Server listening on " + args[0]);
 		
 		while(true)

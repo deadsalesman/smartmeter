@@ -12,6 +12,7 @@ public class EDContNode {
 		}
 		client = new EDCServer(Integer.parseInt(args[0]));
 
+		System.setProperty("java.rmi.server.hostname", DefaultTestClient.ipAddr); 
 		System.out.println("Device Server listening on : " + args[0]);
 		while(true)
 		{
