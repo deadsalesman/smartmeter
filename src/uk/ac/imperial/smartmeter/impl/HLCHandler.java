@@ -45,7 +45,7 @@ public class HLCHandler {
 	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean mutable) {
 		return controller.extendTicket(req, tkt,tktOld,mutable);
 	}
-	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean b) {
-		return controller.intensifyTicket(req,tkt,tktOld);
+	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean mutable) {
+		return controller.intensifyTicket(req,tkt,tktOld, mutable);
 	}
 }
