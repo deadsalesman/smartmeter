@@ -20,12 +20,12 @@ public class RMITest {
 			LCServer srv = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,1098,TicketTestHelper.user1,"");
 			EDCServer client = new EDCServer(9002);
 			HLCServer hl = new HLCServer(9001);
-			srv.client.getMessage("155.198.117.20",1099);
+			
 //			boolean redt = srv.client.addDevice(true, 1, UUID.randomUUID().toString(), 5);
 			ElectronicDevice ed = new ElectronicDevice(true, 1, UUID.randomUUID().toString());
 			 //Boolean ret = srv.client.addDevice(ed,11);
 			 //srv.client.wipeAll();
-			 //System.out.println(ret);
+			 System.out.println(srv.client.getMessage("155.198.117.20",1098));
 			while(true)
 			{
 				try{
