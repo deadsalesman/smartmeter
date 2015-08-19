@@ -1,9 +1,7 @@
 package uk.ac.imperial.smartmeter.webcomms;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.UUID;
 
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 public class RMITest {
 	public static void main(String[] args)
@@ -22,10 +20,10 @@ public class RMITest {
 			HLCServer hl = new HLCServer(9001);
 			
 //			boolean redt = srv.client.addDevice(true, 1, UUID.randomUUID().toString(), 5);
-			ElectronicDevice ed = new ElectronicDevice(true, 1, UUID.randomUUID().toString());
+			//ElectronicDevice ed = new ElectronicDevice(true, 1, UUID.randomUUID().toString());
 			 //Boolean ret = srv.client.addDevice(ed,11);
 			 //srv.client.wipeAll();
-			 System.out.println(srv.client.getMessage("155.198.117.20",1098));
+			// System.out.println(srv.client.getMessage("155.198.117.20",1098));
 			while(true)
 			{
 				try{
