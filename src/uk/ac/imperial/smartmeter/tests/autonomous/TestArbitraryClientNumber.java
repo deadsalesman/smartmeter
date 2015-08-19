@@ -1,7 +1,10 @@
 package uk.ac.imperial.smartmeter.tests.autonomous;
 
 import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.autonomous.LCStandalone;
@@ -16,6 +19,9 @@ public class TestArbitraryClientNumber extends GenericTest {
 	public boolean doTest() {
 		Integer nClients = 3;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date dateStart = new Date();
+		System.out.println(dateFormat.format(dateStart)); 
 		ArrayList<ArraySet<ElectricityTicket>> tickets = new ArrayList<ArraySet<ElectricityTicket>>();
 		try{
 		for (int i = 0; i < nClients; i++)
@@ -60,6 +66,9 @@ public class TestArbitraryClientNumber extends GenericTest {
 		clients.get(0).wipe();
 		int ret = sumTkts(tickets);
 		System.out.println(ret);
+
+		Date dateEnd = new Date();
+		System.out.println(dateFormat.format(dateEnd)); 
 		return ret==nClients;
 	}
 
