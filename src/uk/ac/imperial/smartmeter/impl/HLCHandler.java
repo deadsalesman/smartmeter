@@ -39,13 +39,13 @@ public class HLCHandler {
 	public Boolean calculateTickets() {
 		return controller.calculateTickets();
 	}
-	public Boolean clearAll(String string) {
-		return controller.clearAll(string);
+	public Boolean clearAll() {
+		return controller.clearAll();
 	}
 	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean mutable) {
 		return controller.extendTicket(req, tkt,tktOld,mutable);
 	}
-	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean b) {
-		return controller.intensifyTicket(req,tkt,tktOld);
+	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean mutable) {
+		return controller.intensifyTicket(req,tkt,tktOld, mutable);
 	}
 }

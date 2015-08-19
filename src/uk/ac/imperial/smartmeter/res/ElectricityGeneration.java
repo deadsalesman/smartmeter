@@ -1,8 +1,12 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.io.Serializable;
 import java.util.Date;
-
-public class ElectricityGeneration {
+public class ElectricityGeneration implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8603761161609901680L;
 	private double currentOutput;
 	//private kalmanFilter predictor;
 	public ElectricityGeneration(Double amplitude)

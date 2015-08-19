@@ -22,6 +22,8 @@ public class TestGenerousFavour extends GenericTest {
 		
 		String locationOfB = "localHost";
 		int portOfB = 9006;
+		String locationOfA = "localHost";
+		int portOfA = 9005;
 		aClient.client.registerUser(0.,0.,0.,aClient.getPort());
 		bClient.client.registerUser(0.,3.,0.,bClient.getPort());
 		
@@ -36,6 +38,8 @@ public class TestGenerousFavour extends GenericTest {
 		UUID bID = UUID.fromString(b.get(0).id.toString());
 		
 		aClient.registerClient(locationOfB, portOfB);
+		bClient.registerClient(locationOfA, portOfA);
+		
 		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
 		ArraySet<ElectricityTicket> competing = aClient.client.queryCompeting(locationOfB,portOfB, req);
 		aClient.client.offer(locationOfB, portOfB, competing.get(0),aClient.client.handler.findMatchingTicket(req));

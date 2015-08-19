@@ -42,6 +42,10 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	return alloc.extendTicket(t, e, tktOld,findMatchingRequirement(t),mutable);
 		
 	}
+
+	public Boolean intensifyTicket(ElectricityRequirement e, ElectricityTicket t, ElectricityTicket tktOld, boolean mutable) {
+		return alloc.intensifyTicket(t, e, tktOld,findMatchingRequirement(t), mutable);
+	}
 	public Boolean addRequirement(ElectricityRequirement e) {
 		Boolean found = false;
 		for (UserAgent u : agents) {
@@ -66,15 +70,11 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		}
 		return ret;
 	}
-	public Boolean clearAll(String pass)
+	public Boolean clearAll()
 	{
-		if (pass.equals("drop"))
-		{
 			agents = new ArraySet<UserAgent> ();
 			alloc = new TicketAllocator(agents,new Date(), true);
 			return (dbReq.wipe() && dbAgt.wipe());
-		}
-		return false;
 	}
 	public Boolean calculateTickets()
 	{
@@ -92,7 +92,10 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 
 				for (ElectricityTicket t : a.getReqTktMap().values())
 				{
+					if (t!=null)
+					{
 					ret.add(t);
+					}
 				}
 			}
 		}
@@ -216,8 +219,5 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		}
 		}
 		return null;
-	}
-	public Boolean intensifyTicket(ElectricityRequirement req, ElectricityTicket tkt, ElectricityTicket tktOld) {
-			return alloc.intensifyTicket(tkt, req,findMatchingRequirement(tkt), tktOld,findMatchingRequirement(tktOld));
 	}
 }

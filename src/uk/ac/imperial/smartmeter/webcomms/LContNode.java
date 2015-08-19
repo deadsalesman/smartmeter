@@ -1,7 +1,6 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
@@ -21,13 +20,6 @@ public class LContNode {
 
 	}
 
-	public static ArrayList<String> connect(ArrayList<String> input) {
-		try {
-			return client.connectEDC(input);
-		} catch (IOException e) {
-			return null;
-		}
-	}
 	public static String getUserId()
 	{
 		return client.getId();

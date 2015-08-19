@@ -1,8 +1,13 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public abstract class ConsumptionProfile {
+public abstract class ConsumptionProfile implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8339153712870292778L;
 	protected double amplitude; 
 	protected double duration; //in ms
 	protected String name;
@@ -16,6 +21,8 @@ public abstract class ConsumptionProfile {
 	{
 		amplitude = amp;
 		duration = dur;
+	}
+	public ConsumptionProfile() {
 	}
 	public double getConsumption(Date start, Date offset)
 	{

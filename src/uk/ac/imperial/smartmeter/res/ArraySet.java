@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,7 +9,7 @@ import java.util.Iterator;
 
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
-public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>, Collection<T>{
+public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>, Collection<T>, Serializable{
 	/**
 	 * 
 	 */

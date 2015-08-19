@@ -196,7 +196,7 @@ public class TicketAllocator {
 			{
 				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
 				rankings.put(max, newRank);
-				if (newRank ==0)
+				if ((newRank ==0)||(Double.isNaN(newRank)))
 				{
 					userFinished.put(max, true);
 				}
@@ -326,28 +326,50 @@ public class TicketAllocator {
 		
 		return false;
 	}
-	public Boolean intensifyTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityRequirement match, ElectricityTicket tktOld, ElectricityRequirement r) {
+	public Boolean intensifyTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
 		double metric = e.getMaxConsumption() - t.magnitude;
 		if (metric >0)
 		{
-			return intensify(t,e,match,tktOld,r);
+			return intensify(t,e,tktOld,r,mutable);
 		}
 		return false;
 	}
-	private Boolean intensify(ElectricityTicket t, ElectricityRequirement e, ElectricityRequirement match, ElectricityTicket tktOld, ElectricityRequirement r) {
-		ElectricityRequirement proxy = new ElectricityRequirement(match);
-		proxy.setStartTime(t.getStart(), t.getQuantisedDuration());
-		ArrayList<QuantumNode> nodes = queue.findIntersectingNodes(proxy);
-		removeReqFromNodes(proxy, nodes);  //removes the old requirement that has the same id as the new one
-		e.setStartTime(proxy.getStartTime());
-		nodes = queue.findIntersectingNodes(e);
-		if(addReqToNodes(e,nodes)){ //adds the new consumption requirement
-			t.setStart(e.getStartTime());
-			t.setEnd(e.getEndTime());
-			t.magnitude = e.getMaxConsumption();
-			return true;
+	private Boolean intensify(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
+
+		ElectricityRequirement reqA = new ElectricityRequirement(t.getStart(),t.getEnd(),
+				new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
+		ElectricityRequirement reqB = new ElectricityRequirement(tktOld.getStart(),tktOld.getEnd(),
+				new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		
+		ArrayList<QuantumNode> nodesA;
+		ArrayList<QuantumNode> nodesB;
+		
+		if (mutable)
+
+		{
+		nodesA = queue.findIntersectingNodes(reqA);
+		nodesB = queue.copyIntersectingNodes(reqB);
 		}
-		return false;
+
+		else
+		{
+		nodesA = queue.copyIntersectingNodes(reqA);
+		nodesB = queue.copyIntersectingNodes(reqB);
+		}
+
+        removeReqFromNodes(reqB, nodesB);
+		removeReqFromNodes(reqA, nodesA);
+		
+		Boolean successA = addReqToNodes(reqA,nodesB);
+		Boolean successB = addReqToNodes(reqB,nodesA);
+		
+		if(successA){ //adds the new consumption requirement
+			t.magnitude = e.getMaxConsumption();
+		}
+		if(successB){
+			tktOld.magnitude = r.getMaxConsumption();
+		}
+		return successA&&successB;
 	
 	}
 	

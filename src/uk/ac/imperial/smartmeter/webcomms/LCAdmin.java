@@ -45,7 +45,7 @@ public class LCAdmin implements Runnable{
 		active = false;
 	}
 	private Boolean requestBulletin() {
-		HashMap<String, InetSocketAddress> x = client.getPeers();
+		HashMap<String, InetSocketAddress> x = client.getAddresses();
 		if (x!= null) {
 		for (Entry<String, InetSocketAddress> e : x.entrySet())
 		{
@@ -129,7 +129,7 @@ public class LCAdmin implements Runnable{
 							{
 							//System.out.println(LCServer.calcUtilityNoExtension(e, req)+" : " + LCServer.calcUtilityNoExtension(t, req));
 
-								successfulTrade = client.offer(location, port, e,t);
+								successfulTrade = client.offer(location, port, e,t).success;
 								if (successfulTrade){}//System.out.println(e.toString()+" " + t.toString());}
 							}
 						}

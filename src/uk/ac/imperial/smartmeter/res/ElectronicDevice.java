@@ -1,12 +1,17 @@
 package uk.ac.imperial.smartmeter.res;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 
-public class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace{
+public class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -418628052538268179L;
 	private DeviceType type;
 	private Boolean state;
 	private UUID id;

@@ -1,33 +1,30 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.DayNode;
 import uk.ac.imperial.smartmeter.impl.LCHandler;
+import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
+import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
+import uk.ac.imperial.smartmeter.interfaces.ServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.ElectronicDevice;
+import uk.ac.imperial.smartmeter.res.TicketTuple;
 
-public class LCClient{
+public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	private String eDCHost;
 	private int eDCPort;
 	private String hLCHost;
@@ -56,183 +53,78 @@ public class LCClient{
 	{
 		return handler.getUnhappyTickets();
 	}
-	public ArrayList<String> connectEDC(String input) throws IOException {
-		ArrayList<String> inputArr = new ArrayList<String>();
-		inputArr.add(input);
-		return connectEDC(inputArr);
-	}
 	public Boolean queryUnsatisfiedReqs()
 	{
 		return handler.queryUnsatisfiedReqs();
 	}
-	public ArrayList<String> connectServer(ArrayList<String> input, String host, int port) throws IOException {
-		ArrayList<String> ret =  new ArrayList<String>();
-		try (Socket kkSocket = new Socket();) {
 
-			kkSocket.connect(new InetSocketAddress(host, port), 1000);
-			try (
-					PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
-					BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));)
-			{
-			for (String s : input) {
-				out.println(s);
-			}
-
-			String fromServer;
-			while ((fromServer = in.readLine()) != null) {
-				ret.add(fromServer);
-				try {
-					Thread.sleep(20); //Hacky solution to RPI being slow. 
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				//System.out.println("Server: " + fromServer);
-				if (fromServer.equals("NUL"))
-					break;
-			}
-			}
-		} catch (UnknownHostException e) {
-			System.err.println("Don't know about host " + host);
-			System.exit(1);
-		}
-		return ret;
-	}
-	public void getMsg(String name)
-	{
-		try {
-			Registry registry = LocateRegistry.getRegistry(name);
-			LCServerIFace srv = (LCServerIFace) registry.lookup("LCServer");
-			System.out.println(srv.getMessage());
-		} catch (RemoteException | NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	public ArrayList<String> connectClient(ArrayList<String> input,String clientHost, int clientPort) throws IOException {
-		return connectServer(input, clientHost, clientPort);
-	}
-	
-	public ArrayList<String> connectEDC(ArrayList<String> input) throws IOException {
-		return connectServer(input, eDCHost, eDCPort);
-	}
-	
-	public ArrayList<String> connectHLC(ArrayList<String> input) throws IOException {
-		return connectServer(input, hLCHost, hLCPort);
-	}
-	
 	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
 	{
 		return handler.findCompetingTickets(req);
 	}
-
 	public Boolean addDevice(Boolean state, Integer type, String deviceID, Integer pin)
 	{
-		String inputLine = formatMessage("ADD" , Boolean.toString(state) ,Integer.toString(type) , deviceID, Integer.toString(pin));
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
+		return addDevice(new ElectronicDevice(state,type,deviceID),pin);
+	}
+	@Override
+	public Boolean addDevice(ElectronicDevice ed, Integer pin)
+	{
 		try {
-			ArrayList<String> ret = connectEDC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
+			return lookupEDCServer().addDevice(ed, pin);
+		} catch (RemoteException e) {
+			return false;
 		}
-		return false;
 	}
 	public Boolean GodModeCalcTKTS()
 	{
-		String inputLine = formatMessage("CAL");
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			   ArrayList<String> ret = connectHLC(input);
-			   if (ret.get(0).equals("SUCCESS"))
-			   {
-			   	return true;
-			   }
-		    } catch (IOException e) {
-		    
-		    }
-		return false;
+			return lookupHLCServer().GodModeCalcTKTS();
+		} catch (RemoteException e) {
+			return false;
+		}
 	}
 	public ArraySet<ElectricityTicket> getTickets()
 	{
-		String inputLine = formatMessage("TKT");
-		ArrayList<String> input = new ArrayList<String>();
-		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> msg = connectHLC(input);
-			if (!msg.get(0).equals("FAILURE"))
-			{
-			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			int size = splitMsg.size() / 6;
-			int offset = 0;
-			for (int i = 0; i < size; i++)
-			{
-				try {
-					output.add(new ElectricityTicket(
-							new Date(Long.parseLong(splitMsg.get(0+offset))),
-							new Date(Long.parseLong(splitMsg.get(1+offset))),
-							Double.parseDouble(splitMsg.get(2+offset)),
-							splitMsg.get(3+offset),
-							splitMsg.get(4+offset),
-							splitMsg.get(5+offset)
-							));
-				} catch (Exception e) {
-					System.out.println("Invalid ticket");
-				}
-				offset += 6;
-			}
-			}
-		
-		} catch (IOException e) {
-		}
-		
+		ArraySet<ElectricityTicket> output = lookupHLCServer().getTickets(userId);
 		for (ElectricityTicket t : output)
 		{
 			handler.setTicket(t);
 		}
 		return handler.getTkts();
+		} catch(RemoteException e)
+		{
+			
+		}
+		return null;
+	}
+	public ArraySet<ElectricityTicket> getTickets(String user)
+	{
+		try {
+			return lookupHLCServer().getTickets(user);
+		} catch (RemoteException e) {
+			return null;
+		}
 	}
 	public Boolean setRequirement(ElectricityRequirement req)
 	{
-		String inputLine = formatMessage("REQ" , req.toString());
-				
-	    ArrayList<String> input = new ArrayList<String>();
-	    input.add(inputLine);
-	    end(input);
-	    try {
-		   ArrayList<String> ret = connectHLC(input);
-		   if (ret.get(0).equals("SUCCESS"))
-		   {
-			return handler.setRequirement(req);
-		   }
-	    } catch (IOException e) {
-	}
-	return false;
+		try {
+			if (lookupHLCServer().setRequirement(req))
+			{
+				return handler.setRequirement(req);
+			}
+		} catch (RemoteException e) {
+		}
+
+		return false;
 	}
 	public Boolean setState(String deviceID, Boolean val)
 	{
-		String inputLine = formatMessage("SET" ,deviceID , Boolean.toString(val));
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> ret = connectEDC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
+			return lookupEDCServer().setState(deviceID, val);
+		} catch (RemoteException e) {
+			return false;
 		}
-		return false;
 	}
 	public String formatMessage(String ... args)
 	{
@@ -246,76 +138,26 @@ public class LCClient{
 	}
 	public Boolean getState(String deviceID)
 	{
-		String inputLine = formatMessage("GETS",deviceID);
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> ret = connectEDC(input);
-			switch(ret.get(0))
-			{
-			case "TRUE":  return true;
-			case "FALSE": return false;
-			case "NULL":  return null; 
-			}
-			return Boolean.parseBoolean(ret.get(0));
-		} catch (IOException e) {
+			return lookupEDCServer().getState(deviceID);
+		} catch (RemoteException e) {
+			return false;
 		}
-		return null;
-	}
-	public ArrayList<String> end(ArrayList<String> s)
-	{
-		s.add(userId + "," + "END");
-		return s;
 	}
 	public Boolean removeDevice(String deviceID)
 	{
-		String inputLine = formatMessage("REM",deviceID);
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> ret = connectEDC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
+			return lookupEDCServer().removeDevice(deviceID);
+		} catch (RemoteException e) {
+			return false;
 		}
-		return false;
 	}
-	public Boolean unjamServer()
-	{
-		String inputLine = formatMessage("BOP");
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		try {
-			ArrayList<String> ret = connectEDC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
-		}
-		return false;
-	}
-
 	public Boolean registerUser(Double worth, Double generation, Double economic, int port) {
-		String inputLine = formatMessage("USR",  handler.getSalt(), handler.getHash() , userId ,userName ,worth.toString(),generation.toString(),economic.toString(),String.valueOf(port));
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> ret = connectHLC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				handler.setGeneration(new ElectricityGeneration(generation));
-				return true;
-			}
-		} catch (IOException e) {
+			return lookupHLCServer().registerUser(handler.getSalt(),handler.getHash(),userId, userName, worth, generation, economic, port);
+		} catch (RemoteException e) {
+			return false;
 		}
-		return false;
 	}
 
 	public String getId() {
@@ -327,78 +169,32 @@ public class LCClient{
 		Boolean e = wipeEDC();
 		return e&&h;
 	}
-	public boolean wipeEDC()
+	public Boolean wipeEDC()
 	{
-		String inputLine = formatMessage("DEL" , "drop");
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> ret = connectEDC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
+			return lookupEDCServer().wipeEDC();
+		} catch (RemoteException e) {
+			return false;
 		}
-		return false;
 	}
-	public boolean wipeHLC()
+	public Boolean wipeHLC()
 	{
-		String inputLine = formatMessage("DEL" , "drop");
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
 		try {
-			ArrayList<String> ret = connectHLC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
+			return lookupHLCServer().wipeHLC();
+		} catch (RemoteException e) {
+			return false;
 		}
-		return false;
 	}
-	public boolean setGeneration(ElectricityGeneration i) {
-		String inputLine = formatMessage("GEN", userId , String.valueOf(i.getMaxOutput()));
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		try {
-			ArrayList<String> ret = connectHLC(input);
-			if (ret.get(0).equals("SUCCESS"))
-			{
-				return true;
-			}
-		} catch (IOException e) {
-		}
-		return false;
+	public Boolean setGeneration(ElectricityGeneration i) {
+		return setGeneration(userId, i);
 	}
 
-	public boolean queryUserExists() {
-		String inputLine = formatMessage("XST",userName);
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		try {
-			ArrayList<String> ret = connectHLC(input);
-			return (ret.get(0).equals("SUCCESS"));
-		} catch (IOException e) {
-		}
-		return false;
+	public Boolean queryUserExists() {
+		return queryUserExists(userId);
 	}
 
 	public String getRegisteredUUID() {
-		String inputLine = formatMessage("GID", userName);
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		try {
-			ArrayList<String> ret = connectHLC(input);
-		    return ret.get(0);
-		} catch (IOException e) {
-		}
-		return null;
+		return getRegisteredUUID(userId);
 	}
 
 	public void setID(UUID fromString) {
@@ -406,92 +202,22 @@ public class LCClient{
 	}
 
 	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
-		String inputLine = formatMessage("ADV" , req.toString());
-		ArrayList<String> input = new ArrayList<String>();
-		ArraySet<ElectricityTicket> output = new ArraySet<ElectricityTicket>();
-		input.add(inputLine);
-		end(input);
-		ArrayList<String> msg;
 		try {
-			msg = connectClient(input, location, port);
-			if (msg.size()!=0)
-			{
-			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			if (splitMsg.size()!=0)
-			{
-			if (splitMsg.get(0).equals("SUCCESS")) {
-				int size = splitMsg.size() / 6;
-				int offset = 0;
-				for (int i = 0; i < size; i++) {
-					try {
-						output.add(new ElectricityTicket(
-								new Date(Long.parseLong(splitMsg.get(1+offset))),
-								new Date(Long.parseLong(splitMsg.get(2+offset))),
-								Double.parseDouble(splitMsg.get(3 + offset)),
-								splitMsg.get(4 + offset),
-								splitMsg.get(5 + offset),
-								splitMsg.get(6 + offset)));
-					}
-					catch (Exception e) {
-						System.out.println("Invalid ticket");
-					}
-					offset += 6;
-				}
-			}}
-			}
-		} catch (IOException e1) {
+			return lookupLCServer(location,port).queryCompeting(location, port, req);
+		} catch (RemoteException | NullPointerException n) {
 			return null;
 		}
-
-		return output;
 	}
-	public boolean offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) {
-		String inputLine = formatMessage("OFR" , tktOld.toString() , tktNew.toString());
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		ArrayList<String> msg;
+	@Override
+	public TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
+		TicketTuple ret = null;
 		try {
-			msg = connectClient(input, location, port);
-			if (msg.size()!=0)
-			{
-			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			if (splitMsg.get(0).equals("SUCCESS")) {
-				tktOld = new ElectricityTicket(
-						new Date(Long.parseLong(splitMsg.get(1))),
-						new Date(Long.parseLong(splitMsg.get(2))),
-						Double.parseDouble(splitMsg.get(3)),
-						splitMsg.get(4),
-						splitMsg.get(5),
-						splitMsg.get(6));
-				handler.forceNewTicket(tktOld);
-				return true;
-				
-			}
-			}
-		} catch (IOException e1) {
+			ret = lookupLCServer(location,port).offer(location, port, tktDesired, tktOffered);
+			tktDesired.clone(ret.newTkt);
+			tktOffered.clone(ret.oldTkt);
+		} catch (RemoteException e) {
 		}
-		return false;
-	}
-	public Boolean registerClient(String location, int port, int ownPort)
-	{
-		String inputLine = formatMessage("REG" , userId , "localHost" , String.valueOf(ownPort));
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		ArrayList<String> msg;
-		try {
-			msg = connectClient(input, location, port);
-			if (msg.size()!=0)
-			{
-			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			if (splitMsg.get(0).equals("SUCCESS")) {
-				return true;
-			}
-			}
-		} catch (IOException e1) {
-		} 
-		return false;
+		return ret;
 	}
 	public static Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
 		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.
@@ -511,76 +237,170 @@ public class LCClient{
 		return cappedUtility;
 		
 	}
-	public Boolean modifyTicket(String type,ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt)
+
+	private ServerIFace lookupServer(String name, int port, String registered)
 	{
-		String inputLine = formatMessage(type,  tkt.toString() , req.toString() , oldtkt.toString());
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		ArrayList<String> msg;
+		Registry registry;
 		try {
-			msg = connectHLC(input);
-			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			if (splitMsg.get(0).equals("SUCCESS")) {
-
-				tkt.setStart(new Date(Long.parseLong(splitMsg.get(1))));
-				tkt.setEnd(new Date(Long.parseLong(splitMsg.get(2))));
-				tkt.magnitude = Double.parseDouble(splitMsg.get(3));
-				tkt.ownerID  = UUID.fromString(splitMsg.get(4));
-				tkt.reqID = UUID.fromString(splitMsg.get(5));
-				tkt.id = UUID.fromString(splitMsg.get(6));
-				
-				oldtkt.setStart(new Date(Long.parseLong(splitMsg.get(7))));
-				oldtkt.setEnd(new Date(Long.parseLong(splitMsg.get(8))));
-				oldtkt.magnitude = Double.parseDouble(splitMsg.get(9));
-				oldtkt.ownerID  = UUID.fromString(splitMsg.get(10));
-				oldtkt.reqID = UUID.fromString(splitMsg.get(11));
-				oldtkt.id = UUID.fromString(splitMsg.get(12));
-				return true;
-				
-			}
-		} catch (IOException e1) {
-		} 
-		return false;
+			registry = LocateRegistry.getRegistry(name, port);
+			return (ServerIFace) registry.lookup(registered);
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
 	}
-
-	public Boolean extendMutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
-		return modifyTicket("EXT",tkt,req,oldtkt);
-	}
-	public Boolean extendImmutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
-		return modifyTicket("EXF",tkt,req,oldtkt);
-	}
-	public Boolean intensifyMutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
-		return modifyTicket("INT",tkt,req,oldtkt);
-	}
-	public Boolean intensifyImmutableTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket oldtkt) {
-		return modifyTicket("INF",tkt,req,oldtkt);
-	}
-	public HashMap<String, InetSocketAddress> getPeers() {
-		String inputLine = formatMessage("ADR");
-		ArrayList<String> input = new ArrayList<String>();
-		input.add(inputLine);
-		end(input);
-		ArrayList<String> msg;
-		HashMap<String, InetSocketAddress> ret = null;
+	private LCServerIFace lookupLCServer(String name, int port)
+	{
+		//return (LCServerIFace)lookupServer(name,port, "LCServer");
+		Registry registry;
 		try {
-			msg = connectHLC(input);
-			List<String> splitMsg = Arrays.asList(msg.get(0).split(",[ ]*"));
-			if (splitMsg.get(0).equals("SUCCESS")) {
-				ret = new HashMap<String, InetSocketAddress>();
-				int size = splitMsg.size() / 3;
-				int offset = 0;
-				for (int i = 0; i < size; i++) {
-					try {
-						ret.put(splitMsg.get(1+offset), new InetSocketAddress(splitMsg.get(2+offset), Integer.parseInt(splitMsg.get(3+offset))));
-					} catch (Exception e) {
-						System.out.println("Invalid address");
-					}
-					offset += 3;
-				}
-			}
-		} catch (IOException e1) {
-		} 
+			registry = LocateRegistry.getRegistry(name, port);
+			return (LCServerIFace) registry.lookup("LCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	private HLCServerIFace lookupHLCServer()
+	{
+		//return (HLCServerIFace)lookupServer(hLCHost,hLCPort, "HLCServer");
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(hLCHost,hLCPort);
+			return (HLCServerIFace) registry.lookup("HLCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	private EDCServerIFace lookupEDCServer()
+	{
+		//return (EDCServerIFace)lookupServer(eDCHost,eDCPort, "EDCServer");
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(eDCHost,eDCPort);
+			return (EDCServerIFace) registry.lookup("EDCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	@Override
+	public String getMessage(String name, int port) throws RemoteException {
+		String ret = "";
+		ret = lookupLCServer(name, port).getMessage(name, port);
+		System.out.println(ret);
 		return ret;
+	}
+	@Override
+	public HashMap<String, InetSocketAddress> getAddresses(){
+		try {
+			return lookupHLCServer().getAddresses();
+		} catch (RemoteException e) {
+			return null;
+		}
+	}
+	@Override
+	public TicketTuple extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
+		try {
+			ret = lookupHLCServer().extendImmutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
+		} catch (RemoteException e) {
+		}
+		return ret;
+	}
+	@Override
+	public TicketTuple intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
+		try {
+			ret = lookupHLCServer().intensifyMutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
+		} catch (RemoteException e) {
+		}
+		return ret;
+	}
+	@Override
+	public TicketTuple intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
+		try {
+			ret = lookupHLCServer().intensifyImmutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
+		} catch (RemoteException e) {
+		}
+		return ret;
+	}
+	@Override
+	public TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
+		try {
+			ret = lookupHLCServer().extendMutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
+		} catch (RemoteException e) {
+		}
+		return ret;
+	}
+	@Override
+	public Boolean registerUser(String salt, String hash, String userId, String userName, Double worth, Double generation,
+			Double economic, int port) {
+		try {
+			return lookupHLCServer().registerUser(salt, hash, userId, userName, worth, generation, economic, port);
+		} catch (RemoteException e) {
+			return false;
+		}
+	}
+	@Override
+	public Boolean setGeneration(String userId, ElectricityGeneration i) {
+		try {
+			return lookupHLCServer().setGeneration(userId, i);
+		} catch (RemoteException e) {
+			return false;
+		}
+	}
+	@Override
+	public Boolean queryUserExists(String userId) {
+		try {
+			return lookupHLCServer().queryUserExists(userId);
+		} catch (RemoteException e) {
+			return false;
+		}
+	}
+	@Override
+	public String getRegisteredUUID(String userId) {
+		try {
+			return lookupHLCServer().getRegisteredUUID(userId);
+		} catch (RemoteException e) {
+			return null;
+		}
+	}
+	@Override
+	public Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr) {
+		try {
+			return lookupLCServer(location, port).registerClient(location, port, ownPort, userId, ipAddr);
+		} catch (RemoteException e) {
+			return false;
+		}
+	}
+	
+
+	public Boolean registerClient(String location, int port, int ownPort)
+	{
+		return registerClient(location,port,ownPort,userId,"localhost");
+	}
+	@Override
+	public ElectronicDevice getDevice(String deviceID) {
+		try {
+			return lookupEDCServer().getDevice(deviceID);
+		} catch (RemoteException e) {
+			return null;
+		}
+	}
+	@Override
+	public TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException {
+		return offer(location, port, tuple.newTkt, tuple.oldTkt);
 	}
 }

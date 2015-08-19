@@ -7,12 +7,21 @@ public class HLContNode {
 
 	public static void main(String[] args) throws IOException {
 
-		if (args.length != 2) {
-			System.err.println("Usage: java HLContNode <int port number> <true?false verbose>");
+		if (args.length != 1) {
+			System.err.println("Usage: java HLContNode <int port number>");
 			System.exit(1);
 		}
-		client = new HLCServer(Integer.parseInt(args[0]), Boolean.parseBoolean(args[1]));
+		client = new HLCServer(Integer.parseInt(args[0]));
 		System.out.println("High Level Server listening on " + args[0]);
-		while(client.listen()){}
+		
+		while(true)
+		{
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
