@@ -11,6 +11,7 @@ import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.TicketTuple;
 
 public class LCServer implements Runnable, LCServerIFace{
 	private Integer portNum;
@@ -18,6 +19,8 @@ public class LCServer implements Runnable, LCServerIFace{
 	public LCClient client;
 	private boolean durationModifiable = false;
 	private boolean amplitudeModifiable = false;
+	private boolean modAmp = false;
+	private boolean modDur = false;
 	Boolean active = true;
 	Thread t;
 	private boolean verbose;
@@ -107,6 +110,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			}
 	private Double evaluateUtility(ElectricityTicket newtkt, ElectricityRequirement r, ElectricityTicket oldtkt) {
 		Double utility = 0.;
+		TicketTuple query;
 		double duration = (newtkt.getEnd().getTime() - newtkt.getStart().getTime()) / (double)QuantumNode.quanta;
 		if (r.getMaxConsumption() <= newtkt.magnitude) {
 			if (r.getDuration() <= duration) {
@@ -115,8 +119,12 @@ public class LCServer implements Runnable, LCServerIFace{
 				// ticket is insufficient for this requirement
 				if (durationModifiable)
 				{
-				if (client.extendImmutableTicket(newtkt, oldtkt, r))
+				query = client.extendImmutableTicket(newtkt, oldtkt, r);
+				if (query.success)
 				{
+				newtkt.clone(query.newTkt);
+				oldtkt.clone(query.oldTkt);
+				modDur = true;
 				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 				}
 				}
@@ -124,8 +132,14 @@ public class LCServer implements Runnable, LCServerIFace{
 		} else {
 			if (amplitudeModifiable)
 			{
-			client.intensifyMutableTicket(newtkt, oldtkt, r);
+			query = client.intensifyImmutableTicket(newtkt, oldtkt, r);
+			if (query.success)
+			{
+			newtkt.clone(query.newTkt);
+			oldtkt.clone(query.oldTkt);
+			modAmp = true;
 			utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
+			}
 			}
 		}
 
@@ -173,30 +187,42 @@ public class LCServer implements Runnable, LCServerIFace{
 		return addresses.addUser(u);
 	}
 	@Override
-	public Boolean offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) {
+	public TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
 
-		String traderId = tktNew.ownerID.toString();
+		String traderId = tktOffered.ownerID.toString();
+		Boolean result = false;
         if (addresses.queryUserExists(traderId))
         {
-			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktOld);
-			ElectricityTicket tempOld = new ElectricityTicket(tktOld);
-			ElectricityTicket tempNew = new ElectricityTicket(tktNew);
-			Double oldUtility = evaluateUtility(new ElectricityTicket(tktOld), oldReq, null); //third parameter not included here for convenience
+        	modAmp = false;
+        	modDur = false;
+			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktDesired);
+			ElectricityTicket tempOld = new ElectricityTicket(tktDesired);
+			ElectricityTicket tempNew = new ElectricityTicket(tktOffered);
+			Double oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
-			Double newUtility = evaluateUtility(new ElectricityTicket(tktNew), oldReq, new ElectricityTicket(tktOld));
-			Boolean result = decideUtility(newUtility, oldUtility,traderId);
+			Double newUtility = evaluateUtility(new ElectricityTicket(tktOffered), oldReq, new ElectricityTicket(tktDesired));
+			result = decideUtility(newUtility, oldUtility,traderId);
 			
 			if (result)
 			{
-				client.extendMutableTicket(tempNew, oldReq, tempOld);
-				modifyTickets(tktOld,tktNew, tempOld, tempNew);
-				return true;
+				TicketTuple query = new TicketTuple(tempNew, tempOld);
+				if (modDur)
+				{
+				query = client.extendMutableTicket(tempNew, tempOld, oldReq);
+				}
+				if (modAmp)
+				{
+				query = client.intensifyMutableTicket(query.newTkt, query.oldTkt, oldReq);
+				}
+				tempNew = query.newTkt;
+				tempOld = query.oldTkt;
+				modifyTickets(tktDesired,tktOffered, tempOld, tempNew);
 			}
 			}
 			else
 			{
 			}
-		return false;
+		return new TicketTuple(tktDesired, tktOffered, result);
 	}
 	@Override
 	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
@@ -217,6 +243,10 @@ public class LCServer implements Runnable, LCServerIFace{
 				}
 		}
 		return ret;
+	}
+	@Override
+	public TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException {
+		return offer(location, port, tuple.newTkt, tuple.oldTkt);
 	}
 
 }

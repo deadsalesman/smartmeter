@@ -22,6 +22,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.ElectronicDevice;
+import uk.ac.imperial.smartmeter.res.TicketTuple;
 
 public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	private String eDCHost;
@@ -203,21 +204,20 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
 		try {
 			return lookupLCServer(location,port).queryCompeting(location, port, req);
-		} catch (RemoteException e) {
+		} catch (RemoteException | NullPointerException n) {
 			return null;
 		}
 	}
 	@Override
-	public Boolean offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) {
+	public TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
+		TicketTuple ret = null;
 		try {
-			return lookupLCServer(location,port).offer(location, port, tktOld, tktNew);
+			ret = lookupLCServer(location,port).offer(location, port, tktDesired, tktOffered);
+			tktDesired.clone(ret.newTkt);
+			tktOffered.clone(ret.oldTkt);
 		} catch (RemoteException e) {
-			return false;
 		}
-	}
-	public Boolean registerClient(String location, int port, int ownPort)
-	{
-		return registerClient(location,port,ownPort,userId,"localhost");
+		return ret;
 	}
 	public static Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
 		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.
@@ -301,36 +301,48 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 	}
 	@Override
-	public Boolean extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+	public TicketTuple extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
 		try {
-			return lookupHLCServer().extendImmutableTicket(tktNew, tktOld, req);
+			ret = lookupHLCServer().extendImmutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
 		} catch (RemoteException e) {
-			return false;
 		}
+		return ret;
 	}
 	@Override
-	public Boolean intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+	public TicketTuple intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
 		try {
-			return lookupHLCServer().intensifyMutableTicket(tktNew, tktOld, req);
+			ret = lookupHLCServer().intensifyMutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
 		} catch (RemoteException e) {
-			return false;
 		}
+		return ret;
 	}
 	@Override
-	public Boolean intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+	public TicketTuple intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
 		try {
-			return lookupHLCServer().intensifyImmutableTicket(tktNew, tktOld, req);
+			ret = lookupHLCServer().intensifyImmutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
 		} catch (RemoteException e) {
-			return false;
 		}
+		return ret;
 	}
 	@Override
-	public Boolean extendMutableTicket(ElectricityTicket tktNew, ElectricityRequirement req, ElectricityTicket tktOld) {
+	public TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		TicketTuple ret = null;
 		try {
-			return lookupHLCServer().extendMutableTicket(tktNew, req, tktOld);
+			ret = lookupHLCServer().extendMutableTicket(tktNew, tktOld, req);
+			tktNew.clone(ret.newTkt);
+			tktOld.clone(ret.oldTkt);
 		} catch (RemoteException e) {
-			return false;
 		}
+		return ret;
 	}
 	@Override
 	public Boolean registerUser(String salt, String hash, String userId, String userName, Double worth, Double generation,
@@ -368,10 +380,16 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	@Override
 	public Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr) {
 		try {
-			return lookupLCServer(location, ownPort).registerClient(location, port, ownPort, userId, ipAddr);
+			return lookupLCServer(location, port).registerClient(location, port, ownPort, userId, ipAddr);
 		} catch (RemoteException e) {
 			return false;
 		}
+	}
+	
+
+	public Boolean registerClient(String location, int port, int ownPort)
+	{
+		return registerClient(location,port,ownPort,userId,"localhost");
 	}
 	@Override
 	public ElectronicDevice getDevice(String deviceID) {
@@ -380,5 +398,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		} catch (RemoteException e) {
 			return null;
 		}
+	}
+	@Override
+	public TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException {
+		return offer(location, port, tuple.newTkt, tuple.oldTkt);
 	}
 }

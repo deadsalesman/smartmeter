@@ -8,17 +8,18 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.TicketTuple;
 
  public interface HLCServerIFace extends ServerIFace {
 	HashMap<String, InetSocketAddress> getAddresses() throws RemoteException;
 
-	Boolean extendMutableTicket(ElectricityTicket tktNew, ElectricityRequirement req, ElectricityTicket tktOld) throws RemoteException;
+	TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
 
-	Boolean extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
+	TicketTuple extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
 
-	Boolean intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
+	TicketTuple intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
 
-	Boolean intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
+	TicketTuple intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
 
 	Boolean wipeHLC() throws RemoteException;
 

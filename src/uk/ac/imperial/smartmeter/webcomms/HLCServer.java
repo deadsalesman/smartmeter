@@ -15,6 +15,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class HLCServer implements HLCServerIFace{
@@ -52,20 +53,29 @@ public class HLCServer implements HLCServerIFace{
 		return clients;
 	}
 	@Override
-	public Boolean extendMutableTicket(ElectricityTicket tktNew, ElectricityRequirement req, ElectricityTicket tktOld) {
-		return handler.extendTicket(tktNew, req,tktOld,true);
+	public TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		Boolean success = handler.extendTicket(tktNew, req, tktOld, true);
+		return new TicketTuple(tktNew, tktOld, success);
 	}
+
 	@Override
-	public Boolean extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
-		return handler.intensifyTicket(tktNew,req,tktOld,false);
+	public TicketTuple extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		Boolean success = handler.extendTicket(tktNew, req, tktOld, false);
+
+		return new TicketTuple(tktNew, tktOld, success);
 	}
+
 	@Override
-	public Boolean intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
-		return handler.intensifyTicket(tktNew,req,tktOld,true);
+	public TicketTuple intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		Boolean success = handler.intensifyTicket(tktNew, req, tktOld, true);
+
+		return new TicketTuple(tktNew, tktOld, success);
 	}
+
 	@Override
-	public Boolean intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
-		return handler.extendTicket(tktNew, req,tktOld,false);
+	public TicketTuple intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
+		Boolean success = handler.intensifyTicket(tktNew, req, tktOld, false);
+		return new TicketTuple(tktNew, tktOld, success);
 	}
 	@Override
 	public String getRegisteredUUID(String userId) {
