@@ -10,6 +10,8 @@ public class EDContNode {
 			System.err.println("Usage: java EDContNode <int port number>");
 			System.exit(1);
 		}
+
+		System.setProperty("java.rmi.server.hostname", DefaultTestClient.ipAddr); 
 		client = new EDCServer(Integer.parseInt(args[0]));
 
 		System.out.println("Device Server listening on : " + args[0]);

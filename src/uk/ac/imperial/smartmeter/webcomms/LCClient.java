@@ -263,7 +263,6 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	}
 	private HLCServerIFace lookupHLCServer()
 	{
-		//return (HLCServerIFace)lookupServer(hLCHost,hLCPort, "HLCServer");
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(hLCHost,hLCPort);
@@ -276,6 +275,7 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	private EDCServerIFace lookupEDCServer()
 	{
 		//return (EDCServerIFace)lookupServer(eDCHost,eDCPort, "EDCServer");
+
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(eDCHost,eDCPort);

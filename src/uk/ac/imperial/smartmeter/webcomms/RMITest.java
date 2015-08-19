@@ -23,7 +23,7 @@ public class RMITest {
 			//ElectronicDevice ed = new ElectronicDevice(true, 1, UUID.randomUUID().toString());
 			 //Boolean ret = srv.client.addDevice(ed,11);
 			 //srv.client.wipeAll();
-			// System.out.println(srv.client.getMessage("155.198.117.20",1098));
+			System.out.println(srv.client.getMessage("155.198.117.240",1098));
 			while(true)
 			{
 				try{
