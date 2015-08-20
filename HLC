@@ -2,4 +2,4 @@
 
 . ./updateCP
 
-java uk.ac.imperial.smartmeter.webcomms.HLContNode 6666 true
+java uk.ac.imperial.smartmeter.webcomms.HLContNode 6666 $1

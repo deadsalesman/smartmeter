@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. ./updateCP
+
+java -Djava.security.policy=file:/home/pi/smartmeter/smartmeter/bin/rmi.policy uk.ac.imperial.smartmeter.webcomms.RMITest

@@ -18,3 +18,4 @@ else:
     GPIO.output(outPin, GPIO.LOW)
 
 GPIO.cleanup()
+return int(2)
