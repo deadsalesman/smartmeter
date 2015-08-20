@@ -17,7 +17,7 @@ public class TestArbitraryClientNumber extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		Integer nClients = 3;
+		Integer nClients = 500;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date dateStart = new Date();
@@ -29,12 +29,6 @@ public class TestArbitraryClientNumber extends GenericTest {
 			LCStandalone newLC = new LCStandalone(9400+i, UUID.randomUUID().toString(),1.,200.,3.);
 			TicketTestHelper.bindRequirement(newLC.server.client,1.1, 2.3, 4,3.);
 			clients.add(newLC);
-			try {
-				Thread.sleep(80);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		}catch(RemoteException e)
 		{
@@ -55,12 +49,6 @@ public class TestArbitraryClientNumber extends GenericTest {
 		{
 			l.stop();
 			tickets.add(l.server.client.getTickets());
-			try {
-				Thread.sleep(80);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		
 		clients.get(0).wipe();

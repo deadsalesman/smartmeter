@@ -8,5 +8,13 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/bcpg-jdk15on-152.jar" sourcepath="/Users/bwindo/.m2/repository/org/bouncycastle/bcpg-jdk15on/1.52/bcpg-jdk15on-1.52-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/bctest-jdk15on-152.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/bcprov-jdk15on-152.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/commons-codec-1.10/commons-codec-1.10-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/commons-codec-1.10/commons-codec-1.10-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/commons-codec-1.10/commons-codec-1.10-test-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/commons-codec-1.10/commons-codec-1.10-tests.jar"/>
+	<classpathentry kind="lib" path="/Users/bwindo/Downloads/commons-codec-1.10/commons-codec-1.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
