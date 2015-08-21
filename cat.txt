@@ -1,4 +1,14 @@
------BEGIN PGP MESSAGE-----
+this is a test file to be signed._testID_-----BEGIN PGP MESSAGE-----
+Version: BCPG v1.52
+
+owJ4nJvAy8zAxBi0Tm5PinBeGONpwySu4sz0vNxUvZKKktDrOpklGZnFCkCUqFCS
+WlyikJaZk6pQkq+QlKoAUpeaotexkIWBkYmBm5Up9Lp3AotMYkoiAxenAMxIrWMs
+DM0px9ZmJG/f03E+9PVzA44bKmsYFH6U3PzgHG/g47/QYLNn8rugXDYHpjVv+Sqv
+XPTiDu5LWBk33WEZr+iRiRwZb/p9r8W4ZSuvKZh7SDTP5PDcK2bs1n/Uegws9vZ8
+YTu30eym4OXF0ZNzbnJvPHzAvjTM9WaM32oL5ue6H3uf16/QWe9zEABXOFx1
+=m3wh
+-----END PGP MESSAGE-----
+_testID_-----BEGIN PGP MESSAGE-----
 Version: BCPG v1.52
 
 owJ4nJvAy8zAxBi0Tm5PinBeGOPpA8+S+Ioz0/NyU/VKKkr0kgrSQ697J+iCgJOr
@@ -16,3 +26,4 @@ G1tNjdk3r1c7flx4v6Sfo23tz313Ls3VvzH9vtMjWeby0IN7l6icC7midDbT0WL+
 ZvVP5/eddgYA7m/W+w==
 =6O+a
 -----END PGP MESSAGE-----
+_
