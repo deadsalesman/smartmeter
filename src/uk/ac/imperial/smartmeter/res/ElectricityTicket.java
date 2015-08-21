@@ -16,6 +16,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	private Date end;
 	public double magnitude;
 	private double duration;
+	private String signatureChain;
 	public UUID ownerID;
 	public UUID id;
 	public UUID reqID;
@@ -40,6 +41,17 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	public double getDuration()
 	{
 		return duration;
+	}
+	public void signChain(String userId, String passWd)
+	{
+		//PGPSigner.signString(fileName, keyIn, out, pass, armor)
+	}
+	public Boolean verifyChain()
+	{
+		//split string, recursive call on verify userid, remainder.
+		
+		
+		return false;
 	}
 	public void setDuration()
 	{
@@ -75,6 +87,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 		ownerID = UUID.fromString(newtkt.ownerID.toString());
 		id = UUID.fromString(newtkt.id.toString());
 		duration= end.getTime() - start.getTime();
+		signatureChain = newtkt.signatureChain;
 	}
 	@Override
 	public String getId() {
@@ -96,6 +109,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 		magnitude = tempNew.magnitude;
 
 		id = UUID.fromString(tempNew.id.toString());
+		signatureChain = tempNew.signatureChain;
 		setDuration();
 	}
 
