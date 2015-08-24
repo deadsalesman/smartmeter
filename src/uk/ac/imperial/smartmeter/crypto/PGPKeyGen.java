@@ -3,11 +3,19 @@ package uk.ac.imperial.smartmeter.crypto;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Security;
+import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openpgp.PGPException;
 
+import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.Twople;
 
 
@@ -17,8 +25,12 @@ public class PGPKeyGen {
 	PGPKeyGen()
 	{
 		try {
-			KeyPairGen.main(new String[]{"michael","jackson"});
-			KeyPairGen.main(new String[]{"ada","lovelace"});
+			ArrayList<Twople<String, String>> x = new ArrayList<Twople<String, String>>();
+			x.add(new Twople<String, String>("ada","lovelace"));
+
+			x.add(new Twople<String, String>("michael","jackson"));
+			KeyPairGen.genKeySet(x);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -97,6 +109,61 @@ public class PGPKeyGen {
 	    }
 	    return bytes;
 	}
+	public static String signTicketForNewUser(ElectricityTicket tkt, String newUserId)
+	{
+		String userPubKey = "geronimo";//getPublicKey(newUserId);
+		
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA-256");
+			md.update(userPubKey.getBytes("UTF-8")); // Change this to "UTF-16" if needed
+			byte[] digest = md.digest();
+			
+			
+			FileOutputStream ticketOut = new FileOutputStream(tkt.getId()+".txt",false);
+			
+			
+			md = MessageDigest.getInstance("SHA-256");
+			md.update(tkt.toString().getBytes("UTF-8"));
+			md.update((byte)'_');
+			//md.update(digest);
+			
+			ticketOut.write(md.digest());
+			//ticketOut.write(tkt.toString().getBytes("UTF-8"));
+			//ticketOut.write((byte)'_');
+			//ticketOut.write(digest);
+			
+			
+			PGPSigner.signFile(tkt.getId() + ".txt", "ada_secret.bpg", "lovelace");
+			
+			ticketOut.close();
+			
+
+			FileInputStream ticketIn = new FileInputStream(tkt.getId()+".txt");
+			
+			FileInputStream sigIn = new FileInputStream(tkt.getId()+".txt.bpg");
+			
+			byte temp;
+			ArrayList<Byte> b = new ArrayList<Byte>();
+			while ((temp=(byte) sigIn.read())>=0)
+			{
+				b.add(temp);
+			}
+			String sig = stringFromArrayList(b);
+			tkt.addSignature(sig);
+			System.out.println(sig);
+	
+			ticketIn.close();
+			sigIn.close();
+			return "";
+		} catch (NoSuchAlgorithmException | IOException | NoSuchProviderException | SignatureException | PGPException e) {
+			return "";
+		}
+	}
+	public static String stringFromArrayList(ArrayList<Byte> b)
+	{
+		return new String(getPrimitiveByteArray(b.toArray(new Byte[b.size()])));
+	}
 	public static String catSignatures(String baseid)
 	{
 		String ret = "";
@@ -157,6 +224,38 @@ public class PGPKeyGen {
 		
 		return ret;
 	}
+
+	public static Boolean verifyTicket(ElectricityTicket t) {
+		Boolean ret = true;
+		try {
+			for (int i = 0; i < t.getNSignatures(); i++) {
+				t.writeLog(i);
+				System.out.println(PGPSigner.verifyFile(t.getId() + ".s", "ada_pub.bpg"));
+
+				FileInputStream tktIn = new FileInputStream(t.getId() + ".v");
+				FileInputStream verifIn = new FileInputStream(t.getId() + ".txt");
+				
+				byte temp;
+				ArrayList<Byte> b = new ArrayList<Byte>();
+				while((temp=(byte)tktIn.read())!=-1){b.add(temp);}
+				String tIn = stringFromArrayList(b);
+				
+				b = new ArrayList<Byte>();
+				while((temp=(byte)verifIn.read())!=-1){b.add(temp);}
+				String vIn = stringFromArrayList(b);
+				
+				verifIn.close();
+				tktIn.close();
+				
+				ret &= vIn.equals(tIn)&&!vIn.isEmpty();
+				
+			}
+		} catch (IOException e) { return false;
+		}
+
+		return ret;
+
+	}
 	public static void main(String[] args) throws Exception
 	{
 		//so, cat two files together? fmt: user, levels,  sig, othersigs, ticket.
@@ -164,21 +263,18 @@ public class PGPKeyGen {
         Security.addProvider(new BouncyCastleProvider());
 		//String signme = "billie jean is not my lover";
 		
-        PGPSigner.signFile("signme.txt", "secret.bpg", "lovelace");
-        PGPSigner.signFile("signme.txt.bpg", "secret.bpg", "lovelace");
-        Boolean ret = PGPSigner.verifyFile("signme.txt.bpg.bpg", "pub.bpg");
-        
-        for (int i = 0; i < 5; i++)
-        {
-        	//PGPSigner.s
-        }
-        
-        System.out.println(catSignatures("signme.txt"));
-        System.out.println(deCatSignatures("cat.txt"));
-        System.out.println(ret?"yay":"no");
-		//PGPSigner.verifyString(signme, "pub.bpg");
-        //PGPSigner.main(new String[]{"-s", "signme.txt", "secret.bpg", "jackson"});
-		//PGPSigner.main(new String[]{"-v", "signme.txt.bpg", "pub.bpg"});
+        //PGPSigner.signFile("signme.txt", "michael_secret.bpg", "jackson");
+        //PGPSigner.signFile("signme.txt.bpg", "ada_secret.bpg", "lovelace");
+        //Boolean ret = PGPSigner.verifyFile("signme.txt.bpg.bpg", "ada_pub.bpg");
+        ElectricityTicket t = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
+	    int depth = 4;
+	    for (int i = 0; i < depth; i++)
+	    {
+	    	signTicketForNewUser(t,"Jack");
+	    	t.magnitude += 2;
+	    }
+	    ;
+	    System.out.println(verifyTicket(t)?"yay":"no");
 		
 	}
 }

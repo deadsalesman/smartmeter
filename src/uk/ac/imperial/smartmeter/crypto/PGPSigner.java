@@ -205,7 +205,7 @@ public class PGPSigner
 	        FileOutputStream            out = new FileOutputStream(p2.getFileName());
 
 	        ops.init(new JcaPGPContentVerifierBuilderProvider().setProvider("BC"), key);
-	            
+	        String x = p2.getFileName();
 	        while ((ch = dIn.read()) >= 0)
 	        {
 	            ops.update((byte)ch);

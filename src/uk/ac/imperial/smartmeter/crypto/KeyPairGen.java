@@ -1,6 +1,5 @@
 package uk.ac.imperial.smartmeter.crypto;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,6 +9,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -26,6 +26,8 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+
+import uk.ac.imperial.smartmeter.res.Twople;
 
 /**
  * A simple utility class that generates a RSA PGPPublicKey/PGPSecretKey pair.
@@ -70,7 +72,31 @@ public class KeyPairGen
         
         publicOut.close();
     }
-    
+    public static void genKeySet(ArrayList<Twople<String, String>> identities)
+    {
+    	try{
+    		Security.addProvider(new BouncyCastleProvider());
+
+            KeyPairGenerator    kpg = KeyPairGenerator.getInstance("RSA", "BC");
+            
+            kpg.initialize(1024);
+            
+            KeyPair                    kp = kpg.generateKeyPair();
+            
+                for (Twople<String, String> t : identities)
+                {
+                    FileOutputStream    out3 = new FileOutputStream(t.key+"_secret.bpg");
+                    FileOutputStream    out4 = new FileOutputStream(t.key+"_pub.bpg");
+
+                    exportKeyPair(out3, out4, kp, t.key, t.value.toCharArray(), true); //not the same key pair as the previous export
+                }
+
+    	}
+    	catch (Exception e)
+    	{
+    		
+    	}
+    }
     public static void main(
         String[] args)
         throws Exception
@@ -96,15 +122,13 @@ public class KeyPairGen
                 System.out.println("RSAKeyPairGenerator [-a] identity passPhrase");
                 System.exit(0);
             }
-            ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
             FileOutputStream    out1 = new FileOutputStream("secret.asc");
             FileOutputStream    out2 = new FileOutputStream("pub.asc");
             
-            exportKeyPair(baos1, baos2, kp, args[1], args[2].toCharArray(), true);
+            exportKeyPair(out1, out2, kp, args[1], args[2].toCharArray(), true);
             
-            String pub = baos1.toString();
-            String priv = baos2.toString();
+            String pub = out1.toString();
+            String priv = out2.toString();
             pub.equals(priv);
             
         }

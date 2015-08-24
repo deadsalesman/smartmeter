@@ -1,3 +1,5 @@
+*.bpg
+*.asc
 *.db
 req.db
 edc.db
