@@ -17,14 +17,15 @@ public class UserAgent implements UniqueIdentifierIFace {
 	private String name;
 	private String hash = "";
 	private String salt = "decentralised";
+	private String pubKey;
 	
 	public UserAgent(String saltNew, String password, String userName, Double worth, Double generation, Double economic)
 	{
-		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,worth,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
+		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,"",worth,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
 	}
 	public UserAgent(String saltNew, String password, String userName, Double worth, Double generation, Double economic, Double allocation)
 	{
-		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,worth,generation,economic, allocation,(ArraySet<ElectricityRequirement>)null);
+		this(saltNew, generateHashCode(password,saltNew),UUID.randomUUID().toString(),userName,"",worth,generation,economic, allocation,(ArraySet<ElectricityRequirement>)null);
 	}
 	private static String generateHashCode(String password, String salt)
 	{
@@ -40,14 +41,21 @@ public class UserAgent implements UniqueIdentifierIFace {
 	}
 	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double social, Double generation, Double economic)
 	{
-		this(saltNew, passwdHash,idString,username,social,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
+		this(saltNew, passwdHash,idString,username,"",social,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
 	}
-	
+	public UserAgent(String saltNew, String passwdHash, String idString, String username, String pubkey, Double social, Double generation, Double economic)
+	{
+		this(saltNew, passwdHash,idString,username,pubkey,social,generation,economic, 0.,(ArraySet<ElectricityRequirement>)null);
+	}
 	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double social, Double generation, Double economic, Double allocation, ElectricityRequirement r)
 	{
-		this(saltNew, passwdHash,UUID.randomUUID().toString(),username,social,generation,economic, allocation,new ArraySet<ElectricityRequirement>(r));
+		this(saltNew, passwdHash,UUID.randomUUID().toString(),username,"",social,generation,economic, allocation,new ArraySet<ElectricityRequirement>(r));
 	}
 	public UserAgent(String saltNew, String passwdHash, String idString, String username, Double social, Double generation, Double economic, Double allocation, ArraySet<ElectricityRequirement> r)
+	{
+		this( saltNew,  passwdHash,  idString,  username, "",  social,  generation,  economic,  allocation, r);
+	}
+	public UserAgent(String saltNew, String passwdHash, String idString, String username, String pubkey, Double social, Double generation, Double economic, Double allocation, ArraySet<ElectricityRequirement> r)
 	{
 		name = username;
 		salt = saltNew;
@@ -57,6 +65,7 @@ public class UserAgent implements UniqueIdentifierIFace {
 		generatedPower = new ElectricityGeneration(generation);
 		economicPower = economic;
 		averageAllocation = allocation;
+		pubKey = pubkey;
 
 		reqTktMap = new HashMap<ElectricityRequirement,ElectricityTicket>();
 		if (r!= null)
@@ -142,5 +151,11 @@ public class UserAgent implements UniqueIdentifierIFace {
 	}
 	public ElectricityRequirement getReq(Integer index) {
 		return reqs.get(index);
+	}
+	public String getPubKey() {
+		return pubKey;
+	}
+	public void setPubKey(String pubKey) {
+		this.pubKey = pubKey;
 	}
 }

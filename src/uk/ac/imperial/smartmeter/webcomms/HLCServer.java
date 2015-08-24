@@ -107,7 +107,7 @@ public class HLCServer implements HLCServerIFace{
 		return handler.getTickets(user);
 	}
 	@Override
-	public Boolean registerUser(String salt, String hash, String userId, String userName, Double worth, Double generation,
+	public Boolean registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port) {
 		clients.put(userId, new InetSocketAddress(tempAddress,port));
 		return handler.addUserAgent(new UserAgent(
@@ -115,6 +115,7 @@ public class HLCServer implements HLCServerIFace{
 						hash,
 						userId,
 						userName,
+						pubKey,
 						worth,
 						generation,
 						economic

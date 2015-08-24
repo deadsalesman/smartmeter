@@ -152,9 +152,13 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
-	public Boolean registerUser(Double worth, Double generation, Double economic, int port) {
+	public Boolean registerUser(Double worth, Double generation, Double economic,int port) {
+		return registerUser(worth, generation, economic, "", port);
+	}
+		
+	public Boolean registerUser(Double worth, Double generation, Double economic, String pubKey, int port) {
 		try {
-			return lookupHLCServer().registerUser(handler.getSalt(),handler.getHash(),userId, userName, worth, generation, economic, port);
+			return lookupHLCServer().registerUser(handler.getSalt(),handler.getHash(),userId, userName, pubKey, worth, generation, economic, port);
 		} catch (RemoteException e) {
 			return false;
 		}
@@ -345,10 +349,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		return ret;
 	}
 	@Override
-	public Boolean registerUser(String salt, String hash, String userId, String userName, Double worth, Double generation,
+	public Boolean registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port) {
 		try {
-			return lookupHLCServer().registerUser(salt, hash, userId, userName, worth, generation, economic, port);
+			return lookupHLCServer().registerUser(salt, hash, userId, userName, pubKey, worth, generation, economic, port);
 		} catch (RemoteException e) {
 			return false;
 		}

@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.crypto;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -72,6 +73,28 @@ public class KeyPairGen
         
         publicOut.close();
     }
+
+	public static Twople<String, String> genKeySet(String userId, String pass) {
+
+		Twople<String, String> ret = new Twople<String, String>();
+		try {
+			Security.addProvider(new BouncyCastleProvider());
+
+			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+
+			kpg.initialize(1024);
+			
+			KeyPair kp = kpg.generateKeyPair();
+			ByteArrayOutputStream out3 = new ByteArrayOutputStream();
+			ByteArrayOutputStream out4 = new ByteArrayOutputStream();
+			exportKeyPair(out3, out4, kp, userId, pass.toCharArray(), true);
+			ret.left = new String(out3.toByteArray());
+			ret.right = new String(out4.toByteArray());
+		} catch (Exception e) {
+
+		}
+		return ret;
+	}
     public static void genKeySet(ArrayList<Twople<String, String>> identities)
     {
     	try{
@@ -85,10 +108,10 @@ public class KeyPairGen
             
                 for (Twople<String, String> t : identities)
                 {
-                    FileOutputStream    out3 = new FileOutputStream(t.key+"_secret.bpg");
-                    FileOutputStream    out4 = new FileOutputStream(t.key+"_pub.bpg");
+                    FileOutputStream    out3 = new FileOutputStream(t.left+"_secret.bpg");
+                    FileOutputStream    out4 = new FileOutputStream(t.left+"_pub.bpg");
 
-                    exportKeyPair(out3, out4, kp, t.key, t.value.toCharArray(), true); //not the same key pair as the previous export
+                    exportKeyPair(out3, out4, kp, t.left, t.right.toCharArray(), true); //not the same key pair as the previous export
                 }
 
     	}

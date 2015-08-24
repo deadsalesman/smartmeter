@@ -7,11 +7,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
+import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Twople;
 
 public class LCServer implements Runnable, LCServerIFace{
 	private Integer portNum;
@@ -24,6 +26,8 @@ public class LCServer implements Runnable, LCServerIFace{
 	Boolean active = true;
 	Thread t;
 	private boolean verbose;
+	private String pubKey;
+	private String privKey;
 	public void setTicketDurationModifiable(Boolean t)
 	{
 		durationModifiable = t;
@@ -50,6 +54,9 @@ public class LCServer implements Runnable, LCServerIFace{
 			LCServerIFace stub = (LCServerIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("LCServer", stub);
+			Twople<String, String> x = KeyPairGen.genKeySet(client.getId(), password);
+			pubKey = x.left;
+			privKey = x.right;
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());

@@ -36,9 +36,10 @@ public class PGPKeyGen {
 			e.printStackTrace();
 		}
 	}
+	//DEPRECATED:
 	public static ArrayList<Twople<String, Byte[]>> deCatSignatures(String file)
 	{
-		//for the purposes of this exercise, it is assumed that _ is a suitable separating character
+	/*	//for the purposes of this exercise, it is assumed that _ is a suitable separating character
 		ArrayList<Twople<String, Byte[]>> x = new ArrayList<Twople<String, Byte[]>>();
 		Byte temp = 0;
 		try {
@@ -87,8 +88,8 @@ public class PGPKeyGen {
 		}
 		
 		return x;
-		
-		
+		*/
+		return null;
 	}
 	public static Byte[] getClassyByteArray(byte[] b)
 	{
@@ -111,11 +112,12 @@ public class PGPKeyGen {
 	}
 	public static String signTicketForNewUser(ElectricityTicket tkt, String newUserId)
 	{
-		String userPubKey = "geronimo";//getPublicKey(newUserId);
 		
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-256");
+			String userPubKey = "geronimo";//getPublicKey(newUserId);
+
 			md.update(userPubKey.getBytes("UTF-8")); // Change this to "UTF-16" if needed
 			byte[] digest = md.digest();
 			
@@ -126,12 +128,9 @@ public class PGPKeyGen {
 			md = MessageDigest.getInstance("SHA-256");
 			md.update(tkt.toString().getBytes("UTF-8"));
 			md.update((byte)'_');
-			//md.update(digest);
+			md.update(digest);
 			
 			ticketOut.write(md.digest());
-			//ticketOut.write(tkt.toString().getBytes("UTF-8"));
-			//ticketOut.write((byte)'_');
-			//ticketOut.write(digest);
 			
 			
 			PGPSigner.signFile(tkt.getId() + ".txt", "ada_secret.bpg", "lovelace");
@@ -217,6 +216,7 @@ public class PGPKeyGen {
 				
 			    os.write(getPrimitiveByteArray(b));
 			}
+			os.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -230,7 +230,7 @@ public class PGPKeyGen {
 		try {
 			for (int i = 0; i < t.getNSignatures(); i++) {
 				t.writeLog(i);
-				System.out.println(PGPSigner.verifyFile(t.getId() + ".s", "ada_pub.bpg"));
+				PGPSigner.verifyFile(t.getId() + ".s", "ada_pub.bpg");
 
 				FileInputStream tktIn = new FileInputStream(t.getId() + ".v");
 				FileInputStream verifIn = new FileInputStream(t.getId() + ".txt");
@@ -267,7 +267,7 @@ public class PGPKeyGen {
         //PGPSigner.signFile("signme.txt.bpg", "ada_secret.bpg", "lovelace");
         //Boolean ret = PGPSigner.verifyFile("signme.txt.bpg.bpg", "ada_pub.bpg");
         ElectricityTicket t = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
-	    int depth = 4;
+	    int depth = 400;
 	    for (int i = 0; i < depth; i++)
 	    {
 	    	signTicketForNewUser(t,"Jack");

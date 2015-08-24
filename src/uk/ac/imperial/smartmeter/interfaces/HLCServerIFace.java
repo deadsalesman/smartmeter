@@ -23,7 +23,7 @@ import uk.ac.imperial.smartmeter.res.TicketTuple;
 
 	Boolean wipeHLC() throws RemoteException;
 
-	Boolean registerUser(String salt, String hash, String userId, String userName, Double worth, Double generation, Double economic, int port) throws RemoteException;
+	Boolean registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation, Double economic, int port) throws RemoteException;
 
 	Boolean setRequirement(ElectricityRequirement req) throws RemoteException;
 

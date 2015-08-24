@@ -92,10 +92,11 @@ public class PGPHelper {
                       System.out.println("Version = " + key.getVersion());
                       System.out.println("Encryption key = " + key.isEncryptionKey()+ ", Master key = " + key.isMasterKey());
                       int count = 0;
-                      for ( java.util.Iterator iterator = key.getUserIDs(); iterator.hasNext(); )
+                      for ( @SuppressWarnings("unchecked")
+					java.util.Iterator<String> iterator = key.getUserIDs(); iterator.hasNext(); )
                       {
                               count++;
-                              System.out.println((String) iterator.next());
+                              System.out.println(iterator.next());
                       }
                       System.out.println("Key Count = " + count);
                       // create an armored ascii file
@@ -107,6 +108,7 @@ public class PGPHelper {
                       _encrypt(tempfile.getAbsolutePath(), baos, key);
                       System.out.println("encrypted text length=" + baos.size());			
                       tempfile.delete();
+                      isr.close();
                       return baos.toByteArray();
               }
               catch (PGPException e)
@@ -129,12 +131,12 @@ public class PGPHelper {
               PGPPublicKeyRing pkRing = null;
               BcPGPPublicKeyRingCollection pkCol = new BcPGPPublicKeyRingCollection(PGPUtil.getDecoderStream(in));
               System.out.println("key ring size=" + pkCol.size());
-              Iterator it = pkCol.getKeyRings();
+              Iterator<PGPPublicKeyRing> it = pkCol.getKeyRings();
               while (it.hasNext()) {
-                      pkRing = (PGPPublicKeyRing) it.next();
-                      Iterator pkIt = pkRing.getPublicKeys();
+                      pkRing = it.next();
+                      Iterator<PGPPublicKey> pkIt = pkRing.getPublicKeys();
                       while (pkIt.hasNext()) {
-                              PGPPublicKey key = (PGPPublicKey) pkIt.next();
+                              PGPPublicKey key = pkIt.next();
                               System.out.println("Encryption key = " + key.isEncryptionKey() + ", Master key = " + 
                                                  key.isMasterKey());
                               if (key.isEncryptionKey())
@@ -196,7 +198,8 @@ public class PGPHelper {
                       //
                       // find the secret key
                       //
-                      Iterator it = enc.getEncryptedDataObjects();
+                      @SuppressWarnings("unchecked")
+					Iterator<PGPPublicKeyEncryptedData> it = enc.getEncryptedDataObjects();
                       PGPPrivateKey sKey = null;
                       PGPPublicKeyEncryptedData pbe = null;
                       while (sKey == null && it.hasNext()) {

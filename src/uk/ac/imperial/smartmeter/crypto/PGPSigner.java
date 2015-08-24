@@ -116,12 +116,13 @@ public class PGPSigner
 	        
 	        sGen.init(PGPSignature.BINARY_DOCUMENT, pgpPrivKey);
 	        
-	        Iterator    it = pgpSec.getPublicKey().getUserIDs();
+	        @SuppressWarnings("unchecked")
+			Iterator<String>    it = pgpSec.getPublicKey().getUserIDs();
 	        if (it.hasNext())
 	        {
 	            PGPSignatureSubpacketGenerator  spGen = new PGPSignatureSubpacketGenerator();
 	            
-	            spGen.setSignerUserID(false, (String)it.next());
+	            spGen.setSignerUserID(false, it.next());
 	            sGen.setHashedSubpackets(spGen.generate());
 	        }
 	        
@@ -145,11 +146,10 @@ public class PGPSigner
 	        }
 
 	        lGen.close();
-
+	        fIn.close();
 	        sGen.generate().encode(bOut);
 
 	        cGen.close();
-	        String x = baos.toString("UTF-8");
 	        
 	        return new String(baos.toByteArray(),Charset.forName("UTF-8"));
 	    
@@ -205,7 +205,6 @@ public class PGPSigner
 	        FileOutputStream            out = new FileOutputStream(p2.getFileName());
 
 	        ops.init(new JcaPGPContentVerifierBuilderProvider().setProvider("BC"), key);
-	        String x = p2.getFileName();
 	        while ((ch = dIn.read()) >= 0)
 	        {
 	            ops.update((byte)ch);
@@ -260,12 +259,13 @@ public class PGPSigner
 	        
 	        sGen.init(PGPSignature.BINARY_DOCUMENT, pgpPrivKey);
 	        
-	        Iterator    it = pgpSec.getPublicKey().getUserIDs();
+	        @SuppressWarnings("unchecked")
+			Iterator<String>    it = pgpSec.getPublicKey().getUserIDs();
 	        if (it.hasNext())
 	        {
 	            PGPSignatureSubpacketGenerator  spGen = new PGPSignatureSubpacketGenerator();
 	            
-	            spGen.setSignerUserID(false, (String)it.next());
+	            spGen.setSignerUserID(false, it.next());
 	            sGen.setHashedSubpackets(spGen.generate());
 	        }
 	        
@@ -289,7 +289,7 @@ public class PGPSigner
 	        }
 
 	        lGen.close();
-
+	        fIn.close();
 	        sGen.generate().encode(bOut);
 
 	        cGen.close();
@@ -363,12 +363,12 @@ public class PGPSigner
         // world you would probably want to be a bit smarter about this.
         //
 
-        Iterator keyRingIter = pgpSec.getKeyRings();
+        Iterator<PGPSecretKeyRing> keyRingIter = pgpSec.getKeyRings();
         while (keyRingIter.hasNext())
         {
             PGPSecretKeyRing keyRing = (PGPSecretKeyRing)keyRingIter.next();
 
-            Iterator keyIter = keyRing.getSecretKeys();
+            Iterator<PGPSecretKey> keyIter = keyRing.getSecretKeys();
             while (keyIter.hasNext())
             {
                 PGPSecretKey key = (PGPSecretKey)keyIter.next();

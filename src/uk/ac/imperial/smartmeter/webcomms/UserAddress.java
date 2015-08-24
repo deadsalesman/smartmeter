@@ -5,13 +5,19 @@ public class UserAddress {
 	private String userAddress;
 	private int userPort;
 	private Double history;
+	private String pubKey;
 	
-	public UserAddress(String id, String addr, int port, Double hist)
+	public UserAddress(String id, String addr, int port, Double hist, String pubkey)
 	{
 		userID = id;
 		userAddress = addr;
 		userPort = port;
 		history = hist;
+		pubKey = pubkey;
+	}
+	public UserAddress(String id, String addr, int port, Double hist)
+	{
+		this(id, addr,port, hist, "");
 	}
 	public UserAddress(String id, String addr, int port)
 	{
@@ -35,6 +41,12 @@ public class UserAddress {
 
 	public void setHistory(Double history) {
 		this.history = history;
+	}
+	public String getPubKey() {
+		return pubKey;
+	}
+	public void setPubKey(String pubKey) {
+		this.pubKey = pubKey;
 	}
 
 }
