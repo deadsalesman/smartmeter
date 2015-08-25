@@ -1,8 +1,11 @@
 package uk.ac.imperial.smartmeter.tests;
 
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.tests.allocator.AllocatorTester;
@@ -16,6 +19,7 @@ public static void main(String[] args)
 {
 
 	DateHelper.initialise();
+    Security.addProvider(new BouncyCastleProvider());
 
 	addToLog(new NetworkTester());
 	addToLog(new DBTester());

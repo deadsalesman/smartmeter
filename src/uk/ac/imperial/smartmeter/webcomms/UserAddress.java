@@ -15,6 +15,10 @@ public class UserAddress {
 		history = hist;
 		pubKey = pubkey;
 	}
+	public UserAddress(String id, String addr, String pubkey, int port)
+	{
+		this(id, addr, port,0.,pubkey);
+	}
 	public UserAddress(String id, String addr, int port, Double hist)
 	{
 		this(id, addr,port, hist, "");

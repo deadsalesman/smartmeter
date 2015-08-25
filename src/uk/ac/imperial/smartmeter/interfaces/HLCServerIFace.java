@@ -9,9 +9,10 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Twople;
 
  public interface HLCServerIFace extends ServerIFace {
-	HashMap<String, InetSocketAddress> getAddresses() throws RemoteException;
+	HashMap<String, Twople<String, InetSocketAddress>> getAddresses() throws RemoteException;
 
 	TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) throws RemoteException;
 
@@ -23,7 +24,7 @@ import uk.ac.imperial.smartmeter.res.TicketTuple;
 
 	Boolean wipeHLC() throws RemoteException;
 
-	Boolean registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation, Double economic, int port) throws RemoteException;
+	Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation, Double economic, int port) throws RemoteException;
 
 	Boolean setRequirement(ElectricityRequirement req) throws RemoteException;
 

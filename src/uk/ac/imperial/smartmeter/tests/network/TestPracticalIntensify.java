@@ -22,8 +22,8 @@ public class TestPracticalIntensify extends GenericTest {
 		
 		String locationOfB = "localHost";
 		int portOfB = 9013;
-		aClient.client.registerUser(0.,0.,0.,aClient.getPort());
-		bClient.client.registerUser(0.,3.,0.,bClient.getPort());
+		aClient.registerUser(0.,0.,0.,aClient.getPort());
+		bClient.registerUser(0.,3.,0.,bClient.getPort());
 		
 		TicketTestHelper.bindRequirement(aClient.client,1.1, 2.3, 4,1.);
 		TicketTestHelper.bindRequirement(bClient.client,1.1, 2.3, 4,3.);

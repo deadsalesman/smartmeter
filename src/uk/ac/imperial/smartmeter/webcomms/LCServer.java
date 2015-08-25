@@ -1,10 +1,12 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
+import java.net.InetSocketAddress;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
@@ -34,6 +36,10 @@ public class LCServer implements Runnable, LCServerIFace{
 	{
 		durationModifiable = t;
 	}
+	public String getPubKey()
+	{
+		return pubKey;
+	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password,Boolean loud) throws RemoteException 
 	{
 		portNum = ownPort;
@@ -57,9 +63,13 @@ public class LCServer implements Runnable, LCServerIFace{
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("LCServer", stub);
 			Twople<String, String> x = KeyPairGen.genKeySet(client.getId(), password);
-			pubKey = x.left;
-			privKey = x.right;
+			pubKey = x.right;
+			privKey = x.left;
 			passWd = password;
+			for (Entry<String, Twople<String, InetSocketAddress>> entry : client.getAddresses().entrySet())
+			{
+				addresses.addUser(entry);
+			}
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
@@ -68,6 +78,12 @@ public class LCServer implements Runnable, LCServerIFace{
 	}
 	public LCServer(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, Integer ownPort, String name,String password) throws RemoteException {
 		this( eDCHostName,  eDCPortNum,  hLCHostName, hLCPortNum,  ownPort, name, password, false);
+	}
+	public Twople<String,String> registerUser(Double worth, Double generation, Double economic, int port) {
+		Twople<String, String> ret = client.registerUser(worth, generation, economic, pubKey, port);
+		PGPKeyGen.printPubKey(ret.left, ret.right);
+		addresses.setHLCiD(ret.left);
+		return ret;
 	}
 	public Integer getPort()
 	{
@@ -178,7 +194,7 @@ public class LCServer implements Runnable, LCServerIFace{
 	}
 
 	public Boolean registerClient(String locationOfB, int portOfB) {
-		return client.registerClient(locationOfB, portOfB, portNum);
+		return client.registerClient(locationOfB, portOfB, portNum,client.handler.getId(),"localhost",pubKey);
 	}
 	public void setTicketAmplitudeModifiable(Boolean b) {
 		amplitudeModifiable = b;
@@ -191,8 +207,8 @@ public class LCServer implements Runnable, LCServerIFace{
 		return "RMI YAY";
 	}
 	@Override
-	public Boolean registerClient(String location, int port, int ownPort,String userId, String ipAddr) {
-	UserAddress u = new UserAddress(userId, ipAddr,ownPort);
+	public Boolean registerClient(String location, int port, int ownPort,String userId, String ipAddr, String pubKey) {
+	UserAddress u = new UserAddress(userId, ipAddr,pubKey, ownPort);
 		
 		return addresses.addUser(u);
 	}
@@ -208,6 +224,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktDesired);
 			ElectricityTicket tempOld = new ElectricityTicket(tktDesired);
 			ElectricityTicket tempNew = new ElectricityTicket(tktOffered);
+			PGPKeyGen.verifyTicket(tktOffered, addresses);
 			Double oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
 			Double newUtility = evaluateUtility(new ElectricityTicket(tktOffered), oldReq, new ElectricityTicket(tktDesired));

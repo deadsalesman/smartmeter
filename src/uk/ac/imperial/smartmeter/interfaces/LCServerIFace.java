@@ -11,7 +11,7 @@ import uk.ac.imperial.smartmeter.res.TicketTuple;
 public interface LCServerIFace extends Remote {
 	String getMessage(String name, int port) throws RemoteException;
 
-	Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr) throws RemoteException;
+	Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr, String pubKey) throws RemoteException;
 
 	TicketTuple offer(String location, int port, ElectricityTicket tktOld, ElectricityTicket tktNew) throws RemoteException; 
 	TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException; 

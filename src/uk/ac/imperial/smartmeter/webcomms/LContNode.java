@@ -6,6 +6,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.Twople;
 
 public class LContNode {
 	private static LCClient client;
@@ -40,7 +41,7 @@ public class LContNode {
 	public static Boolean removeDevice(String id) {
 		return client.removeDevice(id);
 	}
-	public static Boolean registerUser(String pubKey, Double worth, Double generation, Double economic, int port)
+	public static Twople<String, String> registerUser(String pubKey, Double worth, Double generation, Double economic, int port)
 	{
 		return client.registerUser(worth, generation, economic,pubKey, port);
 	}

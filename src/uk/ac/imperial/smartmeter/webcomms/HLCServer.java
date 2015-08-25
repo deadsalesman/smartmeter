@@ -7,9 +7,13 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.Security;
 import java.util.HashMap;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
+import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
 import uk.ac.imperial.smartmeter.impl.HLCHandler;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -26,12 +30,12 @@ public class HLCServer implements HLCServerIFace{
 	private String pubKey;
 	private String privKey;
 	private String passWd;
-	private HashMap<String, InetSocketAddress> clients;
+	private HashMap<String, Twople<String,InetSocketAddress>> clients;
 	private InetAddress tempAddress;
 	public HLCServer(int parseInt) {
 		portNum = parseInt;
 		handler = new HLCHandler();
-		clients = new HashMap<String, InetSocketAddress>();
+		clients = new HashMap<String, Twople<String, InetSocketAddress>>();
 		 if (System.getSecurityManager() == null) {
 	            System.setSecurityManager(new RMISecurityManager());
 	        }
@@ -44,21 +48,24 @@ public class HLCServer implements HLCServerIFace{
 		}
 		try
 		{
+			Security.addProvider(new BouncyCastleProvider());
 			passWd = "itsa me, the hlc";
 			Twople<String, String> x = KeyPairGen.genKeySet(handler.getId(), passWd);
-			pubKey = x.left;
-			privKey = x.right;
+			pubKey = x.right;
+			privKey = x.left;
 			handler.setCredentials(passWd, privKey, pubKey);
 			HLCServerIFace stub = (HLCServerIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("HLCServer", stub);
+			PGPKeyGen.printPubKey(handler.getId(), pubKey);
+			PGPKeyGen.printSecKey(handler.getId(), privKey);
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
 		}
 	}
 	@Override
-	public HashMap<String, InetSocketAddress> getAddresses(){
+	public HashMap<String, Twople<String, InetSocketAddress>> getAddresses(){
 		return clients;
 	}
 	@Override
@@ -100,7 +107,7 @@ public class HLCServer implements HLCServerIFace{
 	}
 	@Override
 	public Boolean wipeHLC() {
-		clients = new HashMap<String, InetSocketAddress>();
+		clients = new HashMap<String, Twople<String, InetSocketAddress>>();
 		return handler.clearAll();
 	}
 	@Override
@@ -116,10 +123,10 @@ public class HLCServer implements HLCServerIFace{
 		return handler.getTickets(user);
 	}
 	@Override
-	public Boolean registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
+	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port) {
-		clients.put(userId, new InetSocketAddress(tempAddress,port));
-		return handler.addUserAgent(new UserAgent(
+		clients.put(userId, new Twople<String, InetSocketAddress>(pubKey,new InetSocketAddress(tempAddress,port)));
+		handler.addUserAgent(new UserAgent(
 						salt,
 						hash,
 						userId,
@@ -129,6 +136,7 @@ public class HLCServer implements HLCServerIFace{
 						generation,
 						economic
 						));
+		return new Twople<String, String>(handler.getId(),pubKey);
 	}
 	@Override
 	public String getPublicKey() throws RemoteException {

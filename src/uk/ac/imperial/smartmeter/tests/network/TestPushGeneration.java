@@ -13,7 +13,7 @@ public class TestPushGeneration extends GenericTest {
 	public boolean doTest()  throws Exception{
 		String t = UUID.randomUUID().toString();
 		LCServer aClient = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,8999,t,"");
-		aClient.client.registerUser(0.,0.,0.,8000);
+		aClient.registerUser(0.,0.,0.,8000);
 		Boolean ret = aClient.client.setGeneration(new ElectricityGeneration(10.));
 		aClient.client.wipeAll();
 		return ret;

@@ -23,6 +23,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Twople;
 
 public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	private String eDCHost;
@@ -152,15 +153,15 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
-	public Boolean registerUser(Double worth, Double generation, Double economic,int port) {
+	public Twople<String,String> registerUser(Double worth, Double generation, Double economic,int port) {
 		return registerUser(worth, generation, economic, "", port);
 	}
 		
-	public Boolean registerUser(Double worth, Double generation, Double economic, String pubKey, int port) {
+	public Twople<String,String> registerUser(Double worth, Double generation, Double economic, String pubKey, int port) {
 		try {
 			return lookupHLCServer().registerUser(handler.getSalt(),handler.getHash(),userId, userName, pubKey, worth, generation, economic, port);
 		} catch (RemoteException e) {
-			return false;
+			return null;
 		}
 	}
 
@@ -297,7 +298,7 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		return ret;
 	}
 	@Override
-	public HashMap<String, InetSocketAddress> getAddresses(){
+	public HashMap<String, Twople<String, InetSocketAddress>> getAddresses(){
 		try {
 			return lookupHLCServer().getAddresses();
 		} catch (RemoteException e) {
@@ -349,12 +350,12 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		return ret;
 	}
 	@Override
-	public Boolean registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
+	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port) {
 		try {
 			return lookupHLCServer().registerUser(salt, hash, userId, userName, pubKey, worth, generation, economic, port);
 		} catch (RemoteException e) {
-			return false;
+			return null;
 		}
 	}
 	@Override
@@ -382,18 +383,18 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 	}
 	@Override
-	public Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr) {
+	public Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr, String pubKey) {
 		try {
-			return lookupLCServer(location, port).registerClient(location, port, ownPort, userId, ipAddr);
+			return lookupLCServer(location, port).registerClient(location, port, ownPort, userId, ipAddr, pubKey);
 		} catch (RemoteException e) {
 			return false;
 		}
 	}
 	
 
-	public Boolean registerClient(String location, int port, int ownPort)
+	public Boolean registerClient(String location, int port, int ownPort, String pubKey)
 	{
-		return registerClient(location,port,ownPort,userId,"localhost");
+		return registerClient(location,port,ownPort,userId,"localhost", pubKey);
 	}
 	@Override
 	public ElectronicDevice getDevice(String deviceID) {

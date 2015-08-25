@@ -17,6 +17,7 @@ import org.bouncycastle.openpgp.PGPException;
 
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.webcomms.UserAddressBook;
 
 
 public class PGPKeyGen {
@@ -224,13 +225,52 @@ public class PGPKeyGen {
 		
 		return ret;
 	}
-
-	public static Boolean verifyTicket(ElectricityTicket t) {
+	public static Boolean verifyTicket(ElectricityTicket t, String hLCID) {
 		Boolean ret = true;
 		try {
 			for (int i = 0; i < t.getNSignatures(); i++) {
 				t.writeLog(i);
-				PGPSigner.verifyFile(t.getId() + ".s", "ada_pub.bpg");
+				Boolean check = PGPSigner.verifyFile(t.getId() + ".s", hLCID + "_pub.bpg");
+
+				FileInputStream tktIn = new FileInputStream(t.getId() + ".v");
+				FileInputStream verifIn = new FileInputStream(t.getId() + ".txt");
+				
+				byte temp;
+				ArrayList<Byte> b = new ArrayList<Byte>();
+				while((temp=(byte)tktIn.read())!=-1){b.add(temp);}
+				String tIn = stringFromArrayList(b);
+				
+				b = new ArrayList<Byte>();
+				while((temp=(byte)verifIn.read())!=-1){b.add(temp);}
+				String vIn = stringFromArrayList(b);
+				
+				verifIn.close();
+				tktIn.close();
+				
+				ret &= vIn.equals(tIn)&&!vIn.isEmpty();
+				
+			}
+		} catch (IOException e) { return false;
+		}
+
+		return ret;
+
+	}
+	public static Boolean verifyTicket(ElectricityTicket t, UserAddressBook book) {
+		Boolean ret = true;
+		try {
+			for (int i = 0; i < t.getNSignatures(); i++) {
+				book.findAndPrintPubKey(t.ownerID.toString());
+				t.writeLog(i);
+				Boolean check;
+				if (i ==0)
+				{
+					check =PGPSigner.verifyFile(t.getId() + ".s", book.getHLCiD() + "_pub.bpg");
+				}
+				else
+				{
+					check =PGPSigner.verifyFile(t.getId() + ".s", t.ownerID.toString() + "_pub.bpg");
+				}
 
 				FileInputStream tktIn = new FileInputStream(t.getId() + ".v");
 				FileInputStream verifIn = new FileInputStream(t.getId() + ".txt");
@@ -263,22 +303,45 @@ public class PGPKeyGen {
         Security.addProvider(new BouncyCastleProvider());
 		//String signme = "billie jean is not my lover";
 		
-        //PGPSigner.signFile("signme.txt", "michael_secret.bpg", "jackson");
-        //PGPSigner.signFile("signme.txt.bpg", "ada_secret.bpg", "lovelace");
-        //Boolean ret = PGPSigner.verifyFile("signme.txt.bpg.bpg", "ada_pub.bpg");
+   //     PGPSigner.signFile("signme.txt", "michael_secret.bpg", "jackson");
+  //      PGPSigner.signFile("signme.txt.bpg", "ada_secret.bpg", "lovelace");
+   //     Boolean ret = PGPSigner.verifyFile("signme.txt.bpg.bpg", "ada_pub.bpg");
         
-        String signed = PGPSigner.signString("workcurseyou", "ada_secret.bpg", "lovelace");
-        System.out.println(PGPSigner.verifyString(signed, "ada_pub.bpg"));
+        //String signed = PGPSigner.signString("workcurseyou", "ada_secret.bpg", "lovelace");
+        //System.out.println(PGPSigner.verifyString(signed, "ada_pub.bpg"));
         
         ElectricityTicket t = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
-	    int depth = 400;
+	    int depth = 13;
 	    for (int i = 0; i < depth; i++)
 	    {
 	    	signTicketForNewUser(t,"michael","jackson");
 	    	t.magnitude += 2;
 	    }
 	    ;
-	    System.out.println(verifyTicket(t)?"yay":"no");
+	    System.out.println(verifyTicket(t,"michael")?"yay":"no");
 		
+	}
+	public static void printPubKey(String id, String key) {
+		try {
+			FileOutputStream fOut = new FileOutputStream(id+"_pub.bpg");
+			for (byte b: key.getBytes("UTF-8"))
+			{
+				fOut.write(b);
+			}
+			fOut.close();
+		} catch (IOException e) {
+		}
+	}
+	
+	public static void printSecKey(String id, String key) {
+		try {
+			FileOutputStream fOut = new FileOutputStream(id+"_secret.bpg");
+			for (byte b: key.getBytes("UTF-8"))
+			{
+				fOut.write(b);
+			}
+			fOut.close();
+		} catch (IOException e) {
+		}
 	}
 }

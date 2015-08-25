@@ -26,7 +26,7 @@ public class RegistrationGUI {
 		public void actionPerformed(ActionEvent evt)
 		{
 			result = JOptionPane.showInputDialog(parent, "Please enter your password below.", null);
-			lc.client.registerUser(0.,0.,0.,lc.getPort());
+			lc.registerUser(0.,0.,0.,lc.getPort());
 			lc.client.setGeneration(new ElectricityGeneration(3.));
 			parent.setVisible(false);
 			lc.client.queryUserExists();

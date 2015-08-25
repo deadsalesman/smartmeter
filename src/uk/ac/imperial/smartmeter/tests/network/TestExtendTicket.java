@@ -20,7 +20,7 @@ public class TestExtendTicket extends GenericTest {
 		
 		aClient.start();
 		
-		aClient.client.registerUser(0.,10.,0.,aClient.getPort());
+		aClient.registerUser(0.,10.,0.,aClient.getPort());
 		
 		TicketTestHelper.bindRequirement(aClient.client,6.1, 9.3, 4,3.);
 		TicketTestHelper.bindRequirement(aClient.client,6.1, 9.3, 4,3.);

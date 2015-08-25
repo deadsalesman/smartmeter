@@ -35,8 +35,8 @@ public class LCStandalone {
 	public void initialise(int port, String name, Double worth, Double generation, Double economic) throws RemoteException
 	{
 		server = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,port,name,"");
-		admin = new LCAdmin(server.client,port);
-		server.client.registerUser(worth, generation, economic, port);
+		admin = new LCAdmin(server.client,port,server.getPubKey());
+		server.registerUser(worth, generation, economic, port);
 		s = new Thread(server);
 		a = new Thread(admin);
 		s.start();

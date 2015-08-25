@@ -8,6 +8,7 @@ import java.util.Random;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.Twople;
 
 public class LCAdmin implements Runnable{
 
@@ -22,12 +23,14 @@ public class LCAdmin implements Runnable{
 	private Double reasonableNegotiationTime;
 	private Double pollingTime = Math.pow(10., 8);
 	
+	private String pubkey;
 	private Bulletin bulletin;
 	public LCClient client;
 	private int ownPort;
 	private Boolean active = true;
-	public LCAdmin(LCClient lc, int port)
+	public LCAdmin(LCClient lc, int port, String pubKey)
 	{
+		pubkey = pubKey;
 		client = lc;
 		bulletin = new Bulletin();
 		ownPort = port;
@@ -45,16 +48,16 @@ public class LCAdmin implements Runnable{
 		active = false;
 	}
 	private Boolean requestBulletin() {
-		HashMap<String, InetSocketAddress> x = client.getAddresses();
+		HashMap<String, Twople<String,InetSocketAddress>> x = client.getAddresses();
 		if (x!= null) {
-		for (Entry<String, InetSocketAddress> e : x.entrySet())
+		for (Entry<String, Twople<String,InetSocketAddress>> e : x.entrySet())
 		{
 			
 			if (e.getValue()!=null)
 			{
 				if (!e.getKey().equals(client.getId())) 
 				{
-				bulletin.add(new NamedSocket(e.getKey(),e.getValue()));
+				bulletin.add(new NamedSocket(e.getKey(),e.getValue().right,e.getValue().left));
 			}
 			}
 		}
@@ -116,7 +119,7 @@ public class LCAdmin implements Runnable{
 						{
 						String location = addr.getHostName();
 						int port = addr.getPort();
-						client.registerClient(location, port,ownPort);
+						client.registerClient(location, port,ownPort, pubkey);
 						ElectricityRequirement req = client.handler.findMatchingRequirement(t);
 					ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, req);
 					if (tkts != null)

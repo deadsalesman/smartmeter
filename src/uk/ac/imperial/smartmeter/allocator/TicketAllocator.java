@@ -36,7 +36,7 @@ public class TicketAllocator {
 		this(collection, d, reallocate, "", "");
 	}
 	
-	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate, String pass, String id)
+	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate, String id, String pass)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
 		arbiter = new RescherArbiter();
@@ -44,6 +44,8 @@ public class TicketAllocator {
 		usrArray = (ArraySet<UserAgent>) collection;
 		startDate = d;
 		tryHard = reallocate;
+		userId = id;
+		password = pass;
 		
 		for (UserAgent u : collection)
 		{
@@ -81,6 +83,7 @@ public class TicketAllocator {
 	{
 		ElectricityTicket tkt = new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
 		PGPKeyGen.signTicketForNewUser(tkt, userId, password);
+		PGPKeyGen.verifyTicket(tkt,userId);
 		return tkt;
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)
