@@ -42,10 +42,17 @@ public class HLCHandler {
 	public Boolean clearAll() {
 		return controller.clearAll();
 	}
+	public String getId()
+	{
+		return controller.getId();
+	}
 	public Boolean extendTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean mutable) {
 		return controller.extendTicket(req, tkt,tktOld,mutable);
 	}
 	public Boolean intensifyTicket(ElectricityTicket tkt, ElectricityRequirement req, ElectricityTicket tktOld, boolean mutable) {
 		return controller.intensifyTicket(req,tkt,tktOld, mutable);
+	}
+	public void setCredentials(String passWd, String privKey, String pubKey) {
+		controller.setCredentials(passWd, privKey, pubKey);
 	}
 }

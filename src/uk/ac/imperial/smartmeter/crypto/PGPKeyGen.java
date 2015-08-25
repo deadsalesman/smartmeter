@@ -110,7 +110,7 @@ public class PGPKeyGen {
 	    }
 	    return bytes;
 	}
-	public static String signTicketForNewUser(ElectricityTicket tkt, String newUserId)
+	public static String signTicketForNewUser(ElectricityTicket tkt, String userId, String password)
 	{
 		
 		MessageDigest md;
@@ -133,7 +133,7 @@ public class PGPKeyGen {
 			ticketOut.write(md.digest());
 			
 			
-			PGPSigner.signFile(tkt.getId() + ".txt", "ada_secret.bpg", "lovelace");
+			PGPSigner.signFile(tkt.getId() + ".txt", userId +"_secret.bpg", password);
 			
 			ticketOut.close();
 			
@@ -266,11 +266,15 @@ public class PGPKeyGen {
         //PGPSigner.signFile("signme.txt", "michael_secret.bpg", "jackson");
         //PGPSigner.signFile("signme.txt.bpg", "ada_secret.bpg", "lovelace");
         //Boolean ret = PGPSigner.verifyFile("signme.txt.bpg.bpg", "ada_pub.bpg");
+        
+        String signed = PGPSigner.signString("workcurseyou", "ada_secret.bpg", "lovelace");
+        System.out.println(PGPSigner.verifyString(signed, "ada_pub.bpg"));
+        
         ElectricityTicket t = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
 	    int depth = 400;
 	    for (int i = 0; i < depth; i++)
 	    {
-	    	signTicketForNewUser(t,"Jack");
+	    	signTicketForNewUser(t,"michael","jackson");
 	    	t.magnitude += 2;
 	    }
 	    ;

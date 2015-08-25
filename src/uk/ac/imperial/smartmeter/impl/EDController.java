@@ -107,7 +107,8 @@ public class EDController
 			if (availablePins.contains(pin)) {
 				availablePins.remove(pin);
 				pinouts.put(e, pin);
-				return devices.add(e);
+				devices.add(e);
+				return true;
 			}
 		}
 		return false;

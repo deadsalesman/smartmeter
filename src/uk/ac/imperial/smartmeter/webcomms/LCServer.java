@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
+import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -28,6 +29,7 @@ public class LCServer implements Runnable, LCServerIFace{
 	private boolean verbose;
 	private String pubKey;
 	private String privKey;
+	private String passWd;
 	public void setTicketDurationModifiable(Boolean t)
 	{
 		durationModifiable = t;
@@ -57,6 +59,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			Twople<String, String> x = KeyPairGen.genKeySet(client.getId(), password);
 			pubKey = x.left;
 			privKey = x.right;
+			passWd = password;
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
@@ -75,7 +78,7 @@ public class LCServer implements Runnable, LCServerIFace{
 		active = false;
 	}
 
-	private String modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt, ElectricityTicket tempOld, ElectricityTicket tempNew) {
+	private void modifyTickets(ElectricityTicket oldtkt,ElectricityTicket newtkt, ElectricityTicket tempOld, ElectricityTicket tempNew) {
 		// TODO Auto-generated method stub
 		//change the owners of the tickets around
 		//format as string suitable for transfer
@@ -85,9 +88,9 @@ public class LCServer implements Runnable, LCServerIFace{
 		oldtkt.modifyTimings(tempNew);
 		oldtkt.modifyID(tempOld);
 		String ret = "SUCCESS,";
-		ret += newtkt.toString();
 		client.handler.forceNewTicket(oldtkt);
-		return ret;
+		PGPKeyGen.signTicketForNewUser(oldtkt, client.getId(), passWd);
+		PGPKeyGen.signTicketForNewUser(newtkt, client.getId(), passWd);
 	}
 
 	private Boolean decideUtility(Double newUtility, Double oldUtility, String user) {

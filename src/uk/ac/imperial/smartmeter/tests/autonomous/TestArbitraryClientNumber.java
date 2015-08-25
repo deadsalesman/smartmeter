@@ -17,7 +17,7 @@ public class TestArbitraryClientNumber extends GenericTest {
 
 	@Override
 	public boolean doTest() {
-		Integer nClients = 500;
+		Integer nClients = 3;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date dateStart = new Date();

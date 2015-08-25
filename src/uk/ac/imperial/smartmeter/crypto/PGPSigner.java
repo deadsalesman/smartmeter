@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.SignatureException;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -96,20 +97,13 @@ public class PGPSigner
 		  String          input,
 	      String keyLoc,
 	      //  OutputStream    out,
-	        String         pass,
-	        boolean         armor)
+	        String         pass)
 	        throws IOException, NoSuchAlgorithmException, NoSuchProviderException, PGPException, SignatureException
 	    {
-		
+		//not deprecated, just fundamentally broken.
+		  ByteArrayOutputStream out = new ByteArrayOutputStream();
+		  FileInputStream keyIn = new FileInputStream(keyLoc);
 
-        	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        if (armor)
-	        {
-	        	//baos.close();
-	            //baos = new ArmoredOutputStream(baos);
-	        }
-	        
-	        FileInputStream keyIn = new FileInputStream(keyLoc);
 	        PGPSecretKey                pgpSec = readSecretKey(keyIn);
 	        PGPPrivateKey               pgpPrivKey = pgpSec.extractPrivateKey(new JcePBESecretKeyDecryptorBuilder().setProvider("BC").build(pass.toCharArray()));
 	        PGPSignatureGenerator       sGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(pgpSec.getPublicKey().getAlgorithm(), PGPUtil.SHA1).setProvider("BC"));
@@ -129,29 +123,41 @@ public class PGPSigner
 	        PGPCompressedDataGenerator  cGen = new PGPCompressedDataGenerator(
 	                                                                PGPCompressedData.ZLIB);
 	        
-	        BCPGOutputStream            bOut = new BCPGOutputStream(cGen.open(baos));
+	        BCPGOutputStream            bOut = new BCPGOutputStream(cGen.open(out));
 	        
 	        sGen.generateOnePassVersion(false).encode(bOut);
 	        
-	        File                        file = new File("dummy.txt");
+	        //File                        file = new File("dummy");
 	        PGPLiteralDataGenerator     lGen = new PGPLiteralDataGenerator();
-	        OutputStream                lOut = lGen.open(bOut, PGPLiteralData.BINARY, file);
-	        FileInputStream             fIn = new FileInputStream(file);
-	        int                         ch;
+	        OutputStream                lOut = lGen.open(out, PGPLiteralData.BINARY, "Steven", new Date(), new byte[256]);
+	        //FileInputStream             fIn = new FileInputStream(file);
 	        
-	        while ((ch = fIn.read()) >= 0)
+	        for (byte b : input.getBytes())
 	        {
-	            lOut.write(ch);
-	            sGen.update((byte)ch);
+
+	            lOut.write(b);
+	            sGen.update((byte)b);
+	        	
 	        }
 
 	        lGen.close();
-	        fIn.close();
+	        //fIn.close();
 	        sGen.generate().encode(bOut);
 
 	        cGen.close();
+	        FileOutputStream t = new FileOutputStream("test.txt");
+
+	        String x = new String(out.toByteArray());
 	        
-	        return new String(baos.toByteArray(),Charset.forName("UTF-8"));
+	        for (byte b : out.toByteArray())
+	        {
+
+	        	t.write(b);
+	        	
+	        }
+	        t.close();
+	        out.close();
+	        return x;
 	    
 	}
 	public static Boolean verifyString(

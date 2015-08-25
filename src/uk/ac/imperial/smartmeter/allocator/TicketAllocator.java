@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.comparators.requirementPrioComparator;
+import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
@@ -27,9 +28,15 @@ public class TicketAllocator {
 	private Map<UserAgent, Double> rankings;
 	private Map<UserAgent, Integer> indexes; 
 	private Map<UserAgent, Boolean> userFinished; 
+	private String userId;
+	private String password;
 	private boolean tryHard;
-	
 	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate)
+	{
+		this(collection, d, reallocate, "", "");
+	}
+	
+	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate, String pass, String id)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
 		arbiter = new RescherArbiter();
@@ -72,7 +79,9 @@ public class TicketAllocator {
 	}
 	private ElectricityTicket generateTicket(ElectricityRequirement e)
 	{
-		return new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		ElectricityTicket tkt = new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		PGPKeyGen.signTicketForNewUser(tkt, userId, password);
+		return tkt;
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)
 	{

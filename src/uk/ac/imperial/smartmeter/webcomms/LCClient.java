@@ -407,4 +407,12 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	public TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException {
 		return offer(location, port, tuple.newTkt, tuple.oldTkt);
 	}
+	@Override
+	public String getPublicKey() throws RemoteException {
+		try {
+			return lookupHLCServer().getPublicKey();
+		} catch (RemoteException e) {
+			return null;
+		}
+	}
 }

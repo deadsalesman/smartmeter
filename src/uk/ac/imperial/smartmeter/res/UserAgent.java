@@ -18,6 +18,7 @@ public class UserAgent implements UniqueIdentifierIFace {
 	private String hash = "";
 	private String salt = "decentralised";
 	private String pubKey;
+	private String passwd;
 	
 	public UserAgent(String saltNew, String password, String userName, Double worth, Double generation, Double economic)
 	{
@@ -80,6 +81,14 @@ public class UserAgent implements UniqueIdentifierIFace {
 		{
 			reqs = new ArraySet<ElectricityRequirement>();
 		}
+	}
+	public void setPass(String pass)
+	{
+		passwd = pass;
+	}
+	public String getPass()
+	{
+		return passwd;
 	}
 	public Integer countTkts()
 	{

@@ -9,6 +9,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
+import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.impl.HLCHandler;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -16,11 +17,15 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Twople;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
 public class HLCServer implements HLCServerIFace{
 	private int portNum;
 	private HLCHandler handler;
+	private String pubKey;
+	private String privKey;
+	private String passWd;
 	private HashMap<String, InetSocketAddress> clients;
 	private InetAddress tempAddress;
 	public HLCServer(int parseInt) {
@@ -39,7 +44,11 @@ public class HLCServer implements HLCServerIFace{
 		}
 		try
 		{
-
+			passWd = "itsa me, the hlc";
+			Twople<String, String> x = KeyPairGen.genKeySet(handler.getId(), passWd);
+			pubKey = x.left;
+			privKey = x.right;
+			handler.setCredentials(passWd, privKey, pubKey);
 			HLCServerIFace stub = (HLCServerIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("HLCServer", stub);
@@ -120,6 +129,10 @@ public class HLCServer implements HLCServerIFace{
 						generation,
 						economic
 						));
+	}
+	@Override
+	public String getPublicKey() throws RemoteException {
+		return pubKey;
 	}
 	 
 }

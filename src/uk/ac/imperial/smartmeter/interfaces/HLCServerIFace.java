@@ -36,4 +36,7 @@ import uk.ac.imperial.smartmeter.res.TicketTuple;
 	Boolean queryUserExists(String userId) throws RemoteException;
 
 	String getRegisteredUUID(String userId) throws RemoteException;
+	
+	String getPublicKey() throws RemoteException;
+	
 }

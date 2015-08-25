@@ -25,10 +25,12 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	
 	public ReqsDBManager dbReq;
 	public AgentDBManager dbAgt;
+	private String pass = "";
+	private String priv = "";
+	private String pub = "";
 	
 	public HLController()
 	{
-		
 	    agents = new ArraySet<UserAgent>();
 		id = UUID.randomUUID();
 
@@ -73,12 +75,12 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	public Boolean clearAll()
 	{
 			agents = new ArraySet<UserAgent> ();
-			alloc = new TicketAllocator(agents,new Date(), true);
+			alloc = new TicketAllocator(agents,new Date(), true, id.toString(), pass);
 			return (dbReq.wipe() && dbAgt.wipe());
 	}
 	public Boolean calculateTickets()
 	{
-		alloc = new TicketAllocator(agents,new Date(), true);
+		alloc = new TicketAllocator(agents,new Date(), true, id.toString(), pass);
 		alloc.calculateTickets();
 		return true;
 	}
@@ -219,5 +221,10 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 		}
 		}
 		return null;
+	}
+	public void setCredentials(String passWd, String privKey, String pubKey) {
+		pass = passWd;
+		priv = privKey;
+		pub = pubKey;
 	}
 }
