@@ -10,6 +10,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.tests.allocator.AllocatorTester;
 import uk.ac.imperial.smartmeter.tests.autonomous.AutonTester;
+import uk.ac.imperial.smartmeter.tests.crypto.CryptoTester;
 import uk.ac.imperial.smartmeter.tests.database.DBTester;
 import uk.ac.imperial.smartmeter.tests.network.NetworkTester;
 
@@ -24,7 +25,7 @@ public static void main(String[] args)
 	addToLog(new NetworkTester());
 	addToLog(new DBTester());
 	addToLog(new AllocatorTester());
-
+	addToLog(new CryptoTester());
 	addToLog(new AutonTester());
 	
 	reportLog();
