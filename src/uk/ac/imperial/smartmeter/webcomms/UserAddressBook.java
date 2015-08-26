@@ -23,6 +23,8 @@ public class UserAddressBook {
 	public boolean findAndPrintPubKey(String id)
 	{
 		UserAddress x = addresses.get(id);
+		if (x!=null)
+		{
 		try {
 			FileOutputStream fOut = new FileOutputStream(id+"_pub.bpg");
 			for (byte b: x.getPubKey().getBytes("UTF-8"))
@@ -30,7 +32,9 @@ public class UserAddressBook {
 				fOut.write(b);
 			}
 			fOut.close();
+			return true;
 		} catch (IOException e) {
+		}
 		}
 		return false;
 	}

@@ -82,8 +82,9 @@ public class TicketAllocator {
 	private ElectricityTicket generateTicket(ElectricityRequirement e)
 	{
 		ElectricityTicket tkt = new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
+
 		PGPKeyGen.signTicketForNewUser(tkt, userId, password);
-		PGPKeyGen.verifyTicket(tkt,userId);
+		System.out.println(PGPKeyGen.verifyTicket(tkt));
 		return tkt;
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)

@@ -1,4 +1,6 @@
 *.txt
+*.v
+*.s
 *.bpg
 *.asc
 *.db

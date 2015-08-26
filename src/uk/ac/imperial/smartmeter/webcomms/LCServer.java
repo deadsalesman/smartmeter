@@ -65,11 +65,16 @@ public class LCServer implements Runnable, LCServerIFace{
 			Twople<String, String> x = KeyPairGen.genKeySet(client.getId(), password);
 			pubKey = x.right;
 			privKey = x.left;
+
+			PGPKeyGen.printPubKey(client.getId(), pubKey);
+			PGPKeyGen.printSecKey(client.getId(), privKey);
+			
 			passWd = password;
 			for (Entry<String, Twople<String, InetSocketAddress>> entry : client.getAddresses().entrySet())
 			{
 				addresses.addUser(entry);
 			}
+			
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
@@ -224,12 +229,13 @@ public class LCServer implements Runnable, LCServerIFace{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktDesired);
 			ElectricityTicket tempOld = new ElectricityTicket(tktDesired);
 			ElectricityTicket tempNew = new ElectricityTicket(tktOffered);
-			PGPKeyGen.verifyTicket(tktOffered, addresses);
+			if (PGPKeyGen.verifyTicket(tktOffered, addresses))
+			{
 			Double oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
 			Double newUtility = evaluateUtility(new ElectricityTicket(tktOffered), oldReq, new ElectricityTicket(tktDesired));
 			result = decideUtility(newUtility, oldUtility,traderId);
-			
+			}
 			if (result)
 			{
 				TicketTuple query = new TicketTuple(tempNew, tempOld);
@@ -245,10 +251,7 @@ public class LCServer implements Runnable, LCServerIFace{
 				tempOld = query.oldTkt;
 				modifyTickets(tktDesired,tktOffered, tempOld, tempNew);
 			}
-			}
-			else
-			{
-			}
+        }
 		return new TicketTuple(tktDesired, tktOffered, result);
 	}
 	@Override

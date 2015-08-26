@@ -7,26 +7,26 @@ import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
-import uk.ac.imperial.smartmeter.webcomms.LCClient;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 
 public class TestAppendedRequirement extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest() throws Exception{
 		String t = UUID.randomUUID().toString();
-		LCClient elsie = new LCClient(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,t,"");
+		LCServer elsie = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9015,TicketTestHelper.user1,"");
 
 		elsie.registerUser(0.,10.,0.,8999);
-		TicketTestHelper.bindRequirement(elsie,1.1, 6.3, 4,3.);
-		elsie.GodModeCalcTKTS();
-		ArraySet<ElectricityTicket> tkt1 = elsie.getTickets();
-		TicketTestHelper.bindRequirement(elsie,1.1, 6.3, 4,3.);
+		TicketTestHelper.bindRequirement(elsie.client,1.1, 6.3, 4,3.);
+		elsie.client.GodModeCalcTKTS();
+		ArraySet<ElectricityTicket> tkt1 = elsie.client.getTickets();
+		TicketTestHelper.bindRequirement(elsie.client,1.1, 6.3, 4,3.);
 
-		elsie.GodModeCalcTKTS();
+		elsie.client.GodModeCalcTKTS();
 
-		ArraySet<ElectricityTicket> tkt2 = elsie.getTickets();
+		ArraySet<ElectricityTicket> tkt2 = elsie.client.getTickets();
 		
-		elsie.wipeAll();
+		elsie.client.wipeAll();
 		
 		try{
 		return ((tkt1.getSize()==1)&&

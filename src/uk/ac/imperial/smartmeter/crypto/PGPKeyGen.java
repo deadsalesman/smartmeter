@@ -16,6 +16,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.Quadruple;
 import uk.ac.imperial.smartmeter.res.Twople;
 import uk.ac.imperial.smartmeter.webcomms.UserAddressBook;
 
@@ -150,8 +151,7 @@ public class PGPKeyGen {
 				b.add(temp);
 			}
 			String sig = stringFromArrayList(b);
-			tkt.addSignature(sig);
-			System.out.println(sig);
+			tkt.addSignature(userId, sig);
 	
 			ticketIn.close();
 			sigIn.close();
@@ -225,13 +225,18 @@ public class PGPKeyGen {
 		
 		return ret;
 	}
-	public static Boolean verifyTicket(ElectricityTicket t, String hLCID) {
+	public static Boolean verifyTicket(ElectricityTicket t) {
+
 		Boolean ret = true;
 		try {
+			if(t.getNSignatures()<=0)
+			{
+			 return false;
+			}
 			for (int i = 0; i < t.getNSignatures(); i++) {
 				t.writeLog(i);
-				Boolean check = PGPSigner.verifyFile(t.getId() + ".s", hLCID + "_pub.bpg");
-
+				Boolean check =PGPSigner.verifyFile(t.getId() + ".s", t.getSignature(i).left + "_pub.bpg");
+				ret &= check;
 				FileInputStream tktIn = new FileInputStream(t.getId() + ".v");
 				FileInputStream verifIn = new FileInputStream(t.getId() + ".txt");
 				
@@ -257,49 +262,20 @@ public class PGPKeyGen {
 
 	}
 	public static Boolean verifyTicket(ElectricityTicket t, UserAddressBook book) {
-		Boolean ret = true;
-		try {
-			for (int i = 0; i < t.getNSignatures(); i++) {
-				book.findAndPrintPubKey(t.ownerID.toString());
-				t.writeLog(i);
-				Boolean check;
-				if (i ==0)
-				{
-					check =PGPSigner.verifyFile(t.getId() + ".s", book.getHLCiD() + "_pub.bpg");
-				}
-				else
-				{
-					check =PGPSigner.verifyFile(t.getId() + ".s", t.ownerID.toString() + "_pub.bpg");
-				}
-
-				FileInputStream tktIn = new FileInputStream(t.getId() + ".v");
-				FileInputStream verifIn = new FileInputStream(t.getId() + ".txt");
-				
-				byte temp;
-				ArrayList<Byte> b = new ArrayList<Byte>();
-				while((temp=(byte)tktIn.read())!=-1){b.add(temp);}
-				String tIn = stringFromArrayList(b);
-				
-				b = new ArrayList<Byte>();
-				while((temp=(byte)verifIn.read())!=-1){b.add(temp);}
-				String vIn = stringFromArrayList(b);
-				
-				verifIn.close();
-				tktIn.close();
-				
-				ret &= vIn.equals(tIn)&&!vIn.isEmpty();
-				
-			}
-		} catch (IOException e) { return false;
+		for (Quadruple<String, Date, ElectricityTicket, byte[]> x : t.getSignatures())
+		{
+		book.findAndPrintPubKey(x.left);
 		}
-
-		return ret;
-
+		
+		return verifyTicket(t);
 	}
 	public static void main(String[] args) throws Exception
 	{
 		//so, cat two files together? fmt: user, levels,  sig, othersigs, ticket.
 		PGPKeyGen x = new PGPKeyGen();
+		Twople<String, String> y = KeyPairGen.genKeySet("mich", "jack");
+		printPubKey("mich",y.right);
+		printSecKey("mich",y.left);
         Security.addProvider(new BouncyCastleProvider());
 		//String signme = "billie jean is not my lover";
 		
@@ -310,6 +286,15 @@ public class PGPKeyGen {
         //String signed = PGPSigner.signString("workcurseyou", "ada_secret.bpg", "lovelace");
         //System.out.println(PGPSigner.verifyString(signed, "ada_pub.bpg"));
         
+        ElectricityTicket p = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
+	    int deph = 1;
+	    for (int i = 0; i < deph; i++)
+	    {
+	    	signTicketForNewUser(p,"mich","jack");
+	    	p.magnitude += 2;
+	    }
+	    ;
+	    System.out.println(verifyTicket(p)?"yay":"no");
         ElectricityTicket t = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());
 	    int depth = 13;
 	    for (int i = 0; i < depth; i++)
@@ -317,8 +302,7 @@ public class PGPKeyGen {
 	    	signTicketForNewUser(t,"michael","jackson");
 	    	t.magnitude += 2;
 	    }
-	    ;
-	    System.out.println(verifyTicket(t,"michael")?"yay":"no");
+	    System.out.println(verifyTicket(t)?"yay":"no");
 		
 	}
 	public static void printPubKey(String id, String key) {

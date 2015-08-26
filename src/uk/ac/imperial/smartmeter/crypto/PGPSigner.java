@@ -184,7 +184,10 @@ public class PGPSigner
 	        throws Exception
 	    {
 	    in = PGPUtil.getDecoderStream(in);
-	    return verify(new JcaPGPObjectFactory(in),keyIn);
+	    Boolean ret = verify(new JcaPGPObjectFactory(in),keyIn);
+	    in.close();
+	    keyIn.close();
+	    return ret;
 	    }
 	public static Boolean verify(
 			JcaPGPObjectFactory pgpFact,
@@ -218,6 +221,8 @@ public class PGPSigner
 	        }
 
 	        out.close();
+	        keyIn.close();
+	        dIn.close();
 	        
 	        PGPSignatureList            p3 = (PGPSignatureList)pgpFact.nextObject();
 

@@ -30,6 +30,7 @@ public class HLCServer implements HLCServerIFace{
 	private String pubKey;
 	private String privKey;
 	private String passWd;
+	private String id;
 	private HashMap<String, Twople<String,InetSocketAddress>> clients;
 	private InetAddress tempAddress;
 	public HLCServer(int parseInt) {
@@ -50,15 +51,18 @@ public class HLCServer implements HLCServerIFace{
 		{
 			Security.addProvider(new BouncyCastleProvider());
 			passWd = "itsa me, the hlc";
-			Twople<String, String> x = KeyPairGen.genKeySet(handler.getId(), passWd);
+			id =  handler.getId();
+			Twople<String, String> x = KeyPairGen.genKeySet(id, passWd);
+			System.out.println("id/pass:"+id+" "+passWd);
 			pubKey = x.right;
 			privKey = x.left;
 			handler.setCredentials(passWd, privKey, pubKey);
 			HLCServerIFace stub = (HLCServerIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("HLCServer", stub);
-			PGPKeyGen.printPubKey(handler.getId(), pubKey);
-			PGPKeyGen.printSecKey(handler.getId(), privKey);
+			PGPKeyGen.printPubKey(id, pubKey);
+			PGPKeyGen.printSecKey(id, privKey);
+			System.out.println(pubKey);
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
@@ -123,7 +127,7 @@ public class HLCServer implements HLCServerIFace{
 		return handler.getTickets(user);
 	}
 	@Override
-	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
+	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String foreignPubKey, Double worth, Double generation,
 			Double economic, int port) {
 		clients.put(userId, new Twople<String, InetSocketAddress>(pubKey,new InetSocketAddress(tempAddress,port)));
 		handler.addUserAgent(new UserAgent(
@@ -131,12 +135,12 @@ public class HLCServer implements HLCServerIFace{
 						hash,
 						userId,
 						userName,
-						pubKey,
+						foreignPubKey,
 						worth,
 						generation,
 						economic
 						));
-		return new Twople<String, String>(handler.getId(),pubKey);
+		return new Twople<String, String>(id,pubKey);
 	}
 	@Override
 	public String getPublicKey() throws RemoteException {

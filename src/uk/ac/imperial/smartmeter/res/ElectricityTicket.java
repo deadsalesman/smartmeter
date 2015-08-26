@@ -21,7 +21,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	private Date end;
 	public double magnitude;
 	private double duration;
-	private ArrayList<Triple<Date,ElectricityTicket,byte[]>> signatures;
+	private ArrayList<Quadruple<String,Date,ElectricityTicket,byte[]>> signatures;
 	public UUID ownerID;
 	public UUID id;
 	public UUID reqID;
@@ -31,9 +31,9 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	}
 	public void ruinSignatureValidity() //used in testing. should not ever be used outside testing
 	{
-		for (Triple<Date,ElectricityTicket,byte[]> b : signatures)
+		for (Quadruple<String, Date, ElectricityTicket, byte[]> b : signatures)
 		{
-			b.central.magnitude += 2.;
+			b.rightmid.magnitude += 2.;
 		}
 	}
 	public int getNSignatures()
@@ -66,19 +66,20 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	{
 		this(s,e,m,owner, reqId, UUID.randomUUID().toString());
 	}
-	public void addSignature(String sig)
+	public void addSignature(String signer, String sig)
 	{
 		ElectricityTicket savepoint = new ElectricityTicket(this);
-		signatures.add(new Triple<Date, ElectricityTicket, byte[]>(new Date(), savepoint,sig.getBytes()));
+		signatures.add(new Quadruple<String, Date, ElectricityTicket, byte[]>(signer, new Date(), savepoint,sig.getBytes()));
 	}
 	public String toString()
 	{
 		String ret =  String.valueOf(this.start.getTime()) + "," + String.valueOf(this.end.getTime()) + "," + this.magnitude + "," + this.ownerID.toString() + "," + this.reqID.toString() + "," + this.getId() + ",";
 		
-		for (Triple<Date, ElectricityTicket, byte[]> b : signatures)
+		for (Quadruple<String, Date, ElectricityTicket, byte[]> b : signatures)
 		{
-			ret += b.left.getTime();
-			ret += b.central.toString();
+			ret += b.left;
+			ret += b.leftmid.getTime();
+			ret += b.rightmid.toString();
 			ret += new String(b.right);
 			ret += ",";
 		}
@@ -88,17 +89,18 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	public String toString(int depth)
 	{
 		String ret =  String.valueOf(
-				signatures.get(depth).central.start.getTime()) + ","+ 
-				String.valueOf(signatures.get(depth).central.end.getTime()) + "," + 
-				signatures.get(depth).central.magnitude + "," + 
-				signatures.get(depth).central.ownerID.toString() + "," + 
-				signatures.get(depth).central.reqID.toString() + "," + 
-				signatures.get(depth).central.getId() + ",";
+				signatures.get(depth).rightmid.start.getTime()) + ","+ 
+				String.valueOf(signatures.get(depth).rightmid.end.getTime()) + "," + 
+				signatures.get(depth).rightmid.magnitude + "," + 
+				signatures.get(depth).rightmid.ownerID.toString() + "," + 
+				signatures.get(depth).rightmid.reqID.toString() + "," + 
+				signatures.get(depth).rightmid.getId() + ",";
 		
 		for (int i = 0; i < depth; i++)
 		{
-			ret += signatures.get(i).left.getTime();
-			ret += signatures.get(i).central.toString();
+			ret += signatures.get(i).left;
+			ret += signatures.get(i).leftmid.getTime();
+			ret += signatures.get(i).rightmid.toString();
 			ret += new String(signatures.get(i).right);
 			ret += ",";
 		}
@@ -117,7 +119,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 		ownerID = UUID.fromString(owner);
 		id = UUID.fromString(idString);
 		duration= e.getTime() - s.getTime();
-		signatures = new ArrayList<Triple<Date,ElectricityTicket,byte[]>>();
+		signatures = new ArrayList<Quadruple<String, Date, ElectricityTicket, byte[]>>();
 	}
 	public ElectricityTicket(ElectricityTicket newtkt) {
 		start = DateHelper.clone(newtkt.start);
@@ -127,18 +129,19 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 		ownerID = UUID.fromString(newtkt.ownerID.toString());
 		id = UUID.fromString(newtkt.id.toString());
 		duration= end.getTime() - start.getTime();
-		signatures = new ArrayList<Triple<Date,ElectricityTicket,byte[]>>();
+		signatures = new ArrayList<Quadruple<String, Date, ElectricityTicket, byte[]>>();
 	}
 	public void spamSigs()
 	{
 		int i = 0;
-		for (Triple<Date, ElectricityTicket, byte[]> b : signatures)
+		for (Quadruple<String, Date, ElectricityTicket, byte[]> b : signatures)
 		{
 			i++;
 			System.out.println("Printing signature" + i);
 
-			System.out.println(b.left.getTime());
-			System.out.println(b.central);
+			System.out.println(b.left);
+			System.out.println(b.leftmid.getTime());
+			System.out.println(b.rightmid);
 			System.out.println(new String(b.right));
 		}
 	}
@@ -164,9 +167,13 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 		id = UUID.fromString(tempNew.id.toString());
 		setDuration();
 	}
-	public byte[] getSignature(int depth)
+	public Quadruple<String, Date, ElectricityTicket, byte[]> getSignature(int depth)
 	{
-		return signatures.get(depth).right;
+		return signatures.get(depth);
+	}
+	public ArrayList<Quadruple<String, Date, ElectricityTicket, byte[]>> getSignatures()
+	{
+		return signatures;
 	}
 	public void writeLog(int depth) {
 		try {
@@ -183,7 +190,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 			md.update(digest);
 			
 			oFile.write(md.digest());
-			oSig.write(getSignature(depth));
+			oSig.write(getSignature(depth).right);
 			
 			oSig.close();
 			oFile.close();
