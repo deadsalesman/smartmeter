@@ -1,47 +1,60 @@
 package uk.ac.imperial.smartmeter.electronicdevices;
 
+import java.util.UUID;
+
 import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
+import uk.ac.imperial.smartmeter.electricityprofile.DishwasherConsumptionProfile;
 
 public class Dishwasher implements ElectronicConsumerDevice {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -6906758019033560805L;
 
+	private static final long serialVersionUID = -6906758019033560805L;
+	DeviceType type = DeviceType.Dishwasher;
+	Boolean active = false;
+	ConsumptionProfile demand;
+	private UUID id = UUID.randomUUID();
+	
+
+	Dishwasher(){
+		demand = new DishwasherConsumptionProfile();
+	}
+	public Dishwasher(String id2, Boolean initialState) {
+		this();
+		active = initialState;
+		id = UUID.fromString(id2);
+	}
 	@Override
 	public DeviceType getType() {
-		return this.getClass().toString();
-	}
-
-	@Override
-	public Boolean getState() {
-		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setState(Boolean newState) {
-		// TODO Auto-generated method stub
-		
+		return id.toString();
 	}
 
 	@Override
 	public double getMaxConsumptionRate() {
-		// TODO Auto-generated method stub
-		return 0;
+		return demand.getMaxConsumption();
 	}
 
 	@Override
 	public ConsumptionProfile getProfile() {
-		// TODO Auto-generated method stub
-		return null;
+		return demand;
+	}
+
+	@Override
+	public Boolean getConsumptionEnabled() {
+		return active;
+	}
+
+	@Override
+	public void setConsumptionEnabled(Boolean state) {
+		active = state;
+		
 	}
 
 }

@@ -84,7 +84,7 @@ public class TicketAllocator {
 		ElectricityTicket tkt = new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
 
 		SignatureHelper.signTicketForNewUser(tkt, userId, password);
-		System.out.println(SignatureHelper.verifyTicket(tkt));
+		SignatureHelper.verifyTicket(tkt);
 		return tkt;
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)

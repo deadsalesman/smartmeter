@@ -23,12 +23,13 @@ public class Battery  implements ElectronicConsumerDevice, ElectronicSupplierDev
 	private static final long serialVersionUID = 2442756528890104616L;
 	public Battery()
 	{
+		demand = new BatteryConsumptionProfile(1., 1.); //arbitrary units of charging
+		supply = new ElectricityGeneration(1.);
 	}
-	public Battery(Double consume, Double generate)
-	{
-
-		demand = new BatteryConsumptionProfile(1., consume); //arbitrary units of charging
-		supply = new ElectricityGeneration(generate);
+	public Battery(String uID, Boolean initialState) {
+		this();
+		charging = initialState;
+		id = UUID.fromString(uID);
 	}
 	@Override
 	public DeviceType getType() {

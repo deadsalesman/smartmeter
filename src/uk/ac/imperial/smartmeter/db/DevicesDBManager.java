@@ -4,10 +4,11 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
-import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
 
 public class DevicesDBManager 
-     extends IntegratedDBManager<ElectronicDevice>{
+     extends IntegratedDBManager<ElectronicConsumerDevice>{
 	public DevicesDBManager(String dbLocation) {
 		super(dbLocation,primTable,primFmt);
 		initialiseEnumTable();
@@ -96,8 +97,8 @@ public class DevicesDBManager
 	}
 
 	@Override
-	public boolean insertElement(ElectronicDevice r) {
-		int state = r.getState() ? 1 : 0;
+	public boolean insertElement(ElectronicConsumerDevice r) {
+		int state = r.getConsumptionEnabled() ? 1 : 0;
 		String fmt = "INSERT INTO "+primTable+"(ID, STATE, TYPE, UUID) " + "VALUES ("
 				+ r.getId().hashCode() + ", " + state + ", " + r.getType().ordinal() + ", '" + r.getId().toString() + "' "
 				+ " );";
@@ -106,19 +107,19 @@ public class DevicesDBManager
 	}
 
 	@Override
-	public ElectronicDevice formatMap(Map<String, Object> ls) {
-		ElectronicDevice ed = null;
-		ed = new ElectronicDevice(
-				((int)ls.get("STATE")==1?true:false),
+	public ElectronicConsumerDevice formatMap(Map<String, Object> ls) {
+		ElectronicConsumerDevice ed = null;
+		ed = (ElectronicConsumerDevice) ElectronicDeviceFactory.getDevice(
 				(int)ls.get("TYPE"),
-				(String)ls.get("UUID")
+				(String)ls.get("UUID"),
+				((int)ls.get("STATE")==1?true:false)
 				);
 		return ed;
 	}
 
 
 	@Override
-	public boolean removeElement(ElectronicDevice r) {
+	public boolean removeElement(ElectronicConsumerDevice r) {
 		String fmt = "DELETE FROM "+primTable+" WHERE ID = " + r.getId().hashCode()
 				+ ";";
 	

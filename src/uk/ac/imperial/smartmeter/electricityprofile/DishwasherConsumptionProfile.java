@@ -18,7 +18,7 @@ public class DishwasherConsumptionProfile extends ConsumptionProfile {
 	public DishwasherConsumptionProfile(double dur, double amplitude)
 	{
 		super(dur,amplitude);
-		name = "Battery";
+		name = "Dishwasher";
 	}
 
 }

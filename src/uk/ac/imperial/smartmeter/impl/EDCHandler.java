@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.impl;
 
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 
 public class EDCHandler {
@@ -25,7 +26,7 @@ public class EDCHandler {
 			return false;
 		}
 	}
-	public Boolean addDevice(ElectronicDevice newDevice, Integer pin)
+	public Boolean addDevice(ElectronicConsumerDevice newDevice, Integer pin)
 	{
 		return controller.addDevice(newDevice, pin);
 	}

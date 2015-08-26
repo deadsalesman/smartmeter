@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.DayNode;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
 import uk.ac.imperial.smartmeter.impl.LCHandler;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
@@ -65,10 +67,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	}
 	public Boolean addDevice(Boolean state, Integer type, String deviceID, Integer pin)
 	{
-		return addDevice(new ElectronicDevice(state,type,deviceID),pin);
+		return addDevice(ElectronicDeviceFactory.getDevice(type,deviceID,state),pin);
 	}
 	@Override
-	public Boolean addDevice(ElectronicDevice ed, Integer pin)
+	public Boolean addDevice(ElectronicConsumerDevice ed, Integer pin)
 	{
 		try {
 			return lookupEDCServer().addDevice(ed, pin);

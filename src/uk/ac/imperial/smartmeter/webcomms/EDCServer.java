@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.impl.EDCHandler;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
@@ -39,7 +40,7 @@ public class EDCServer implements EDCServerIFace{
 
 	private EDCHandler handler;
 	@Override
-	public Boolean addDevice(ElectronicDevice ed, Integer pin) {
+	public Boolean addDevice(ElectronicConsumerDevice ed, Integer pin) {
 		return handler.addDevice(ed, pin);
 	}
 	@Override

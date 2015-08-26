@@ -12,25 +12,25 @@ import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.db.DevicesDBManager;
 import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
-import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceControllerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 
-//ElectronicDeviceController
+//ElectronicConsumerDeviceController
 public class EDController 
 	implements ElectronicDeviceControllerIFace, UniqueIdentifierIFace{
-	private ArraySet<ElectronicDevice> devices;
-	private Map<ElectronicDevice, Integer> pinouts;
+	private ArraySet<ElectronicConsumerDevice> devices;
+	private Map<ElectronicConsumerDevice, Integer> pinouts;
 	public DevicesDBManager db;
 	private UUID id;
 	private Set<Integer> availablePins;
 	public EDController()
 	{
 		id = UUID.randomUUID();
-		devices = new ArraySet<ElectronicDevice>();
+		devices = new ArraySet<ElectronicConsumerDevice>();
 		db = new DevicesDBManager("jdbc:sqlite:edc.db");
-		pinouts = new HashMap<ElectronicDevice, Integer>();
+		pinouts = new HashMap<ElectronicConsumerDevice, Integer>();
 		availablePins = setAvailablePins();
 		pullFromDB();
 		setAvailablePins();
@@ -68,7 +68,7 @@ public class EDController
 	}
 	public int getDeviceIndex(String deviceID)
 	{
-		for (ElectronicDevice ed : devices)
+		for (ElectronicConsumerDevice ed : devices)
 		{
 			if (ed.getId().equals(deviceID))
 			{
@@ -78,9 +78,9 @@ public class EDController
 		
 		return -1;
 	}
-	public ElectronicDevice getDevice(String deviceID)
+	public ElectronicConsumerDevice getDevice(String deviceID)
 	{
-		for (ElectronicDevice ed : devices)
+		for (ElectronicConsumerDevice ed : devices)
 		{
 			if (ed.getId().equals(deviceID))
 			{
@@ -94,15 +94,15 @@ public class EDController
 	public Boolean getDeviceState(int index) {
 		
 		try {
-			return devices.get(index).getState();
+			return devices.get(index).getConsumptionEnabled();
 		}
 		catch (IndexOutOfBoundsException e){
-			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicConsumerDeviceController");
 		}
 		return null;
 	}
 
-	public Boolean addDevice(ElectronicDevice e, Integer pin) {
+	public Boolean addDevice(ElectronicConsumerDevice e, Integer pin) {
 		if (db.insertElement(e)) {
 			if (availablePins.contains(pin)) {
 				availablePins.remove(pin);
@@ -116,14 +116,14 @@ public class EDController
 	public Boolean wipe()
 	{
 		db.wipe();
-		devices = new ArraySet<ElectronicDevice>();
-		pinouts = new HashMap<ElectronicDevice, Integer>();
+		devices = new ArraySet<ElectronicConsumerDevice>();
+		pinouts = new HashMap<ElectronicConsumerDevice, Integer>();
 		availablePins = setAvailablePins();
 		return true;
 	}
    public Boolean removeDevice(int index)
    {
-	   ElectronicDevice x = devices.get(index);
+	   ElectronicConsumerDevice x = devices.get(index);
 	   if(db.removeElement(x))
 	   {
 		   availablePins.add(pinouts.get(x));
@@ -143,7 +143,7 @@ public class EDController
 			return devices.get(index).getType();
 		}
 		catch (IndexOutOfBoundsException e){
-			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicConsumerDeviceController");
 		}
 		return null;
 	}
@@ -154,8 +154,8 @@ public class EDController
 	public Boolean setDeviceState(int index, Boolean newState) {
 
 		try {
-			ElectronicDevice ed = devices.get(index);
-			ed.setState(newState);
+			ElectronicConsumerDevice ed = devices.get(index);
+			ed.setConsumptionEnabled(newState);
 			db.updateDeviceState(ed.hashCode(), newState);
 			ProcessBuilder pb = new ProcessBuilder("python", "test1.py", "" + pinouts.get(ed), "" + pinouts.get(ed));
 			Process p = pb.start();
@@ -165,7 +165,7 @@ public class EDController
 			System.out.println("value is : " + ret);
 			return true;
 		} catch (IndexOutOfBoundsException e){
-			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicDeviceController");
+			//System.err.println("IndexOutOfBoundsException: " + e.getMessage() + " in ElectronicConsumerDeviceController");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -178,11 +178,11 @@ public class EDController
 
 	@Override
 	public void setDevicesOfType(DeviceType type, Boolean newState) {
-		for (ElectronicDevice device : devices)
+		for (ElectronicConsumerDevice device : devices)
 		{
 			if (device.getType()==type)
 			{
-				device.setState(newState);
+				device.setConsumptionEnabled(newState);
 				db.updateDeviceState(device.getId().hashCode(), newState);
 			}
 		}
@@ -204,7 +204,7 @@ public class EDController
 	
 	@Override
 	public void pushToDB() {
-		for (ElectronicDevice i : devices)
+		for (ElectronicConsumerDevice i : devices)
 		{
 			db.insertElement(i);
 		}
@@ -212,8 +212,8 @@ public class EDController
 	}
 	@Override
 	public void pullFromDB() {
-		ArrayList<ElectronicDevice>temp_array = db.extractAll();
-		for (ElectronicDevice i : temp_array)
+		ArrayList<ElectronicConsumerDevice>temp_array = db.extractAll();
+		for (ElectronicConsumerDevice i : temp_array)
 		{
 			devices.add(i);
 		}
