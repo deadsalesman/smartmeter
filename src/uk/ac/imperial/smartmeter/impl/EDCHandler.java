@@ -1,6 +1,6 @@
 package uk.ac.imperial.smartmeter.impl;
 
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 
 public class EDCHandler {
 	

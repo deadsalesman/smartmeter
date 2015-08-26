@@ -1,8 +1,8 @@
 package uk.ac.imperial.smartmeter.tests.database;
 
+import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.impl.EDController;
-import uk.ac.imperial.smartmeter.res.DeviceType;
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestECDB extends GenericTest {

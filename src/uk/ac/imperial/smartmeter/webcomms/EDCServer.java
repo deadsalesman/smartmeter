@@ -6,9 +6,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.impl.EDCHandler;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 
 public class EDCServer implements EDCServerIFace{
 	private int portNum;

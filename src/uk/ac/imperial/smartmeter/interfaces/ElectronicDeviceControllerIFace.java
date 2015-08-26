@@ -1,6 +1,6 @@
 package uk.ac.imperial.smartmeter.interfaces;
 
-import uk.ac.imperial.smartmeter.res.DeviceType;
+import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
 
 public interface ElectronicDeviceControllerIFace {
 	public Boolean getDeviceState(int index);

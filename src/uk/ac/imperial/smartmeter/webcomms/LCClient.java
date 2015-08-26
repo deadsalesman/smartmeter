@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.DayNode;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.impl.LCHandler;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
@@ -21,7 +22,6 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Twople;
 

@@ -1,4 +1,4 @@
-package uk.ac.imperial.smartmeter.res;
+package uk.ac.imperial.smartmeter.electronicdevices;
 
 import java.io.Serializable;
 

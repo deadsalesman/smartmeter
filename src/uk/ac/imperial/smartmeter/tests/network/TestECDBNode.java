@@ -2,7 +2,7 @@ package uk.ac.imperial.smartmeter.tests.network;
 
 import java.util.UUID;
 
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;

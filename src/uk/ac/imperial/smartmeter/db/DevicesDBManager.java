@@ -3,8 +3,8 @@ package uk.ac.imperial.smartmeter.db;
 import java.sql.SQLException;
 import java.util.Map;
 
-import uk.ac.imperial.smartmeter.res.DeviceType;
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 
 public class DevicesDBManager 
      extends IntegratedDBManager<ElectronicDevice>{

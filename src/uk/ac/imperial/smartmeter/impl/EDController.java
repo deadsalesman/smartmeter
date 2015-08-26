@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.db.DevicesDBManager;
+import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceControllerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
-import uk.ac.imperial.smartmeter.res.DeviceType;
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 
 //ElectronicDeviceController
 public class EDController 

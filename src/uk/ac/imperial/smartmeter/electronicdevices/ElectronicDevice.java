@@ -1,4 +1,4 @@
-package uk.ac.imperial.smartmeter.res;
+package uk.ac.imperial.smartmeter.electronicdevices;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -7,7 +7,7 @@ import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 
-public class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace, Serializable{
+public abstract class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace, Serializable{
 	/**
 	 * 
 	 */
