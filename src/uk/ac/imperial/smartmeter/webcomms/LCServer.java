@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
-import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
+import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -66,8 +66,8 @@ public class LCServer implements Runnable, LCServerIFace{
 			pubKey = x.right;
 			privKey = x.left;
 
-			PGPKeyGen.printPubKey(client.getId(), pubKey);
-			PGPKeyGen.printSecKey(client.getId(), privKey);
+			SignatureHelper.printPubKey(client.getId(), pubKey);
+			SignatureHelper.printSecKey(client.getId(), privKey);
 			
 			passWd = password;
 			for (Entry<String, Twople<String, InetSocketAddress>> entry : client.getAddresses().entrySet())
@@ -86,7 +86,7 @@ public class LCServer implements Runnable, LCServerIFace{
 	}
 	public Twople<String,String> registerUser(Double worth, Double generation, Double economic, int port) {
 		Twople<String, String> ret = client.registerUser(worth, generation, economic, pubKey, port);
-		PGPKeyGen.printPubKey(ret.left, ret.right);
+		SignatureHelper.printPubKey(ret.left, ret.right);
 		addresses.setHLCiD(ret.left);
 		return ret;
 	}
@@ -110,8 +110,8 @@ public class LCServer implements Runnable, LCServerIFace{
 		oldtkt.modifyID(tempOld);
 		String ret = "SUCCESS,";
 		client.handler.forceNewTicket(oldtkt);
-		PGPKeyGen.signTicketForNewUser(oldtkt, client.getId(), passWd);
-		PGPKeyGen.signTicketForNewUser(newtkt, client.getId(), passWd);
+		SignatureHelper.signTicketForNewUser(oldtkt, client.getId(), passWd);
+		SignatureHelper.signTicketForNewUser(newtkt, client.getId(), passWd);
 	}
 
 	private Boolean decideUtility(Double newUtility, Double oldUtility, String user) {
@@ -229,7 +229,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktDesired);
 			ElectricityTicket tempOld = new ElectricityTicket(tktDesired);
 			ElectricityTicket tempNew = new ElectricityTicket(tktOffered);
-			if (PGPKeyGen.verifyTicket(tktOffered, addresses))
+			if (SignatureHelper.verifyTicket(tktOffered, addresses))
 			{
 			Double oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure

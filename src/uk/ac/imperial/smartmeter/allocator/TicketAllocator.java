@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.comparators.requirementPrioComparator;
-import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
+import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
@@ -83,8 +83,8 @@ public class TicketAllocator {
 	{
 		ElectricityTicket tkt = new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
 
-		PGPKeyGen.signTicketForNewUser(tkt, userId, password);
-		System.out.println(PGPKeyGen.verifyTicket(tkt));
+		SignatureHelper.signTicketForNewUser(tkt, userId, password);
+		System.out.println(SignatureHelper.verifyTicket(tkt));
 		return tkt;
 	}
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)

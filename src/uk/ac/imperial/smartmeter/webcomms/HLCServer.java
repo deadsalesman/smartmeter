@@ -13,7 +13,7 @@ import java.util.HashMap;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
-import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
+import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.impl.HLCHandler;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -60,8 +60,8 @@ public class HLCServer implements HLCServerIFace{
 			HLCServerIFace stub = (HLCServerIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("HLCServer", stub);
-			PGPKeyGen.printPubKey(id, pubKey);
-			PGPKeyGen.printSecKey(id, privKey);
+			SignatureHelper.printPubKey(id, pubKey);
+			SignatureHelper.printSecKey(id, privKey);
 			System.out.println(pubKey);
 		}catch (RemoteException e)
 		{

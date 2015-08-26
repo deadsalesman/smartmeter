@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
-import uk.ac.imperial.smartmeter.crypto.PGPKeyGen;
+import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.crypto.PGPSigner;
 import uk.ac.imperial.smartmeter.res.Twople;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
@@ -24,8 +24,8 @@ public class TestBasicSignUnsign extends GenericTest {
 		for (byte b : testFileData.getBytes()){fOut.write(b);}
 		
 		Twople<String, String> y = KeyPairGen.genKeySet(id, pass);
-		PGPKeyGen.printPubKey(id,y.right);
-		PGPKeyGen.printSecKey(id,y.left);
+		SignatureHelper.printPubKey(id,y.right);
+		SignatureHelper.printSecKey(id,y.left);
 		PGPSigner.signFile(testFile+".xtx", id +"_secret.bpg", pass);
 
 		Boolean ret = PGPSigner.verifyFile(testFile + ".xtx.bpg", id + "_pub.bpg");
@@ -36,7 +36,7 @@ public class TestBasicSignUnsign extends GenericTest {
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
 		while((temp=(byte) fIn.read())!=-1){bytes.add(temp);}
 		
-		String readData = PGPKeyGen.stringFromArrayList(bytes);
+		String readData = SignatureHelper.stringFromArrayList(bytes);
 		fOut.close();
 		fIn.close();
 		return ret && readData.equals(testFileData);

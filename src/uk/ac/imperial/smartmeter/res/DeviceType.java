@@ -6,5 +6,6 @@ public enum DeviceType implements Serializable{
 	Light,
 	LED,
 	Dishwasher,
-	Stove
+	Stove,
+	Battery
 }
