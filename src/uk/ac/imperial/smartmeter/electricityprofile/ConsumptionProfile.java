@@ -1,4 +1,4 @@
-package uk.ac.imperial.smartmeter.res;
+package uk.ac.imperial.smartmeter.electricityprofile;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,6 +23,10 @@ public abstract class ConsumptionProfile implements Serializable{
 		duration = dur;
 	}
 	public ConsumptionProfile() {
+	}
+	public double getMaxConsumption()
+	{
+		return amplitude;
 	}
 	public double getConsumption(Date start, Date offset)
 	{

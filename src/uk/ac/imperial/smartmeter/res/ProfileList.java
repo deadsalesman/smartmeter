@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
+import uk.ac.imperial.smartmeter.electricityprofile.UniformConsumptionProfile;
+
 public abstract class ProfileList {
 	public static final Map<Integer, Class<? extends ConsumptionProfile>> profileMap = new HashMap<Integer,Class<? extends ConsumptionProfile>>();
 

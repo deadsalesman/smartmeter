@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
+import uk.ac.imperial.smartmeter.electricityprofile.UniformConsumptionProfile;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ElectricityRequirement implements UniqueIdentifierIFace, Serializable{
@@ -76,7 +77,7 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 		endTime = DateHelper.clone(req.endTime);
 		duration = new Double(req.duration);
 		priority = new DecimalRating(req.priority.getValue());
-		profile = new UniformConsumptionProfile(duration, req.profile.amplitude);
+		profile = new UniformConsumptionProfile(duration, req.profile.getMaxConsumption());
 		userID = UUID.fromString(req.getUserID());
 		reqID = UUID.fromString(req.getId());
 	}
@@ -113,7 +114,7 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	}
 	public double getMaxConsumption()
 	{
-		return profile.amplitude;
+		return profile.getMaxConsumption();
 	}
 	public double getConsumption(Date time)
 	{

@@ -2,17 +2,17 @@ package uk.ac.imperial.smartmeter.electronicdevices;
 
 public class ElectronicDeviceFactory {
 	
-	public ElectronicDevice getDevice(Integer deviceType)
+	public ElectronicDeviceIFace getDevice(Integer deviceType)
 	{
 		return getDevice(DeviceType.values()[deviceType].toString());
 		
 	}
-	public ElectronicDevice getDevice(String deviceType)
+	public ElectronicDeviceIFace getDevice(String deviceType)
 	{
 		switch(deviceType)
 		{
 		case "Battery":
-			return new Battery(false, 0);
+			return new Battery();
 		default: 
 			return null;
 		}

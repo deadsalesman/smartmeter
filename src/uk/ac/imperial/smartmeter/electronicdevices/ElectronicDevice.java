@@ -1,13 +1,10 @@
 package uk.ac.imperial.smartmeter.electronicdevices;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceIFace;
-import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 
-public abstract class ElectronicDevice implements ElectronicDeviceIFace, UniqueIdentifierIFace, Serializable{
+public abstract class ElectronicDevice implements ElectronicDeviceIFace{
 	/**
 	 * 
 	 */
@@ -41,20 +38,6 @@ public abstract class ElectronicDevice implements ElectronicDeviceIFace, UniqueI
 		type = DeviceType.values()[device];
 		id = UUID.randomUUID();
 	}
-	@Override
-	public double getConsumptionRate() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
-	public Boolean getState() {
-		return state;
-	}
-	@Override
-	public void setState(Boolean newState) {
-		state = newState;
-	}
-
 	public String getId() {
 		return id.toString();
 	}

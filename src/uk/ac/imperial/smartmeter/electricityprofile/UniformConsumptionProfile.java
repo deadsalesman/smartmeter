@@ -1,8 +1,7 @@
-package uk.ac.imperial.smartmeter.res;
+package uk.ac.imperial.smartmeter.electricityprofile;
 
-import java.io.Serializable;
 
-public class UniformConsumptionProfile extends ConsumptionProfile implements Serializable {
+public class UniformConsumptionProfile extends ConsumptionProfile {
 
 	/**
 	 * 
