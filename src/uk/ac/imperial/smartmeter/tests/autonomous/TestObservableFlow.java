@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.autonomous.LCStandalone;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
@@ -20,9 +21,11 @@ public class TestObservableFlow extends GenericTest {
 			
 			
 			
-			TicketTestHelper.bindRequirement(a.server.client,1.1, 2.3, 4,3.);
-			TicketTestHelper.bindRequirement(b.server.client,1.1, 4.3, 4,3.);
+			ElectronicConsumerDevice x = TicketTestHelper.bindRequirementToDevice(a.server.client,0.1, 2.3, 4,3.);
+			ElectronicConsumerDevice y = TicketTestHelper.bindRequirementToDevice(b.server.client,0.1, 4.3, 4,3.);
 			
+			a.server.client.addDevice(x, 5);
+			b.server.client.addDevice(y, 7);
 			a.server.client.GodModeCalcTKTS();
 
 			final ArraySet<ElectricityTicket> l = a.server.client.getTickets();
@@ -30,7 +33,7 @@ public class TestObservableFlow extends GenericTest {
 			UUID lID = UUID.fromString(l.get(0).id.toString());
 			UUID mID = UUID.fromString(m.get(0).id.toString());
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(50000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

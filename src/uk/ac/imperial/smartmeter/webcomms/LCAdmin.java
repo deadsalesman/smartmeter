@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
 import java.net.InetSocketAddress;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -18,7 +19,10 @@ public class LCAdmin implements Runnable{
 	private Double timeSinceLastTickets=0.;
 	private Double timeSinceLastBulletin=0.;
 	private Double timeSinceLastNegotiation=0.;
+	private Double timeSinceLastReqCheck=0.;
 
+
+	private Double reasonableReqCheckTime;
 	private Double reasonableBulletinTime;
 	private Double reasonableTicketTime;
 	private Double reasonableNegotiationTime;
@@ -42,10 +46,16 @@ public class LCAdmin implements Runnable{
 		bulletin = new Bulletin();
 		ownPort = port;
 		Random rn = new Random();
-		reasonableBulletinTime = Math.pow(10., 8.8) + rn.nextInt(30);
-		reasonableTicketTime = Math.pow(10., 8.8)+ rn.nextInt(30);
-		reasonableNegotiationTime = Math.pow(10.,8.9)+ rn.nextInt(30);
-		initialiseRequirementClasses();
+		reasonableReqCheckTime = Math.pow(10., 7.8 + rn.nextInt(50)/100);
+		reasonableBulletinTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
+		reasonableTicketTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
+		reasonableNegotiationTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
+
+		newReqs = new ArraySet<ElectricityRequirement>();
+		currentReqs = new ArraySet<ElectricityRequirement>();
+		deadReqs = new ArraySet<ElectricityRequirement>();
+		
+		updateRequirementClasses(client.handler.getReqs());
 	}
 	public Integer getRequirementCategory(ElectricityRequirement e)
 	{
@@ -53,11 +63,11 @@ public class LCAdmin implements Runnable{
 		Integer ret = -1;
 		if (e.getEndTime().compareTo(d) <= 0)
 		{
-			ret = 0;
+			ret = 2;
 		}
 		else if (e.getStartTime().compareTo(d) >= 0)
 		{
-			ret = 2;
+			ret = 0;
 		}
 		else
 		{
@@ -66,13 +76,9 @@ public class LCAdmin implements Runnable{
 		
 		return ret;
 	}
-	public void initialiseRequirementClasses()
+	public void updateRequirementClasses(ArraySet<ElectricityRequirement> reqs)
 	{
-		newReqs = new ArraySet<ElectricityRequirement>();
-		currentReqs = new ArraySet<ElectricityRequirement>();
-		deadReqs = new ArraySet<ElectricityRequirement>();
-		
-		for (ElectricityRequirement r : client.handler.getReqs())
+		for (ElectricityRequirement r : reqs)
 		{
 			switch(getRequirementCategory(r))
 			{
@@ -94,7 +100,7 @@ public class LCAdmin implements Runnable{
 	}
 	public void modifyRequirementClasses()
 	{
-
+		try{
 		for (ElectricityRequirement r: currentReqs)
 		{
 			if (getRequirementCategory(r)==2)
@@ -110,9 +116,23 @@ public class LCAdmin implements Runnable{
 			{
 				newReqs.remove(r);
 				currentReqs.add(r);
-				client.setState(r.getDevice().getId(), true);
+				checkTickets(r);
 			}
 		}
+		}
+		catch(ConcurrentModificationException e)
+		{
+			
+		}
+	}
+	private void checkTickets(ElectricityRequirement r) {
+		ElectricityTicket q = client.handler.findMatchingTicket(r);
+		if (q!=null)
+		{
+			q.setActive(true);
+			System.out.println(client.setState(r.getDevice().getId(), true));
+		}
+		
 	}
 	public void activate()
 	{
@@ -163,7 +183,13 @@ public class LCAdmin implements Runnable{
 				timeSinceLastTickets += pollingTime;
 				timeSinceLastBulletin += pollingTime;
 				timeSinceLastNegotiation += pollingTime;
-				
+				timeSinceLastReqCheck += pollingTime;
+			if (timeSinceLastReqCheck > reasonableReqCheckTime)
+			{
+				updateRequirementClasses(client.newReqs);
+				client.newReqs = new ArraySet<ElectricityRequirement>();
+				modifyRequirementClasses();
+			}
 			if (client.queryUnsatisfiedReqs()&&(timeSinceLastTickets>reasonableTicketTime))
 			{
 				//attempt to get tickets from the central server

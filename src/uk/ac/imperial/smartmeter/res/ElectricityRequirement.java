@@ -66,12 +66,17 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	}
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude, String iDUser,String idString )
 	{
-		device = ElectronicDeviceFactory.getDevice(profileId);
+	 this(start, end, prio, amplitude, iDUser, idString, ElectronicDeviceFactory.getDevice(profileId));
+	}
+	public ElectricityRequirement(Date start, Date end, DecimalRating prio, double amplitude, String iDUser,String idString, ElectronicConsumerDevice d)
+	{
+		device = d;
 		startTime = start;
 		endTime = end;
 		duration = end.getTime() - start.getTime();
 		priority = prio;
-		profile = ElectricityProfileFactory.getProfile(profileId, duration, amplitude);
+		profile = ElectricityProfileFactory.getProfile(0, duration, amplitude);
+		profile.setMaxConsumption(amplitude);
 		userID = UUID.fromString(iDUser);
 		if (idString == "")
 		{
@@ -93,6 +98,10 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 		reqID = UUID.fromString(req.getId());
 	}
 
+	public ElectricityRequirement(Date start, Date end, DecimalRating prio, Double amplitude, String iDUser,
+			ElectronicConsumerDevice ret) {
+		this(start, end, prio,  amplitude, iDUser, UUID.randomUUID().toString(), ret);
+	}
 	public int getPriority() {
 		return priority.getValue();
 	}

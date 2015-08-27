@@ -1,0 +1,8 @@
+#!/bin/sh
+
+rm *.asc
+rm *.s
+rm *.v
+rm *.xtx
+rm *.txt
+rm *.bpg

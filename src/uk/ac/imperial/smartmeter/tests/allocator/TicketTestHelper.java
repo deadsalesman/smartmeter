@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
@@ -39,12 +41,28 @@ public class TicketTestHelper {
 				DateHelper.os(start), 
 				DateHelper.os(end), 
 				new DecimalRating(prio), 
-				0, 
+				0,
 				amplitude, 
-				lc.getId());
+				lc.getId()
+				);
 		
 		lc.setRequirement(ele);
 		return ele;
+	}
+	public static ElectronicConsumerDevice bindRequirementToDevice(LCClient lc, Double start, Double end, Integer prio, Double amplitude)
+	{
+		ElectronicConsumerDevice ret = ElectronicDeviceFactory.getDevice(0);
+		ElectricityRequirement ele = new ElectricityRequirement(
+				DateHelper.os(start), 
+				DateHelper.os(end), 
+				new DecimalRating(prio), 
+				amplitude, 
+				lc.getId(),
+				ret
+				);
+		
+		lc.setRequirement(ele);
+		return ret;
 	}
 	public static ElectricityRequirement bindRequirement(UserAgent u, Double start, Double end, Integer prio, Double amplitude)
 	{

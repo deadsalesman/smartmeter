@@ -35,7 +35,7 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	public LCHandler handler;
 	private String userId; 
 	private String userName;
-	
+	protected ArraySet<ElectricityRequirement> newReqs;
 	public LCClient(String eDCHostName, int eDCPortNum, String hLCHostName,int hLCPortNum, String name,String password) {
 		eDCHost = eDCHostName;
 		eDCPort = eDCPortNum;
@@ -43,6 +43,7 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		hLCPort = hLCPortNum;
 		userName = name;
 		handler = new LCHandler(name,password,0.,0.,0.); //TODO: make not naughty. 
+		newReqs = new ArraySet<ElectricityRequirement>();
 		userId = handler.getId();
 		 if (System.getSecurityManager() == null) {
 	            System.setSecurityManager(new RMISecurityManager());
@@ -114,6 +115,7 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		try {
 			if (lookupHLCServer().setRequirement(req))
 			{
+				newReqs.add(req);
 				return handler.setRequirement(req);
 			}
 		} catch (RemoteException e) {

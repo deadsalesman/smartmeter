@@ -24,6 +24,11 @@ public abstract class ConsumptionProfile implements Serializable{
 	}
 	public ConsumptionProfile() {
 	}
+
+	public void setMaxConsumption(double amp)
+	{
+		amplitude = amp;
+	}
 	public double getMaxConsumption()
 	{
 		return amplitude;

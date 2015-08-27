@@ -21,6 +21,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	private Date end;
 	public double magnitude;
 	private double duration;
+	private Boolean active = false;
 	private ArrayList<Quadruple<String,Date,ElectricityTicket,byte[]>> signatures;
 	public UUID ownerID;
 	public UUID id;
@@ -29,7 +30,7 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 	{
 		return start;
 	}
-	public void ruinSignatureValidity() //used in testing. should not ever be used outside testing
+	public void ruinSignatureValidity() //used in testing. should not ever be used outside testing. you will make babies cry. why would you even do something like that? you evil person.
 	{
 		for (Quadruple<String, Date, ElectricityTicket, byte[]> b : signatures)
 		{
@@ -200,6 +201,12 @@ public class ElectricityTicket implements UniqueIdentifierIFace, Serializable{
 		
 		
 		
+	}
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 }
