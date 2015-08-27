@@ -39,7 +39,7 @@ public class TicketTestHelper {
 				DateHelper.os(start), 
 				DateHelper.os(end), 
 				new DecimalRating(prio), 
-				1, 
+				0, 
 				amplitude, 
 				lc.getId());
 		
@@ -52,7 +52,7 @@ public class TicketTestHelper {
 				DateHelper.os(start), 
 				DateHelper.os(end), 
 				new DecimalRating(prio), 
-				1, 
+				0, 
 				amplitude, 
 				u.getId());
 		

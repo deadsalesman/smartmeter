@@ -1,23 +1,26 @@
-package uk.ac.imperial.smartmeter.res;
+package uk.ac.imperial.smartmeter.electricityprofile;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
-import uk.ac.imperial.smartmeter.electricityprofile.UniformConsumptionProfile;
 
 public abstract class ProfileList {
 	public static final Map<Integer, Class<? extends ConsumptionProfile>> profileMap = new HashMap<Integer,Class<? extends ConsumptionProfile>>();
 
 	static {
-		profileMap.put(1, UniformConsumptionProfile.class);
+		profileMap.put(0, UniformConsumptionProfile.class);
+		profileMap.put(1, LightConsumptionProfile.class);
+		profileMap.put(2, LEDConsumptionProfile.class);
+		profileMap.put(3, DishwasherConsumptionProfile.class);
+		profileMap.put(4, StoveConsumptionProfile.class);
+		profileMap.put(5, BatteryConsumptionProfile.class);
 	}
-	static public int getCode(UniformConsumptionProfile profile)
+	static public int getCode(ConsumptionProfile profile)
 	{
 		int ret = -1;
 		for (Entry<Integer, Class<? extends ConsumptionProfile>> entry : profileMap.entrySet()) {
-	        if (profile.getClass().equals(entry.getValue().getClass())) {
+	        if (profile.getClass().equals(entry.getValue())) {
 	            ret = entry.getKey();
 	        }
 	    }

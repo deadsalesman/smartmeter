@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
+import uk.ac.imperial.smartmeter.electricityprofile.ProfileList;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-import uk.ac.imperial.smartmeter.res.ProfileList;
 
 public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 	public ReqsDBManager(String dbLocation) {

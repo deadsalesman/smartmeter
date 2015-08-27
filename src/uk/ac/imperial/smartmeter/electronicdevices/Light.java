@@ -11,7 +11,7 @@ public class Light implements ElectronicConsumerDevice{
 	 * 
 	 */
 	private static final long serialVersionUID = 4762861591914874965L;
-	DeviceType type = DeviceType.Light;
+	DeviceType type = DeviceType.LIGHT;
 	Boolean active = false;
 	ConsumptionProfile demand;
 	private UUID id = UUID.randomUUID();

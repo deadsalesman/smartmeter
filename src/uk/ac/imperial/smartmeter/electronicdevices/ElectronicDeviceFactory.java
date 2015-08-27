@@ -4,9 +4,16 @@ import java.util.UUID;
 
 public class ElectronicDeviceFactory {
 	
-	public static ElectronicConsumerDevice getDevice(Integer deviceType)
+	public static ElectronicConsumerDevice getDevice(Integer type)
 	{
-		return getDevice(DeviceType.values()[deviceType].toString());
+		DeviceType x;
+		try {
+			x = DeviceType.values()[type];
+		} catch(ArrayIndexOutOfBoundsException e)
+		{
+			x = DeviceType.values()[0];
+		}
+		return getDevice(x.toString());
 		
 	}
 	public static ElectronicConsumerDevice getDevice(int deviceType, String id, Boolean initialState)
@@ -21,15 +28,17 @@ public class ElectronicDeviceFactory {
 		}
 		switch(deviceType)
 		{
-		case "Battery":
+		case "DUMMY":
+			return new LED(id, initialState);
+		case "BATTERY":
 			return new Battery(id, initialState);
 		case "LED":
 			return new LED(id, initialState);
-		case "Dishwasher":
+		case "DISHWASHER":
 			return new Dishwasher(id, initialState);
-		case "Stove":
+		case "STOVE":
 			return new Stove(id, initialState);
-		case "Light":
+		case "LIGHT":
 			return new Light(id, initialState);
 		default: 
 			return null;

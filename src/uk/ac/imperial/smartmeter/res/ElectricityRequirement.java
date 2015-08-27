@@ -5,7 +5,12 @@ import java.util.Date;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
-import uk.ac.imperial.smartmeter.electricityprofile.UniformConsumptionProfile;
+import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
+import uk.ac.imperial.smartmeter.electricityprofile.ElectricityProfileFactory;
+import uk.ac.imperial.smartmeter.electricityprofile.ProfileList;
+import uk.ac.imperial.smartmeter.electronicdevices.DeviceList;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 public class ElectricityRequirement implements UniqueIdentifierIFace, Serializable{
@@ -17,15 +22,19 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	private Date endTime;
 	private double duration;
 	private DecimalRating priority;
-	private UniformConsumptionProfile profile; //consumption assum
+	private ConsumptionProfile profile; //consumption assum
 	private UUID reqID;
 	private UUID userID;
 	private Boolean tampered = false;
+	public ElectronicConsumerDevice device;
 	public int getProfileCode()
 	{
 		return ProfileList.getCode(profile);
 	}
-	
+	public int getDeviceCode()
+	{
+		return DeviceList.getCode(device);
+	}
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, String user)
 	{
 		this(start,end,prio,1,1,user,"");
@@ -57,11 +66,12 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	}
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude, String iDUser,String idString )
 	{
+		device = ElectronicDeviceFactory.getDevice(profileId);
 		startTime = start;
 		endTime = end;
 		duration = end.getTime() - start.getTime();
 		priority = prio;
-		profile = new UniformConsumptionProfile(duration, amplitude);
+		profile = ElectricityProfileFactory.getProfile(profileId, duration, amplitude);
 		userID = UUID.fromString(iDUser);
 		if (idString == "")
 		{
@@ -73,11 +83,12 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 		}
 	}
 	public ElectricityRequirement(ElectricityRequirement req) {
+		device = ElectronicDeviceFactory.getDevice(req.getDeviceCode(),req.device.getId(),req.device.getConsumptionEnabled());
 		startTime = DateHelper.clone(req.startTime);
 		endTime = DateHelper.clone(req.endTime);
 		duration = new Double(req.duration);
 		priority = new DecimalRating(req.priority.getValue());
-		profile = new UniformConsumptionProfile(duration, req.profile.getMaxConsumption());
+		profile = ElectricityProfileFactory.getProfile(req.getProfileCode(),duration, req.profile.getMaxConsumption());
 		userID = UUID.fromString(req.getUserID());
 		reqID = UUID.fromString(req.getId());
 	}
@@ -131,6 +142,14 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 
 	public void setUserID(String id) {
 	   userID = UUID.fromString(id);
+	}
+	public void setDevice(ElectronicConsumerDevice d)
+	{
+		device = d;
+		profile = d.getProfile();
+	}
+	public ElectronicConsumerDevice getDevice() {
+		return device;
 	}
 
 }

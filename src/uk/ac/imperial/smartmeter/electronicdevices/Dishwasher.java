@@ -12,7 +12,7 @@ public class Dishwasher implements ElectronicConsumerDevice {
 	 */
 
 	private static final long serialVersionUID = -6906758019033560805L;
-	DeviceType type = DeviceType.Dishwasher;
+	DeviceType type = DeviceType.DISHWASHER;
 	Boolean active = false;
 	ConsumptionProfile demand;
 	private UUID id = UUID.randomUUID();

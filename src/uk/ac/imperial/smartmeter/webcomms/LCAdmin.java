@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -28,6 +29,12 @@ public class LCAdmin implements Runnable{
 	public LCClient client;
 	private int ownPort;
 	private Boolean active = true;
+	
+
+	private ArraySet<ElectricityRequirement> newReqs;
+	private ArraySet<ElectricityRequirement> currentReqs;
+	private ArraySet<ElectricityRequirement> deadReqs;
+	
 	public LCAdmin(LCClient lc, int port, String pubKey)
 	{
 		pubkey = pubKey;
@@ -38,6 +45,74 @@ public class LCAdmin implements Runnable{
 		reasonableBulletinTime = Math.pow(10., 8.8) + rn.nextInt(30);
 		reasonableTicketTime = Math.pow(10., 8.8)+ rn.nextInt(30);
 		reasonableNegotiationTime = Math.pow(10.,8.9)+ rn.nextInt(30);
+		initialiseRequirementClasses();
+	}
+	public Integer getRequirementCategory(ElectricityRequirement e)
+	{
+		Date d = new Date();
+		Integer ret = -1;
+		if (e.getEndTime().compareTo(d) <= 0)
+		{
+			ret = 0;
+		}
+		else if (e.getStartTime().compareTo(d) >= 0)
+		{
+			ret = 2;
+		}
+		else
+		{
+			ret = 1;
+		}
+		
+		return ret;
+	}
+	public void initialiseRequirementClasses()
+	{
+		newReqs = new ArraySet<ElectricityRequirement>();
+		currentReqs = new ArraySet<ElectricityRequirement>();
+		deadReqs = new ArraySet<ElectricityRequirement>();
+		
+		for (ElectricityRequirement r : client.handler.getReqs())
+		{
+			switch(getRequirementCategory(r))
+			{
+			case -1:
+				System.out.println("The requirement category algorithm is broken in LCAdmin");
+				break;
+			case 0:
+				newReqs.add(r);
+				break;
+			case 1:
+				currentReqs.add(r);
+				break;
+			case 2:
+				deadReqs.add(r);
+				break;
+			}
+		}
+
+	}
+	public void modifyRequirementClasses()
+	{
+
+		for (ElectricityRequirement r: currentReqs)
+		{
+			if (getRequirementCategory(r)==2)
+			{
+				currentReqs.remove(r);
+				deadReqs.add(r);
+				client.setState(r.getDevice().getId(), false);
+			}
+		}
+		for (ElectricityRequirement r: newReqs)
+		{
+			if (getRequirementCategory(r)==1)
+			{
+				newReqs.remove(r);
+				currentReqs.add(r);
+				client.setState(r.getDevice().getId(), true);
+			}
+		}
 	}
 	public void activate()
 	{

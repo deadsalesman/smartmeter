@@ -8,6 +8,8 @@ public class NetworkTester extends GenericTester{
 	public Integer main()
 	{
 
+		testLog.add(new TestPracticalExtension());
+		testLog.add(new TestGenerousFavour());
 		testLog.add(new TestAppendedRequirement());
 		testLog.add(new TestComplexTickets());
 		testLog.add(new TestHLCGetTkt());
@@ -18,10 +20,8 @@ public class NetworkTester extends GenericTester{
 		testLog.add(new TestHLCAddReq());
 		testLog.add(new TestPushGeneration());
 		testLog.add(new TestConcurrentClients());
-		testLog.add(new TestGenerousFavour());
 		testLog.add(new TestFavourExchange());
 		testLog.add(new TestExtendTicket());
-		testLog.add(new TestPracticalExtension());
 		testLog.add(new TestPracticalIntensify());
 		testLog.add(new TestQueryAddresses());
 		return reportLog();

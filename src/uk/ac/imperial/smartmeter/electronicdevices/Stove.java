@@ -11,7 +11,7 @@ public class Stove implements ElectronicConsumerDevice{
 	 * 
 	 */
 	private static final long serialVersionUID = 3955694270941594052L;
-	DeviceType type = DeviceType.Stove;
+	DeviceType type = DeviceType.STOVE;
 	Boolean active = false;
 	ConsumptionProfile demand;
 	private UUID id = UUID.randomUUID();

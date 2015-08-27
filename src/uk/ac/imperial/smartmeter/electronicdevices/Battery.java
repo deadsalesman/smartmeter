@@ -13,7 +13,7 @@ public class Battery  implements ElectronicConsumerDevice, ElectronicSupplierDev
 	/**
 	 * 
 	 */
-	DeviceType type = DeviceType.Battery;
+	DeviceType type = DeviceType.BATTERY;
 	Boolean charging = false;
 	Boolean supplying = false;
 	ElectricityGeneration supply;
