@@ -9,5 +9,4 @@ public enum ProfileType implements Serializable{
 		DISHWASHER,
 		STOVE,
 		BATTERY
-	
 }

@@ -61,7 +61,6 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 			}
 			if ((verifyProfileTable==null)||(count!=l))
 			{
-				System.out.println("filling table");
 				for (Entry<Integer, Class<? extends ConsumptionProfile>> m : ProfileList.profileMap.entrySet())
 				{
 					String fmt = "INSERT INTO "+profileTable+"(ID,NAME) " + 

@@ -1,5 +1,7 @@
 package uk.ac.imperial.smartmeter.electricityprofile;
 
+import java.lang.reflect.Constructor;
+
 
 
 public class ElectricityProfileFactory {
@@ -22,22 +24,18 @@ public class ElectricityProfileFactory {
 	}
 	public static ConsumptionProfile getProfile(String type, Double dur, Double amp)
 	{
-		switch(type)
+		ProfileType x = ProfileType.valueOf(type);
+		try{
+			String name = "uk.ac.imperial.smartmeter.electricityprofile." + x.name().substring(0, 1).toUpperCase()+x.name().substring(1,x.name().length()).toLowerCase()+"ConsumptionProfile";
+			@SuppressWarnings("unchecked")
+			Constructor<ConsumptionProfile> c = (Constructor<ConsumptionProfile>) Class.forName(
+					name
+					).getConstructor(Double.TYPE, Double.TYPE);
+			ConsumptionProfile foo = c.newInstance(dur, amp);
+			return foo;
+		} catch (Exception e)
 		{
-		case "UNIFORM":
 			return new UniformConsumptionProfile(dur, amp);
-		case "BATTERY":
-			return new BatteryConsumptionProfile(dur, amp);
-		case "LED":
-			return new LEDConsumptionProfile(dur, amp);
-		case "DISHWASHER":
-			return new DishwasherConsumptionProfile(dur, amp);
-		case "STOVE":
-			return new StoveConsumptionProfile(dur, amp);
-		case "LIGHT":
-			return new LightConsumptionProfile(dur, amp);
-		default: 
-			return null;
 		}
 	}
 	public static ConsumptionProfile getProfile(String type)

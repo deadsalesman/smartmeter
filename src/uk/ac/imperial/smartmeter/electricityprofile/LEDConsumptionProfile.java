@@ -1,6 +1,6 @@
 package uk.ac.imperial.smartmeter.electricityprofile;
 
-public class LEDConsumptionProfile extends ConsumptionProfile {
+public class LedConsumptionProfile extends ConsumptionProfile {
 
 	/**
 	 * 
@@ -11,11 +11,11 @@ public class LEDConsumptionProfile extends ConsumptionProfile {
 	protected double shape(double time) {
 		return 1;
 	}
-	public LEDConsumptionProfile()
+	public LedConsumptionProfile()
 	{
 		super();
 	}
-	public LEDConsumptionProfile(double dur, double amplitude)
+	public LedConsumptionProfile(double dur, double amplitude)
 	{
 		super(dur,amplitude);
 		name = "LED";

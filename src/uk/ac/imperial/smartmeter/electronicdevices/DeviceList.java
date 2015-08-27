@@ -4,17 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import uk.ac.imperial.smartmeter.electricityprofile.ProfileType;
 
+
+@SuppressWarnings("unchecked")
 public abstract class DeviceList {
 	public static final Map<Integer, Class<? extends ElectronicDevice>> profileMap = new HashMap<Integer,Class<? extends ElectronicDevice>>();
 
 	static {
-		profileMap.put(0, Battery.class);
-		profileMap.put(1, Light.class);
-		profileMap.put(2, LED.class);
-		profileMap.put(3, Dishwasher.class);
-		profileMap.put(4, Stove.class);
-		profileMap.put(5, Battery.class);
+
+		int i = 0;
+		for (ProfileType profile : ProfileType.values())
+		{
+		try {
+			profileMap.put(i, (Class<? extends ElectronicDevice>) Class.forName("uk.ac.imperial.smartmeter.electronicdevices."+ profile.name().substring(0, 1).toUpperCase()+profile.name().substring(1,profile.name().length()).toLowerCase()));
+			i++;
+		} catch (ClassNotFoundException e) {
+		}
+		}
 	}
 	static public int getCode(ElectronicDevice device)
 	{

@@ -3,7 +3,7 @@ package uk.ac.imperial.smartmeter.electronicdevices;
 import java.io.Serializable;
 
 public enum DeviceType implements Serializable{
-	DUMMY,
+	UNIFORM,
 	LIGHT,
 	LED,
 	DISHWASHER,

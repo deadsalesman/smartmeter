@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.electronicdevices;
 
+import java.lang.reflect.Constructor;
 import java.util.UUID;
 
 public class ElectronicDeviceFactory {
@@ -26,22 +27,20 @@ public class ElectronicDeviceFactory {
 		{
 			id = UUID.randomUUID().toString();
 		}
-		switch(deviceType)
+		
+		DeviceType x = DeviceType.valueOf(deviceType);
+		try{
+
+			String name = "uk.ac.imperial.smartmeter.electronicdevices." + x.name().substring(0, 1).toUpperCase()+x.name().substring(1,x.name().length()).toLowerCase();
+			@SuppressWarnings("unchecked")
+			Constructor<ElectronicConsumerDevice> c = (Constructor<ElectronicConsumerDevice>) Class.forName(
+					name
+					).getConstructor(String.class, Boolean.class);
+			ElectronicConsumerDevice foo = c.newInstance(id, initialState);
+			return foo;
+		} catch (Exception e)
 		{
-		case "DUMMY":
-			return new LED(id, initialState);
-		case "BATTERY":
-			return new Battery(id, initialState);
-		case "LED":
-			return new LED(id, initialState);
-		case "DISHWASHER":
-			return new Dishwasher(id, initialState);
-		case "STOVE":
-			return new Stove(id, initialState);
-		case "LIGHT":
-			return new Light(id, initialState);
-		default: 
-			return null;
+			return new Uniform(id, initialState);
 		}
 	}
 	public static ElectronicConsumerDevice getDevice(String deviceType)

@@ -3,24 +3,24 @@ package uk.ac.imperial.smartmeter.electronicdevices;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
-import uk.ac.imperial.smartmeter.electricityprofile.LedConsumptionProfile;
-
-public class Led implements ElectronicConsumerDevice {
+import uk.ac.imperial.smartmeter.electricityprofile.UniformConsumptionProfile;
+public class Uniform implements ElectronicConsumerDevice {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1369515486831127720L;
-	DeviceType type = DeviceType.LED;
+	private static final long serialVersionUID = 7585173436276946544L;
+
+	DeviceType type = DeviceType.DISHWASHER;
 	Boolean active = false;
 	ConsumptionProfile demand;
 	private UUID id = UUID.randomUUID();
 	
 
-	Led(){
-		demand = new LedConsumptionProfile();
+	Uniform(){
+		demand = new UniformConsumptionProfile();
 	}
-	public Led(String id2, Boolean initialState) {
+	public Uniform(String id2, Boolean initialState) {
 		this();
 		active = initialState;
 		id = UUID.fromString(id2);
@@ -55,5 +55,4 @@ public class Led implements ElectronicConsumerDevice {
 		active = state;
 		
 	}
-
 }

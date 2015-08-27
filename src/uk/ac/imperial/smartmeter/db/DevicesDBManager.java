@@ -50,7 +50,6 @@ public class DevicesDBManager
 			}
 			if ((verifyEnumTable==null)||(count!=l))
 			{
-				System.out.println("filling table");
 				for (DeviceType D: DeviceType.values())
 				{
 					String fmt = "INSERT INTO "+enumTable+"(ID,NAME) " + 
