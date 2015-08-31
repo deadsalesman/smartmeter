@@ -24,10 +24,23 @@ public class RescherArbiter {
 	private Double productivityModifier;
 	private Double socialModifier;
 	private ArrayList<Double> weightings;
+	/**
+	 * Default ctor, used in testing. 
+	 * All parameters set to unity.
+	 */
 	public RescherArbiter()
 	{
 		this(1.,1.,1.,1.,1.);
 	}
+	/**
+	 * Initialises the RescherArbiter with the specified weightings for each of
+	 * the distributive justice attributes considered
+	 * @param d Weighting for demand.
+	 * @param e Weighting for equality.
+	 * @param n Weighting for needs.
+	 * @param p Weighting for productivity.
+	 * @param s Weighting for social worth.
+	 */
 	public RescherArbiter(Double d, Double e, Double n, Double p, Double s)
 	{
 		demandModifier = d;
@@ -43,6 +56,11 @@ public class RescherArbiter {
 		weightings.add(productivityModifier);
 		weightings.add(socialModifier);
 	}
+	/**
+	 * Initialises an ArrayList<Integer> of the specified size.
+	 * @param size
+	 * @return ArrayList of size
+	 */
 	private ArrayList<Integer> getValidIntArray(int size)
 	{
 		ArrayList<Integer> ret = new ArrayList<Integer>();
@@ -53,6 +71,11 @@ public class RescherArbiter {
 		
 		return ret;
 	}
+	/**
+	 * Initialises an ArrayList<Double> of the specified size.
+	 * @param size
+	 * @return ArrayList of size.
+	 */
 	private ArrayList<Double> getValidDoubleArray(int size)
 	{
 		ArrayList<Double> ret = new ArrayList<Double>();
@@ -63,6 +86,14 @@ public class RescherArbiter {
 		
 		return ret;
 	}
+	/**
+	 * Orders the set of UserAgents according to the specified comparator.
+	 * 
+	 * @param users The users to be sorted.
+	 * @param canon The comparator used.
+	 * @return ArrayList of the relative positions of the sorted elements.
+	 *         where ret[i] = position of i in the sorted array
+	 */
 	public ArrayList<Integer> evaluateCanon(ArraySet<UserAgent> users, Comparator<UserAgent> canon)
 	{
 		ArrayList<Integer> ret = getValidIntArray(users.getSize());
@@ -80,7 +111,11 @@ public class RescherArbiter {
 		}
 		return ret;
 	}
-	//Deprecated
+	/**
+	 * @deprecated
+	 * @param m
+	 * @return
+	 */
 	@SuppressWarnings("unused")
 	private Map<UserAgent, Double> normaliseWeighting(Map<UserAgent,Double> m)
 	{
@@ -102,6 +137,12 @@ public class RescherArbiter {
 
 		return m;
 	}
+	/**
+	 * Maps the user agents to a double representing their consolidated rankings
+	 * according to the Rescher criteria
+	 * @param users The users to be weighted.
+	 * @return A map of users to their weights.
+	 */
 	public Map<UserAgent, Double> getWeighting(ArraySet<UserAgent> users)
 	{
 		ArrayList<ArrayList<Integer>> ranks = new ArrayList<ArrayList<Integer>>();
