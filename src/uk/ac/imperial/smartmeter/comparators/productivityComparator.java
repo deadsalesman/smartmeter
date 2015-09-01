@@ -4,6 +4,12 @@ import java.util.Comparator;
 
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
+/**
+ * Simple comparator to compare two users by their economic power
+ * The user that has the greatest economic power is treated as larger.
+ * @author bwindo
+ *
+ */
 public class productivityComparator implements Comparator<UserAgent> {
 
 	public int compare(UserAgent o1, UserAgent o2) {

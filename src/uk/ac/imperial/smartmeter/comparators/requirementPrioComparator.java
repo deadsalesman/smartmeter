@@ -4,6 +4,12 @@ import java.util.Comparator;
 
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 
+/**
+ * Simple comparator to compare two electricity requirements by their priorities
+ * The requirement that has a higher priority is treated as larger.
+ * @author bwindo
+ *
+ */
 public class requirementPrioComparator implements Comparator<ElectricityRequirement> {
 
 	@Override

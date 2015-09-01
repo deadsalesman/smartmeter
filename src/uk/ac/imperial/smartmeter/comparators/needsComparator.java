@@ -5,6 +5,12 @@ import java.util.Comparator;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
+/**
+ * Simple comparator to compare two users by their electricity required
+ * The user that has requested the most electricity is treated as larger.
+ * @author bwindo
+ * 
+ */
 public class needsComparator implements Comparator<UserAgent> {
 
 	public int compare(UserAgent o1, UserAgent o2) {

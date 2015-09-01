@@ -1,19 +1,16 @@
 package uk.ac.imperial.smartmeter.crypto;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.SignatureException;
-import java.util.Date;
 import java.util.Iterator;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -46,24 +43,23 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 /**
  * A simple utility class that signs and verifies files.
  * <p>
- * To sign a file: SignedFileProcessor -s [-a] fileName secretKey passPhrase.<br>
+ * To sign a file: PGPSigner -s [-a] fileName secretKey passPhrase.<br>
  * If -a is specified the output file will be "ascii-armored".
  * <p>
- * To decrypt: SignedFileProcessor -v fileName publicKeyFile.
+ * To decrypt: PGPSigner -v fileName publicKeyFile.
  * <p>
- * <b>Note</b>: this example will silently overwrite files, nor does it pay any attention to
- * the specification of "_CONSOLE" in the filename. It also expects that a single pass phrase
- * will have been used.
- * <p>
- * <b>Note</b>: the example also makes use of PGP compression. If you are having difficulty getting it
- * to interoperate with other PGP programs try removing the use of compression first.
  */
 public class PGPSigner
 {
-    /*
-     * verify the passed in file as being correctly signed.
-     */
-	
+	/**
+	 * Verifies that the file that has been passed in has been correctly signed by the owner of the public key that has been passed in.
+	 *  restoring the original document if possible.
+	 * Writes the success? to the console.
+	 * 
+	 * @param in An inputstream pointing to the location of the file to be verified.
+	 * @param keyIn An inputstream pointing to the location of the file holding the public key of the presumed signatory.
+	 * @throws Exception
+	 */
 	public static void verifyFileAndDisplay(
 	        InputStream        in,
 	        InputStream        keyIn)
@@ -78,7 +74,13 @@ public class PGPSigner
 	            System.out.println("signature verification failed.");
 	        }
 	}
-	
+	/**
+	 * Verifies that the file at the location pointed to by the inStr parameter has been correctly signed by the owner of the public key pointed to be the keyInStr parameter.
+	 * The original file (pre-signature) is restored to its original location.
+	 * @param inStr A string pointing to the location of the file to be verified.
+	 * @param keyInStr A string pointing to the location of the file holding the public key of the presumed signatory.
+	 * @return Success?
+	 */
 	public static Boolean verifyFile(String inStr, String keyInStr)
 	{
         try {
@@ -93,91 +95,17 @@ public class PGPSigner
         
         
 	}
-	public static String signString(
-		  String          input,
-	      String keyLoc,
-	      //  OutputStream    out,
-	        String         pass)
-	        throws IOException, NoSuchAlgorithmException, NoSuchProviderException, PGPException, SignatureException
-	    {
-		//not deprecated, just fundamentally broken.
-		  ByteArrayOutputStream out = new ByteArrayOutputStream();
-		  FileInputStream keyIn = new FileInputStream(keyLoc);
-
-	        PGPSecretKey                pgpSec = readSecretKey(keyIn);
-	        PGPPrivateKey               pgpPrivKey = pgpSec.extractPrivateKey(new JcePBESecretKeyDecryptorBuilder().setProvider("BC").build(pass.toCharArray()));
-	        PGPSignatureGenerator       sGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(pgpSec.getPublicKey().getAlgorithm(), PGPUtil.SHA1).setProvider("BC"));
-	        
-	        sGen.init(PGPSignature.BINARY_DOCUMENT, pgpPrivKey);
-	        
-	        @SuppressWarnings("unchecked")
-			Iterator<String>    it = pgpSec.getPublicKey().getUserIDs();
-	        if (it.hasNext())
-	        {
-	            PGPSignatureSubpacketGenerator  spGen = new PGPSignatureSubpacketGenerator();
-	            
-	            spGen.setSignerUserID(false, it.next());
-	            sGen.setHashedSubpackets(spGen.generate());
-	        }
-	        
-	        PGPCompressedDataGenerator  cGen = new PGPCompressedDataGenerator(
-	                                                                PGPCompressedData.ZLIB);
-	        
-	        BCPGOutputStream            bOut = new BCPGOutputStream(cGen.open(out));
-	        
-	        sGen.generateOnePassVersion(false).encode(bOut);
-	        
-	        //File                        file = new File("dummy");
-	        PGPLiteralDataGenerator     lGen = new PGPLiteralDataGenerator();
-	        OutputStream                lOut = lGen.open(out, PGPLiteralData.BINARY, "Steven", new Date(), new byte[256]);
-	        //FileInputStream             fIn = new FileInputStream(file);
-	        
-	        for (byte b : input.getBytes())
-	        {
-
-	            lOut.write(b);
-	            sGen.update((byte)b);
-	        	
-	        }
-
-	        lGen.close();
-	        //fIn.close();
-	        sGen.generate().encode(bOut);
-
-	        cGen.close();
-	        FileOutputStream t = new FileOutputStream("test.txt");
-
-	        String x = new String(out.toByteArray());
-	        
-	        for (byte b : out.toByteArray())
-	        {
-
-	        	t.write(b);
-	        	
-	        }
-	        t.close();
-	        out.close();
-	        return x;
-	    
-	}
-	public static Boolean verifyString(
-			String in,
-			String keyIn
-			)
-		    throws Exception
-	{
-		
-		return verify(new JcaPGPObjectFactory(in.getBytes(Charset.forName("UTF-8"))), new FileInputStream(keyIn));
-	}
-	public static Boolean verifyString(
-			String in,
-			InputStream keyIn
-			)
-		    throws Exception
-	{
-		
-		return verify(new JcaPGPObjectFactory(in.getBytes(Charset.forName("UTF-8"))), keyIn);
-	}
+	/**
+	 * Verifies that the file that has been passed in has been correctly signed by the owner of the public key that has been passed in.
+	 *  restoring the original document if possible.
+	 * 
+	 * @param in An inputstream pointing to the location of the file to be verified.
+	 * @param keyIn An inputstream pointing to the location of the file holding the public key of the presumed signatory.
+	 * @param in
+	 * @param keyIn
+	 * @return
+	 * @throws Exception
+	 */
 	public static Boolean verifyFile(
 	        InputStream        in,
 	        InputStream        keyIn)
@@ -189,7 +117,17 @@ public class PGPSigner
 	    keyIn.close();
 	    return ret;
 	    }
-	public static Boolean verify(
+	/**
+	 * Verifies that the file that has been passed in has been correctly signed by the owner of the public key that has been passed in.
+	 *  restoring the original document if possible.
+	 * Used internally.
+	 * 
+	 * @param pgpFact An object factory derived from the location of the file to be verified.
+	 * @param keyIn An inputstream pointing to the location of the file holding the public key of the presumed signatory.
+	 * @return Success?
+	 * @throws Exception
+	 */
+	private static Boolean verify(
 			JcaPGPObjectFactory pgpFact,
 			InputStream keyIn)
 			throws Exception
@@ -230,20 +168,19 @@ public class PGPSigner
 	}
     
 
-    /**
-     * Generate an encapsulated signed file.
-     * 
-     * @param fileName
-     * @param keyIn
-     * @param out
-     * @param pass
-     * @param armor
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchProviderException
-     * @throws PGPException
-     * @throws SignatureException
-     */
+	/**
+	 * Generate an encapsulated signed file. The original message is contained within the signature in an encrypted fashion.
+	 * The signed file has a filename equal to original filename +.bpg.
+	 * 
+	 * @param file The filename of the file to be signed.
+	 * @param keyIn The filename of the file holding the secret key that shall be used in the signing.
+	 * @param pass  The passphrase used to open the secret lock and reveal the private key, to be used in the signing process.
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 * @throws PGPException
+	 * @throws SignatureException
+	 */
 	static public void signFile(String file, String keyIn, String pass) throws IOException, NoSuchAlgorithmException,
 			NoSuchProviderException, PGPException, SignatureException {
 		FileInputStream     keyStream = new FileInputStream(keyIn);
@@ -251,6 +188,21 @@ public class PGPSigner
         
         signFile(file, keyStream, outStream, pass.toCharArray(),true);
 	}
+	/**
+	 * Generate an encapsulated signed file. The original message is contained within the signature in an encrypted fashion.
+	 * The signed file has a filename equal to original filename +.bpg.
+	 * 
+	 * @param fileName The filename of the file to be signed.
+	 * @param keyIn The filename of the file holding the secret key that shall be used in the signing.
+	 * @param out An outputstream which the signed file shall be written to.
+	 * @param pass  The passphrase used to open the secret lock and reveal the private key, to be used in the signing process.
+	 * @param armor If true, wraps the output in an ArmoredOutputStream for ASCII armouring.
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 * @throws PGPException
+	 * @throws SignatureException
+	 */
 	static public void signFile(
 	        String          fileName,
 	        InputStream     keyIn,
@@ -310,7 +262,12 @@ public class PGPSigner
 	            out.close();
 	        }
 	    }
-
+/**
+ * Main function allows for command line signing and verification of files.
+ * SignedFileProcessor -v|-s [-a] file keyfile [passPhrase]
+ * @param args The mode, optional armouring, keyfile location, and passphrase.
+ * @throws Exception
+ */
     public static void main(
         String[] args)
         throws Exception
@@ -347,6 +304,13 @@ public class PGPSigner
         }
     }
     
+    /**
+     * Reads the first secret key from a file containing secret keys.
+     * @param fileName The location of the secret ring collection.
+     * @return A secret key.
+     * @throws IOException
+     * @throws PGPException
+     */
     static PGPSecretKey readSecretKey(String fileName) throws IOException, PGPException
     {
         InputStream keyIn = new BufferedInputStream(new FileInputStream(fileName));

@@ -3,7 +3,12 @@ package uk.ac.imperial.smartmeter.comparators;
 import java.util.Comparator;
 
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-
+/**
+ * Simple comparator to compare two electricity requirements by their end times
+ * The requirement that ends last is treated as larger.
+ * @author bwindo
+ *
+ */
 public class requirementEndComparator implements Comparator<ElectricityRequirement> {
 
 	@Override

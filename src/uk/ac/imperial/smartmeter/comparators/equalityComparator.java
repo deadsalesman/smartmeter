@@ -4,6 +4,12 @@ import java.util.Comparator;
 
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
+/**
+ * Simple comparator to compare two users by their average amount allocated
+ * The user that has been allocated the least electricity is treated as larger.
+ * @author bwindo
+ *
+ */
 public class equalityComparator implements Comparator<UserAgent> {
 
 	public int compare(UserAgent o1, UserAgent o2) {

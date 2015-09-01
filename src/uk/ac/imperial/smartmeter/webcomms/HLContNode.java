@@ -1,7 +1,11 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
 import java.io.IOException;
-
+/**
+ * @deprecated
+ * @author bwindo
+ *
+ */
 public class HLContNode {
 	private static HLCServer client;
 

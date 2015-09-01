@@ -4,7 +4,12 @@ import java.util.Comparator;
 
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 
-
+/**
+ * Simple comparator to compare two electricity requirements by their start times
+ * The requirement that starts last is treated as larger.
+ * @author bwindo
+ *
+ */
 public class requirementStartComparator implements Comparator<ElectricityRequirement> {
 
 	@Override

@@ -4,6 +4,12 @@ import java.util.Comparator;
 
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
+/**
+ * Simple comparator to compare two users by their social worth
+ * The user that has a greater social worth is treated as larger.
+ * @author bwindo
+ *
+ */
 public class socialComparator implements Comparator<UserAgent> {
 
 	public int compare(UserAgent o1, UserAgent o2) {

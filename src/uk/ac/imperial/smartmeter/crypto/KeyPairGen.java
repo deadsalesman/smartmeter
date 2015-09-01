@@ -33,13 +33,28 @@ import uk.ac.imperial.smartmeter.res.Twople;
 /**
  * A simple utility class that generates a RSA PGPPublicKey/PGPSecretKey pair.
  * <p>
- * usage: RSAKeyPairGenerator [-a] identity passPhrase
+ * usage: KeyPairGen [-a] identity passPhrase
  * <p>
  * Where identity is the name to be associated with the public key. The keys are placed 
  * in the files pub.[asc|bpg] and secret.[asc|bpg].
  */
 public class KeyPairGen
 {
+	/**
+	 * Creates a public/secret key pair for a specified identity and passphrase, putting the outputs in specified OutputStream objects.
+	 * 
+	 * @param secretOut The stream which the secret key is output to.
+	 * @param publicOut The stream which the public key is output to.
+	 * @param pair      KeyPair object that defines the encryption protocol to be used.
+	 * @param identity  The identity of the user which the keys will be bound to.
+	 * @param passPhrase The passphrase that will be used to access the secret key and sign documents.
+	 * @param armor  If true, wraps the output in an ArmoredOutputStream.
+	 * @throws IOException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchProviderException
+	 * @throws SignatureException
+	 * @throws PGPException
+	 */
     private static void exportKeyPair(
         OutputStream    secretOut,
         OutputStream    publicOut,
@@ -74,6 +89,12 @@ public class KeyPairGen
         publicOut.close();
     }
 
+    /**
+     * Generates a public/secret key pair wrapped in a Twople object from a given id and password.
+     * @param userId The identity to be associated with the user and bound to the key pair.
+     * @param pass The password that can be used to access the secret key.
+     * @return A Twople<String,String> containing the secretkey on the left side, and the public key on the right.
+     */
 	public static Twople<String, String> genKeySet(String userId, String pass) {
 
 		Twople<String, String> ret = new Twople<String, String>();
@@ -95,6 +116,11 @@ public class KeyPairGen
 		}
 		return ret;
 	}
+	/**
+	 * Generates and writes several public/secret key pairs to files based on a list of identities and passwords.
+	 * 
+	 * @param identities An array of Twoples containing username and passwords to be associated with public/secret key pairs.
+	 */
     public static void genKeySet(ArrayList<Twople<String, String>> identities)
     {
     	try{
@@ -120,6 +146,13 @@ public class KeyPairGen
     		
     	}
     }
+    /**
+     * Outputs to file a public/secret key pair based on the input.
+     * Used as: KeyPairGen [-a] identity passPhrase
+     * 
+     * @param args The identity and passphrase to be associated with the new public and private keys.
+     * @throws Exception
+     */
     public static void main(
         String[] args)
         throws Exception
@@ -134,7 +167,7 @@ public class KeyPairGen
         
         if (args.length < 2)
         {
-            System.out.println("RSAKeyPairGenerator [-a] identity passPhrase");
+            System.out.println("KeyPairGen [-a] identity passPhrase");
             System.exit(0);
         }
         
@@ -142,7 +175,7 @@ public class KeyPairGen
         {
             if (args.length < 3)
             {
-                System.out.println("RSAKeyPairGenerator [-a] identity passPhrase");
+                System.out.println("KeyPairGen [-a] identity passPhrase");
                 System.exit(0);
             }
             FileOutputStream    out1 = new FileOutputStream("secret.asc");

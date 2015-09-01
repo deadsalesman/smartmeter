@@ -78,6 +78,7 @@ public class LCStandalone {
 	public static void main(String[] args)
 	{
 		try {
+			@SuppressWarnings("unused")
 			LCStandalone s = new LCStandalone(Integer.parseInt(args[0]),args[1],Double.parseDouble(args[2]),Double.parseDouble(args[3]),Double.parseDouble(args[4]));
 		} catch (NumberFormatException | RemoteException e) {
 			// TODO Auto-generated catch block

@@ -18,7 +18,7 @@ public abstract class ProfileList {
 				profileMap.put(i, (Class<? extends ConsumptionProfile>) Class.forName("uk.ac.imperial.smartmeter.electricityprofile."+profile.name().substring(0, 1).toUpperCase()+profile.name().substring(1,profile.name().length()).toLowerCase()+"ConsumptionProfile"));
 				i++;
 			} catch (ClassNotFoundException e) {
-				System.out.println("sa");
+				System.out.println(profile.name() + " does not have an associated profile");
 			}
 		}
 	}

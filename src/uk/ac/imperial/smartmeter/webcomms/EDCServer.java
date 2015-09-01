@@ -11,17 +11,12 @@ import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.impl.EDCHandler;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
-<<<<<<< HEAD
-
-=======
-import uk.ac.imperial.smartmeter.res.ElectronicDevice;
 /**
  * ElectronicDeviceController server implementation
  * Handles all communications and control of electronic devices.
  * @author Ben Windo
  *
  */
->>>>>>> c0041a06c1b40a7f130b3d8a171f9b1c803850ef
 public class EDCServer implements EDCServerIFace{
 	private int portNum;
 	public EDCServer(int parseInt) {

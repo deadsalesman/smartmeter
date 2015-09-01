@@ -12,15 +12,26 @@ import java.util.Date;
 
 import org.bouncycastle.openpgp.PGPException;
 
+import uk.ac.imperial.smartmeter.allocator.TicketAllocator;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.Quadruple;
 import uk.ac.imperial.smartmeter.webcomms.UserAddressBook;
 
-
+/**
+ * Utility class which aids in the signing of ElectricityTickets.
+ * 
+ * @author bwindo
+ * @see TicketAllocator
+ */
 public class SignatureHelper {
 	public static final char delimChar = '_';
 	public static final byte delim = (byte)delimChar;
 	
+	/**
+	 * Returns a Byte[] representation of a given byte[]
+	 * @param b The byte array.
+	 * @return The Byte array.
+	 */
 	public static Byte[] getClassyByteArray(byte[] b)
 	{
 
@@ -31,6 +42,11 @@ public class SignatureHelper {
 	    }
 	    return Bytes;
 	}
+	/**
+	 * Returns a byte[] representation of a given Byte[]
+	 * @param b The Byte array.
+	 * @return The byte array.
+	 */
 	public static byte[] getPrimitiveByteArray(Byte[] b)
 	{
 		byte[] bytes = new byte[b.length];
@@ -40,7 +56,15 @@ public class SignatureHelper {
 	    }
 	    return bytes;
 	}
-	public static String signTicketForNewUser(ElectricityTicket tkt, String userId, String password)
+	/**
+	 * Adds a signature to an electricity ticket based on its current values and some properties of the signing agent.
+	 * 
+	 * @param tkt The ElectricityTicket to be signed.
+	 * @param userId The userId of the agent to sign the ticket. This determines which keypair is used, and what is logged in the ticket.
+	 * @param password The password of the agent desiring to sign the ticket. If this is incorrect, the ticket will not be signed.
+	 * @return Success?
+	 */
+	public static Boolean signTicketForNewUser(ElectricityTicket tkt, String userId, String password)
 	{
 		
 		MessageDigest md;
@@ -54,7 +78,7 @@ public class SignatureHelper {
 			
 			FileOutputStream ticketOut = new FileOutputStream(tkt.getId()+".txt",false);
 			
-			
+			//Create a hashed version of the current ticket. 
 			md = MessageDigest.getInstance("SHA-256");
 			md.update(tkt.toString().getBytes("UTF-8"));
 			md.update((byte)'_');
@@ -62,7 +86,8 @@ public class SignatureHelper {
 			
 			ticketOut.write(md.digest());
 			
-			
+			//Sign the hashed ticket. A hash is required so that each signature increases the size of the ticket by a constant value
+			//rather than a value proportional to the size of the ticket.
 			PGPSigner.signFile(tkt.getId() + ".txt", userId +"_secret.bpg", password);
 			
 			ticketOut.close();
@@ -83,24 +108,38 @@ public class SignatureHelper {
 	
 			ticketIn.close();
 			sigIn.close();
-			return "";
+			return true;
 		} catch (NoSuchAlgorithmException | IOException | NoSuchProviderException | SignatureException | PGPException e) {
-			return "";
+			return false;
 		}
 	}
+	/**
+	 * Returns a String from an arraylist of Bytes. By default, this method only exists for arrays of bytes.
+	 * @param b The ArrayList of Bytes.
+	 * @return The String representation of b
+	 */
 	public static String stringFromArrayList(ArrayList<Byte> b)
 	{
 		return new String(getPrimitiveByteArray(b.toArray(new Byte[b.size()])));
 	}
+    /**
+     * Iteratively verifies each layer of the ticket to ensure authenticated transactions have occurred at every layer of the system.
+     * 
+     * @param t The ElectricityTicket to be verified.
+     * @return Success?
+     */
 	public static Boolean verifyTicket(ElectricityTicket t) {
 
 		Boolean ret = true;
 		try {
+			//If the ticket has never been signed, it is broken. All tickets should at least be signed by the central ticket allocator.
 			if(t.getNSignatures()<=0)
 			{
 			 return false;
 			}
 			for (int i = 0; i < t.getNSignatures(); i++) {
+				//Write both the current signature and the hash of all levels of the ticket 'below' that signature. 
+				//This hash should be the same as the content of the decrypted signature, if it is not then the ticket has been altered.
 				t.writeLog(i);
 				Boolean check =PGPSigner.verifyFile(t.getId() + ".s", t.getSignature(i).left + "_pub.bpg");
 				ret &= check;
@@ -118,7 +157,7 @@ public class SignatureHelper {
 				
 				verifIn.close();
 				tktIn.close();
-				
+				//Verify the calculated hash is identical to the stored hash and that both are nonzero.
 				ret &= vIn.equals(tIn)&&!vIn.isEmpty();
 				
 			}
@@ -128,6 +167,15 @@ public class SignatureHelper {
 		return ret;
 
 	}
+	/**
+	 * Iteratively verifies each layer of the ticket to ensure authenticated transactions have occurred at every layer of the system.
+	 * As this requires public keys to be locally present for each of the signatories, it prints all these public keys that are locally stored. 
+	 * This is objectively awful but the performance hit isn't too bad while n is very, very small. 
+	 * 
+	 * @param t The ticket to be signed.
+	 * @param book The information on all users that may have signed the ticket.
+	 * @return
+	 */
 	public static Boolean verifyTicket(ElectricityTicket t, UserAddressBook book) {
 		for (Quadruple<String, Date, ElectricityTicket, byte[]> x : t.getSignatures())
 		{
@@ -136,11 +184,12 @@ public class SignatureHelper {
 		
 		return verifyTicket(t);
 	}
-	public static void main(String[] args) throws Exception
-	{
-		
-		
-	}
+	/**
+	 * Writes a public key to its associated output file.
+	 * 
+	 * @param id The identity of the owner of the public key.
+	 * @param key The public key to be printed.
+	 */
 	public static void printPubKey(String id, String key) {
 		try {
 			FileOutputStream fOut = new FileOutputStream(id+"_pub.bpg");
@@ -152,7 +201,12 @@ public class SignatureHelper {
 		} catch (IOException e) {
 		}
 	}
-	
+	/**
+	 * Writes a secret key to its associated output file.
+	 * 
+	 * @param id The identity of the owner of the secret key.
+	 * @param key The secret key to be printed.
+	 */
 	public static void printSecKey(String id, String key) {
 		try {
 			FileOutputStream fOut = new FileOutputStream(id+"_secret.bpg");
