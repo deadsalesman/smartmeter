@@ -27,6 +27,11 @@ import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Twople;
 
+/**
+ * imaclass
+ * @author bwindo
+ *
+ */
 public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	private String eDCHost;
 	private int eDCPort;

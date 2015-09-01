@@ -4,6 +4,8 @@ package uk.ac.imperial.smartmeter.electricityprofile;
  * @author bwindo
  *
  */
+
+
 public class BatteryConsumptionProfile extends ConsumptionProfile {
 
 	/**

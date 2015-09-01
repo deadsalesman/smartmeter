@@ -13,17 +13,33 @@ import java.util.UUID;
 import uk.ac.imperial.smartmeter.db.DevicesDBManager;
 import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
+import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.interfaces.ElectronicDeviceControllerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
-
-//ElectronicConsumerDeviceController
+/**
+ * Acts as a controller for the individual device controllers, setting the physical states of hardware.
+ * @author bwindo
+ * @see EDCHandler
+ */
 public class EDController 
 	implements ElectronicDeviceControllerIFace, UniqueIdentifierIFace{
+	/**
+	 * A representation of all the devices controlled by this controller
+	 */
 	private ArraySet<ElectronicConsumerDevice> devices;
+	/**
+	 * A map of the devices controlled to the physical pins that they are mapped to.
+	 */
 	private Map<ElectronicConsumerDevice, Integer> pinouts;
+	/**
+	 * The manager for the local database of {@link ElectronicConsumerDevice}
+	 */
 	public DevicesDBManager db;
 	private UUID id;
+	/**
+	 * A set of the physical GPIO pins that are available for use.
+	 */
 	private Set<Integer> availablePins;
 	public EDController()
 	{
@@ -35,6 +51,10 @@ public class EDController
 		pullFromDB();
 		setAvailablePins();
 	}
+	/**
+	 * Creates a Set<Integer> which contains the integer values corresponding to the numbers of the Raspberry Pi pins that can be used for General Purpose Input/Output.
+	 * @return the available pins before any devices have been allocated.
+	 */
 	private Set<Integer> setAvailablePins()
 	{
 		HashSet<Integer> pins = new HashSet<Integer>();
@@ -66,6 +86,11 @@ public class EDController
 	{
 		return devices.size();
 	}
+	/**
+	 * Returns the index of a given device, if it in storage.
+	 * @param deviceID The given device's id.
+	 * @return the integer index of the device, -1 if it is not present.
+	 */
 	public int getDeviceIndex(String deviceID)
 	{
 		for (ElectronicConsumerDevice ed : devices)
@@ -78,6 +103,11 @@ public class EDController
 		
 		return -1;
 	}
+	/**
+	 * Gets a  {@link ElectronicDevice} from the controller.
+	 * @param deviceID
+	 * @return the requested  {@link ElectronicDevice}
+	 */
 	public ElectronicConsumerDevice getDevice(String deviceID)
 	{
 		for (ElectronicConsumerDevice ed : devices)
@@ -90,6 +120,11 @@ public class EDController
 		
 		return null;
 	}
+	/**
+	 * Gets the state of a specific  {@link ElectronicDevice}.
+	 * @param index The String representation of a {@link UUID} which identifies the specific device
+	 * @return true if the  {@link ElectronicDevice} is on
+	 */
 	@Override
 	public Boolean getDeviceState(int index) {
 		
@@ -101,7 +136,12 @@ public class EDController
 		}
 		return null;
 	}
-
+	/**
+	 * Adds a new  {@link ElectronicDevice} to the controller's storage.
+	 * @param e The new  {@link ElectronicDevice} to be added.
+	 * @param pin The GPIO pin that controls this specific device. Only certain values are allowed, given the physical properties of the raspberry pi controlling the devices. No two devices may be controlled by the same pin.
+	 * @return Success?
+	 */
 	public Boolean addDevice(ElectronicConsumerDevice e, Integer pin) {
 		if (db.insertElement(e)) {
 			if (availablePins.contains(pin)) {
@@ -113,6 +153,10 @@ public class EDController
 		}
 		return false;
 	}
+	/**
+	 * Removes all information from the controller and its associated database.
+	 * @return Success?
+	 */
 	public Boolean wipe()
 	{
 		db.wipe();
@@ -121,6 +165,11 @@ public class EDController
 		availablePins = setAvailablePins();
 		return true;
 	}
+	/**
+	 * Removes a  {@link ElectronicDevice} from the controller's storage
+	 * @param index The index of the {@link ElectronicDevice} to be removed.
+	 * @return Success?
+	 */
    public Boolean removeDevice(int index)
    {
 	   ElectronicConsumerDevice x = devices.get(index);
@@ -135,7 +184,11 @@ public class EDController
 		   return false;
 	   }
    }
-
+   	/**
+   	 * Returns the devicetype at a given position in EDController#devices
+   	 * @param index The index to be examined.
+   	 * @return the {@link DeviceType} at that location, null if ine index is out of bounds.
+   	 */
 	@Override
 	public DeviceType getDeviceType(int index) {
 
@@ -149,7 +202,12 @@ public class EDController
 	}
 
 	
-
+	/**
+	 * Sets the state of a specific {@link ElectronicDevice}.
+	 * @param index The index of the device in EDController#devices.
+	 * @param newState The new state to be adopted by the  {@link ElectronicDevice}.
+	 * @return Success?
+	 */
 	@Override
 	public Boolean setDeviceState(int index, Boolean newState) {
 
@@ -175,7 +233,11 @@ public class EDController
 	}
 
 	
-
+	/**
+	 * Sets all devices of a certain type to a given state.
+	 * @param type The type of device to set the state of.
+	 * @param newState The state to set the devices to.
+	 */
 	@Override
 	public void setDevicesOfType(DeviceType type, Boolean newState) {
 		for (ElectronicConsumerDevice device : devices)
@@ -187,7 +249,9 @@ public class EDController
 			}
 		}
 	}
-
+	/**
+	 * Registers with an external server.
+	 */
 	@Override
 	public Boolean registerSmartMeter() {
 		// TODO Auto-generated method stub
@@ -195,13 +259,17 @@ public class EDController
 	}
 
 	
-	
+	/**
+	 * Pushes all data to the local database when being garbage collected.
+	 */
 	protected void finalize() throws Throwable
 	{
 		pushToDB();
 		super.finalize();
 	}
-	
+	/**
+	 * Updates the local database with the {@link ElectronicConsumerDevice} objects stored in the controller data structures.
+	 */
 	@Override
 	public void pushToDB() {
 		for (ElectronicConsumerDevice i : devices)
@@ -210,6 +278,9 @@ public class EDController
 		}
 		
 	}
+	/**
+	 * Updates internal data structures with the {@link ElectronicConsumerDevice} objects stored in the local database.
+	 */
 	@Override
 	public void pullFromDB() {
 		ArrayList<ElectronicConsumerDevice>temp_array = db.extractAll();

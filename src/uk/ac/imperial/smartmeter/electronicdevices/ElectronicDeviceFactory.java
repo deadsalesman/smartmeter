@@ -2,14 +2,23 @@ package uk.ac.imperial.smartmeter.electronicdevices;
 
 import java.lang.reflect.Constructor;
 import java.util.UUID;
-
+/**
+ * Utility class used to generate different types of ElectronicConsumerDevice 
+ * @author bwindo
+ * @see DeviceType
+ * @see ElectronicConsumerDevice
+ */
 public class ElectronicDeviceFactory {
-	
-	public static ElectronicConsumerDevice getDevice(Integer type)
+	/**
+	 * Gets a {@link ElectronicConsumerDevice} based on the index of the associated device in {@link DeviceType}.
+	 * @param deviceType The index of the device.
+	 * @return A new {@link ElectronicConsumerDevice} based on the type determined by the given parameter.
+	 */
+	public static ElectronicConsumerDevice getDevice(Integer deviceType)
 	{
 		DeviceType x;
 		try {
-			x = DeviceType.values()[type];
+			x = DeviceType.values()[deviceType];
 		} catch(ArrayIndexOutOfBoundsException e)
 		{
 			x = DeviceType.values()[0];
@@ -17,10 +26,24 @@ public class ElectronicDeviceFactory {
 		return getDevice(x.toString());
 		
 	}
+	/**
+	 * Gets a {@link ElectronicConsumerDevice} based on the index of the associated device in {@link DeviceType}.
+	 * @param deviceType The index of the device.
+	 * @param id The string representation of the {@link UUID} to be used for the returned device.
+	 * @param initialState The initial state of the returned device.
+	 * @return A new {@link ElectronicConsumerDevice} based on the type determined by the given parameter.
+	 */
 	public static ElectronicConsumerDevice getDevice(int deviceType, String id, Boolean initialState)
 	{
 		return getDevice(DeviceType.values()[deviceType].toString(),id, initialState);
 	}
+	/**
+	 * Gets a {@link ElectronicConsumerDevice} based on the name of the associated device in {@link DeviceType}.
+	 * @param deviceType The name of the device.
+	 * @param id The string representation of the {@link UUID} to be used for the returned device.
+	 * @param initialState The initial state of the returned device.
+	 * @return A new {@link ElectronicConsumerDevice} based on the type determined by the given parameter.
+	 */
 	public static ElectronicConsumerDevice getDevice(String deviceType, String id, Boolean initialState)
 	{
 		if (id == null)
@@ -43,6 +66,11 @@ public class ElectronicDeviceFactory {
 			return new Uniform(id, initialState);
 		}
 	}
+	/**
+	 * Gets a {@link ElectronicConsumerDevice} based on the name of the associated device in {@link DeviceType}.
+	 * @param deviceType The name of the device.
+	 * @return A new {@link ElectronicConsumerDevice} based on the type determined by the given parameter.
+	 */
 	public static ElectronicConsumerDevice getDevice(String deviceType)
 	{
 		return getDevice(deviceType, null, false);

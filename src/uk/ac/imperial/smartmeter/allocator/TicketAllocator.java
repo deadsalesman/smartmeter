@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.comparators.requirementPrioComparator;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
+import uk.ac.imperial.smartmeter.impl.HLController;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
@@ -20,7 +21,7 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 /**
  * Class handles initial allocation of Electricity slots to the various users of the system
  * @author Ben Windo
- * @see HLCController
+ * @see HLController
  */
 public class TicketAllocator {
 	private Map<ElectricityRequirement, ArrayList<QuantumNode>> reqMap;
@@ -446,55 +447,55 @@ public class TicketAllocator {
 	}
 	/**
 	 * Attempts to extend a ticket if the ticket duration is less than the requirement duration
-	 * @param t
-	 * @param e
-	 * @param tktOld
-	 * @param r
+	 * @param newTkt
+	 * @param oldReq
+	 * @param oldTkt
+	 * @param newReq
 	 * @param mutable Defines whether the underlying nodes can be changed, or whether copies should be made.
 	 * @return success?
 	 */
-	public Boolean extendTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
+	public Boolean extendTicket(ElectricityTicket newTkt, ElectricityRequirement oldReq, ElectricityTicket oldTkt, ElectricityRequirement newReq, boolean mutable) {
 
-		double metric = e.getDuration() - t.getQuantisedDuration();
+		double metric = oldReq.getDuration() - newTkt.getQuantisedDuration();
 		
 		if (metric > 0) {
-			return expandToFit(t, e, tktOld,r,mutable);
+			return expandToFit(newTkt, oldReq, oldTkt,newReq,mutable);
 		}
 		
 		return false;
 	}
 	/**
 	 * Attempts to intensify a ticket if the ticket amplitude is less than the requirement amplitude
-	 * @param t
-	 * @param e
-	 * @param tktOld
-	 * @param r
-	 * @param mutable
-	 * @return
+	 * @param newTkt
+	 * @param oldReq
+	 * @param oldTkt
+	 * @param newReq
+	 * @param mutable Defines whether the underlying nodes can be changed, or whether copies should be made.
+	 * @return success?
 	 */
-	public Boolean intensifyTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
-		double metric = e.getMaxConsumption() - t.magnitude;
+	public Boolean intensifyTicket(ElectricityTicket newTkt, ElectricityRequirement oldReq, ElectricityTicket oldTkt, ElectricityRequirement newReq, boolean mutable) {
+		double metric = oldReq.getMaxConsumption() - newTkt.magnitude;
 		if (metric >0)
 		{
-			return intensify(t,e,tktOld,r,mutable);
+			return intensify(newTkt,oldReq,oldTkt,newReq,mutable);
 		}
 		return false;
 	}
 	/**
 	 * Attempt to intensify a ticket to allow a higher amplitude requirement to fit in that slot
-	 * @param t
-	 * @param e
-	 * @param tktOld
-	 * @param r
-	 * @param mutable
-	 * @return
+	 * @param newTkt
+	 * @param oldReq
+	 * @param oldTkt
+	 * @param newReq
+	 * @param mutable Defines whether the underlying nodes can be changed, or whether copies should be made.
+	 * @return success?
 	 */
-	private Boolean intensify(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
+	private Boolean intensify(ElectricityTicket newTkt, ElectricityRequirement oldReq, ElectricityTicket oldTkt, ElectricityRequirement newReq, boolean mutable) {
 
-		ElectricityRequirement reqA = new ElectricityRequirement(t.getStart(),t.getEnd(),
-				new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
-		ElectricityRequirement reqB = new ElectricityRequirement(tktOld.getStart(),tktOld.getEnd(),
-				new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		ElectricityRequirement reqA = new ElectricityRequirement(newTkt.getStart(),newTkt.getEnd(),
+				new DecimalRating(newReq.getPriority()), newReq.getProfileCode(), newReq.getMaxConsumption(), newReq.getUserID(), newReq.getId());
+		ElectricityRequirement reqB = new ElectricityRequirement(oldTkt.getStart(),oldTkt.getEnd(),
+				new DecimalRating(oldReq.getPriority()), oldReq.getProfileCode(), oldReq.getMaxConsumption(), oldReq.getUserID(), oldReq.getId());
 		
 		ArrayList<QuantumNode> nodesA;
 		ArrayList<QuantumNode> nodesB;
@@ -519,10 +520,10 @@ public class TicketAllocator {
 		Boolean successB = addReqToNodes(reqB,nodesA);
 		
 		if(successA){ //adds the new consumption requirement
-			t.magnitude = e.getMaxConsumption();
+			newTkt.magnitude = oldReq.getMaxConsumption();
 		}
 		if(successB){
-			tktOld.magnitude = r.getMaxConsumption();
+			oldTkt.magnitude = newReq.getMaxConsumption();
 		}
 		return successA&&successB;
 	

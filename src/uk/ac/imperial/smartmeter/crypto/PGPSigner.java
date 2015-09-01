@@ -101,9 +101,7 @@ public class PGPSigner
 	 * 
 	 * @param in An inputstream pointing to the location of the file to be verified.
 	 * @param keyIn An inputstream pointing to the location of the file holding the public key of the presumed signatory.
-	 * @param in
-	 * @param keyIn
-	 * @return
+	 * @return Success?
 	 * @throws Exception
 	 */
 	public static Boolean verifyFile(

@@ -174,7 +174,7 @@ public class SignatureHelper {
 	 * 
 	 * @param t The ticket to be signed.
 	 * @param book The information on all users that may have signed the ticket.
-	 * @return
+	 * @return Success?
 	 */
 	public static Boolean verifyTicket(ElectricityTicket t, UserAddressBook book) {
 		for (Quadruple<String, Date, ElectricityTicket, byte[]> x : t.getSignatures())

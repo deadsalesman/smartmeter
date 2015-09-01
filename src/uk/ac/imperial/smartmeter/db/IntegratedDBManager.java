@@ -64,7 +64,7 @@ public abstract class IntegratedDBManager<T extends UniqueIdentifierIFace> exten
 	/**
 	 * Formats all elements of a LocalSet into an ArrayList<T>
 	 * @param res
-	 * @return
+	 * @return The arrayList generated from the LocalSet.
 	 */
 	public ArrayList<T> resToArray(LocalSet res) // T
 	{

@@ -114,7 +114,7 @@ public class RescherArbiter {
 	/**
 	 * @deprecated
 	 * @param m
-	 * @return
+	 * @return The normalised array.
 	 */
 	@SuppressWarnings("unused")
 	private Map<UserAgent, Double> normaliseWeighting(Map<UserAgent,Double> m)

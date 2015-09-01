@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
  
 class GpioTest{
+	/**
+	 * Tests calling a python script within Java.
+	 * @param a
+	 */
 public static void main(String a[]){
 try{
  

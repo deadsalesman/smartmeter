@@ -21,7 +21,7 @@ public class QuantumNode implements TimeNode {
 	/**
 	 * Initialises the node with the given parameters
 	 * @param cap   Maximum capacity for the node
-	 * @param start Date when node 'starts', has a duration of {@value QuantumNode#quanta}
+	 * @param start Date when node 'starts', has a duration of quanta.
 	 */
 	public QuantumNode(Double cap, Date start)
 	{
@@ -104,7 +104,7 @@ public class QuantumNode implements TimeNode {
 	 * Of all the ElectricityRequirements in the array,
 	 *  returns the time when the earliest one finishes
 	 * 
-	 * @return
+	 * @return The earliest finishing requirement.
 	 */
 	public Date getSoonestFinishingTime()
  {

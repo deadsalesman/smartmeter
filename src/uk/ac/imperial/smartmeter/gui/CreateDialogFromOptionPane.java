@@ -6,7 +6,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class CreateDialogFromOptionPane {
-
+	/**
+	 * Used to test the functionality of a spontaneously created JFrame
+	 * @param args
+	 */
     public static void main(final String[] args) {
         final JFrame parent = new JFrame();
         JButton button = new JButton();
