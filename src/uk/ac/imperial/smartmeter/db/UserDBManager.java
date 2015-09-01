@@ -1,8 +1,16 @@
 package uk.ac.imperial.smartmeter.db;
 
+import java.sql.SQLException;
+import java.util.Map;
 
-//DEPRECATED
-/*
+import uk.ac.imperial.smartmeter.res.User;
+
+
+/**
+ * @deprecated
+ * @author bwindo
+ *
+ */
 public class UserDBManager extends IntegratedDBManager<User>{
 	public UserDBManager(String dbLocation) {
 
@@ -21,10 +29,6 @@ public class UserDBManager extends IntegratedDBManager<User>{
 	public User formatMap(Map<String,Object> ls) 
 	{
 		User u = new User(
-				(String)ls.get("SALT"),
-				ls.get("HASH").toString(),
-				(String)ls.get("UUID"),
-				(String)ls.get("NAME")
 				);
 		return u;
 	}
@@ -60,4 +64,3 @@ public class UserDBManager extends IntegratedDBManager<User>{
 	}
 	
 }
-*/

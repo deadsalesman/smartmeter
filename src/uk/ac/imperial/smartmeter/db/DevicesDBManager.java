@@ -6,9 +6,18 @@ import java.util.Map;
 import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
-
+import uk.ac.imperial.smartmeter.impl.EDController;
+/**
+ * Helper class to handle manipulation of the devices database.
+ * @author bwindo
+ * @see EDController
+ */
 public class DevicesDBManager 
      extends IntegratedDBManager<ElectronicConsumerDevice>{
+	/**
+	 * Ctor that starts a database at the given location with the internally specified name and format.
+	 * @param dbLocation The location of the database.
+	 */
 	public DevicesDBManager(String dbLocation) {
 		super(dbLocation,primTable,primFmt);
 		initialiseEnumTable();
@@ -29,11 +38,19 @@ public class DevicesDBManager
 			"UUID    TEXT                      NOT NULL, "                            +
 			"FOREIGN KEY(TYPE) REFERENCES      ENUM_TABLE(ID));"
 			;
-
+	/**
+	 * Wipes everything from the database.
+	 * @return Success?
+	 */
 	public boolean wipe()
 	{
 		return genericDBUpdate("DELETE FROM " + primTable);
 	}
+	/**
+	 * Checks to see if the EnumTable has been created, does so if this is not the case.
+	 * Checks to see if the EnumTable has been initialised, does so if this is not the case.
+	 * @return Success?
+	 */
 	public boolean initialiseEnumTable()
 	{
 		LocalSet verifyEnumTable = queryDB("SELECT COUNT(*) FROM " + enumTable);
@@ -65,14 +82,22 @@ public class DevicesDBManager
 		return false;
 	}
 
-	
+	/**
+	 * Changes the recorded state of a device in the database.
+	 * @param id The identity of the device to change the state of.
+	 * @param state The new state of the device.
+	 * @return Success?
+	 */
 	public boolean updateDeviceState(int id, boolean state)
 	{
 		int value = state ? 1 : 0;
 		String stmt = "UPDATE " + primTable + " SET STATE = " + value + " WHERE ID = " + id + ";";
 		return genericDBUpdate(stmt);
 	}
-	
+	/**
+	 * Creates a new table from a list of preapproved table names, which are mapped to a specific format of table and role.
+	 * @param tableName The table type to create.
+	 */
 	public void createTable(String tableName) throws SQLException{
 		String fmt = "";
 		boolean validTable = false;
@@ -94,7 +119,11 @@ public class DevicesDBManager
 			throw new SQLException("Invalid Table Name");
 		}
 	}
-
+	/**
+	 * Inserts an ElectronicConsumerDevice into the table.
+	 * @param r The new ElectronicConsumerDevice to insert
+	 * @return Success?
+	 */
 	@Override
 	public boolean insertElement(ElectronicConsumerDevice r) {
 		int state = r.getConsumptionEnabled() ? 1 : 0;
@@ -104,7 +133,11 @@ public class DevicesDBManager
 	
 		return insertValue(primTable, fmt);
 	}
-
+	/**
+	 * Returns a ElectronicConsumerDevice from a given Map<String, Object> as returned by the database cursor.
+	 * @param ls The local set returned after querying the database.
+	 * @return The newly extracted ElectronicConsumerDevice.
+	 */
 	@Override
 	public ElectronicConsumerDevice formatMap(Map<String, Object> ls) {
 		ElectronicConsumerDevice ed = null;
@@ -116,7 +149,11 @@ public class DevicesDBManager
 		return ed;
 	}
 
-
+    /**
+     * Removes a specific ElectronicConsumerDevice from the database.
+     * @param r The ElectronicConsumerDevice to be removed.
+     * @return Success?
+     */
 	@Override
 	public boolean removeElement(ElectronicConsumerDevice r) {
 		String fmt = "DELETE FROM "+primTable+" WHERE ID = " + r.getId().hashCode()

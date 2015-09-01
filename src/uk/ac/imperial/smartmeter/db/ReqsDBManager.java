@@ -9,10 +9,21 @@ import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
 import uk.ac.imperial.smartmeter.electricityprofile.ProfileList;
+import uk.ac.imperial.smartmeter.impl.HLController;
+import uk.ac.imperial.smartmeter.impl.LController;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
-
+/**
+ * Helper class to handle manipulation of the ElectricityRequirement database.
+ * @author bwindo
+ * @see HLController
+ * @see LController
+ */
 public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
+	/**
+	 * Ctor that starts a database at the given location with the internally specified name and format.
+	 * @param dbLocation The location of the database.
+	 */
 	public ReqsDBManager(String dbLocation) {
 		super(dbLocation,primTable,primFmt);
 	    initialiseProfileTable();
@@ -40,11 +51,19 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 			"FOREIGN   KEY(PROFILE) REFERENCES    PROFILE_TABLE(ID));"/*,"		        +
 			"FOREIGN   KEY(USERID)  REFERENCES    USER_TABLE(ID));"*/
 			;
-	
+	/**
+	 * Wipes everything from the database.
+	 * @return Success?
+	 */
 	public boolean wipe()
 	{
 		return genericDBUpdate("DELETE FROM " + primTable);
 	}
+	/**
+	 * Checks to see if the ProfileTable has been created, does so if this is not the case.
+	 * Checks to see if the ProfileTable has been initialised, does so if this is not the case.
+	 * @return Success?
+	 */
 	public boolean initialiseProfileTable()
 	{
 		LocalSet verifyProfileTable = queryDB("SELECT COUNT(*) FROM " + profileTable);
@@ -75,7 +94,12 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 		}
 		return false;
 	}
-	
+	/** 
+	 * Adds a ElectricityRequirement to the database.
+	 * @param r The ElectricityRequirement to be inserted into the database.
+	 * @return Success?
+	 */
+
 	public boolean insertElement(ElectricityRequirement r) {
 		String fmt = "INSERT INTO "+primTable+"(REQID, START, END, USERID, UUID, PRIORITY, PROFILE, AMPLITUDE) " + "VALUES ("
 				+ r.getId().hashCode() + ", '" + df.format(r.getStartTime()) + "', '" + df.format(r.getEndTime()) 
@@ -84,6 +108,12 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 				+ " );";
 		return insertValue(primTable, fmt);
 	}
+	
+	/**
+	 * Returns a ElectricityRequirement from a given Map<String, Object> as returned by the database cursor.
+	 * @param ls The local set returned after querying the database.
+	 * @return The newly extracted ElectricityRequirement.
+	 */
 	@Override
 	public ElectricityRequirement formatMap(Map<String,Object> ls)
 	{
@@ -105,7 +135,10 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 		}
 		return er;
 	}
-
+	/**
+	 * Creates a new table from a list of preapproved table names, which are mapped to a specific format of table and role.
+	 * @param tableName The table type to create.
+	 */
 	@Override
 	public void createTable(String tableName) throws SQLException{
 		String fmt = "";
@@ -128,7 +161,11 @@ public class ReqsDBManager extends IntegratedDBManager<ElectricityRequirement>{
 			throw new SQLException("Invalid Table Name");
 		}
 	}
-
+	   /**
+     * Removes a specific ElectricityRequirement from the database.
+     * @param r The ElectricityRequirement to be removed.
+     * @return Success?
+     */
 	@Override
 	public boolean removeElement(ElectricityRequirement r) {
 		String fmt = "DELETE FROM "+primTable+" WHERE REQID = " + r.getId().hashCode()
