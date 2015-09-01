@@ -3,14 +3,31 @@ package uk.ac.imperial.smartmeter.electricityprofile;
 import java.lang.reflect.Constructor;
 
 
-
+/**
+ * Utility class used to generate different types of ConsumptionProfile 
+ * @author bwindo
+ * @see ProfileType
+ * @see ConsumptionProfile
+ */
 public class ElectricityProfileFactory {
 
+	/**
+	 * Gets a ConsumptionProfile based on the index of the associated profile in ProfileType.
+	 * @param type The index of the profile.
+	 * @return A new consumption profile based on the type determined by the given parameter.
+	 */
 	public static ConsumptionProfile getProfile(Integer type)
 	{
 		return getProfile(ProfileType.values()[type].toString());
 	}
-	public static ConsumptionProfile getProfile(int type, Double dur, Double amp)
+	/**
+	 * Gets a ConsumptionProfile based on the index of the associated profile in ProfileType.
+	 * @param type The index of the profile.
+	 * @param dur The duration of the new ConsumptionProfile.
+	 * @param amp The amplitude of the new ConsumptionProfile.
+	 * @return A new consumption profile based on the type determined by the given parameter.
+	 */
+	public static ConsumptionProfile getProfile(Integer type, Double dur, Double amp)
 	{
 		ProfileType x;
 		try {
@@ -22,6 +39,13 @@ public class ElectricityProfileFactory {
 		return getProfile(x.toString(),dur, amp);
 		
 	}
+	/**
+	 * Gets a ConsumptionProfile based on the name of the associated profile in ProfileType.
+	 * @param type The name of the profile.
+	 * @param dur The duration of the new ConsumptionProfile.
+	 * @param amp The amplitude of the new ConsumptionProfile.
+	 * @return A new consumption profile based on the type determined by the given parameter.
+	 */
 	public static ConsumptionProfile getProfile(String type, Double dur, Double amp)
 	{
 		ProfileType x = ProfileType.valueOf(type);
@@ -38,6 +62,11 @@ public class ElectricityProfileFactory {
 			return new UniformConsumptionProfile(dur, amp);
 		}
 	}
+	/**
+	 * Gets a ConsumptionProfile based on the name of the associated profile in ProfileType.
+	 * @param type The name of the profile.
+	 * @return A new consumption profile based on the type determined by the given parameter.
+	 */
 	public static ConsumptionProfile getProfile(String type)
 	{
 		return getProfile(type, 0., 0.);

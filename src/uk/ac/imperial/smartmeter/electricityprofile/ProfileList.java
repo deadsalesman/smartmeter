@@ -4,11 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
+/**
+ * A utility class to contain a mapping from the value of the {@link ProfileType} enum to their respective {@link ConsumptionProfile}.
+ * @author bwindo
+ *
+ */
 @SuppressWarnings("unchecked")
 public abstract class ProfileList {
 	public static final Map<Integer, Class<? extends ConsumptionProfile>> profileMap = new HashMap<Integer,Class<? extends ConsumptionProfile>>();
-
+	/**
+	* Populates the immutable mapping from index in ProfileType to Class.
+ 	*/
 	static {
 		int i = 0;
 		for (ProfileType profile : ProfileType.values())
@@ -22,6 +28,11 @@ public abstract class ProfileList {
 			}
 		}
 	}
+	/**
+	 * Gets the index in {@link ProfileType} that represents the type of the input profile.
+	 * @param profile The profile to find the index of.
+	 * @return The index of the given profile in {@link ProfileType}.
+	 */
 	static public int getCode(ConsumptionProfile profile)
 	{
 		int ret = -1;
@@ -35,9 +46,5 @@ public abstract class ProfileList {
 	static public int getLength()
 	{
 		return profileMap.size();
-	}
-	ProfileList()
-	{
-		
 	}
 }
