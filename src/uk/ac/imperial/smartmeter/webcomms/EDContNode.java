@@ -1,7 +1,13 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
 import java.io.IOException;
-
+/**
+ * Basic class to instantiate an EDCServer 
+ * On reflection this entire thing is pointless and a main in EDCServer would be superior in every conceivable way.
+ * 
+ * @author Ben Windo
+ *
+ */
 public class EDContNode {
 	private static EDCServer client;
 	public static void main(String[] args) throws IOException {

@@ -17,7 +17,11 @@ import uk.ac.imperial.smartmeter.res.EleGenConglomerate;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.UserAgent;
-
+/**
+ * Class handles initial allocation of Electricity slots to the various users of the system
+ * @author Ben Windo
+ * @see HLCController
+ */
 public class TicketAllocator {
 	private Map<ElectricityRequirement, ArrayList<QuantumNode>> reqMap;
 	private CalendarQueue queue;
@@ -31,11 +35,27 @@ public class TicketAllocator {
 	private String userId;
 	private String password;
 	private boolean tryHard;
+	/**
+	 * Dummy Ctor for testing purposes, cannot sign tickets
+	 * @param collection list of agents and their ElectricityRequirements
+	 * @param d the start time of the allocation 
+	 * @param reallocate allows tickets to be assigned to slightly different timeslots if they cannot
+	 *                   be assigned to the original priority
+	 */
 	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate)
 	{
 		this(collection, d, reallocate, "", "");
 	}
 	
+	/**
+	 * Full ctor
+	 * @param collection list of agents and their ElectricityRequirements
+	 * @param d the start time of the allocation 
+	 * @param reallocate allows tickets to be assigned to slightly different timeslots if they cannot
+	 *                   be assigned to the original priority
+	 * @param id   identity of the HLCNode used for signing
+	 * @param pass password of the HLCNode used for signing
+	 */
 	public TicketAllocator(Collection<UserAgent> collection, Date d, boolean reallocate, String id, String pass)
 	{
 		reqMap = new HashMap<ElectricityRequirement, ArrayList<QuantumNode>>();
@@ -55,6 +75,11 @@ public class TicketAllocator {
 		queue = new CalendarQueue(conglom,startDate);
 		populateReqMap();
 	}
+	/**
+	 * adds a new collection of user agents to the internal data
+	 * also populates the list of requirements
+	 * @param collection list of agents and their ElectricityRequirements
+	 */
 	public void updateAgents(Collection<UserAgent> collection)
 	{
 		conglom = new EleGenConglomerate();
@@ -64,6 +89,9 @@ public class TicketAllocator {
 		}
 		populateReqMap();
 	}
+	/**
+	 * for all useragents, add their requirements to a central repository of requirements
+	 */
 	private void populateReqMap()
 	{
 		for (UserAgent u : usrArray)
@@ -74,25 +102,43 @@ public class TicketAllocator {
 		}
 		}
 	}
-	private void addUser(UserAgent u)
+	/**
+	 * Adds the user's generation profile to the conglomeration, and 
+	 * adds the user to the local list
+	 * @param user the UserAgent in question
+	 */
+	private void addUser(UserAgent user)
 	{
-		conglom.addGen(u.getGeneratedPower());
-		usrArray.add(u);
+		conglom.addGen(user.getGeneratedPower());
+		usrArray.add(user);
 	}
-	private ElectricityTicket generateTicket(ElectricityRequirement e)
+	/**
+	 * Creates an electricity ticket based on a requirement and signs it
+	 * @param req the requirement
+	 * @return the ticket
+	 */
+	private ElectricityTicket generateTicket(ElectricityRequirement req)
 	{
-		ElectricityTicket tkt = new ElectricityTicket(e.getStartTime(), e.getEndTime(), e.getMaxConsumption(), e.getUserID(), e.getId());
+		ElectricityTicket tkt = new ElectricityTicket(req.getStartTime(), req.getEndTime(), req.getMaxConsumption(), req.getUserID(), req.getId());
 
 		SignatureHelper.signTicketForNewUser(tkt, userId, password);
 		SignatureHelper.verifyTicket(tkt);
 		return tkt;
 	}
+	/**
+	 * Finds the userAgent with the highest associated value
+	 * This indicates the highest current utility and preferential treatment
+	 * @param m map of userAgents to associated utilities
+	 * @return the highest ranking agent
+	 */
 	private UserAgent findMaxAgent(Map<UserAgent,Double> m)
 	{
 		UserAgent maxAgt = null;
 		Double max = -1.;
 		for (Entry<UserAgent, Double> u : m.entrySet())
 		{
+			//if the user has a value greater than the current highest user
+			// and they have not finished, set as new highest user
 			if ((u.getValue() > max)&&(!userFinished.containsKey(u)))
 			{
 				maxAgt = u.getKey();
@@ -101,32 +147,51 @@ public class TicketAllocator {
 		}
 		return maxAgt;
 	}
-	private Boolean removeReqFromNodes(ElectricityRequirement e, ArrayList<QuantumNode> nodes)
+	/**
+	 * Attempt to remove an electricity requirement from a set of nodes.
+	 * @param req the ElectricityRequirement in question
+	 * @param nodes the set of nodes to have the requirement removed.
+	 * @return unconditionally true
+	 */
+	private Boolean removeReqFromNodes(ElectricityRequirement req, ArrayList<QuantumNode> nodes)
 	{
 		Boolean ret = true; //innocent until proven guilty
 		for (QuantumNode n : nodes)
 		{
-			ret &= n.removeReq(e.getId());
+			ret &= n.removeReq(req.getId());
 		}
 		return ret;
 	}
-	private Boolean addReqToNodes(ElectricityRequirement e, ArrayList<QuantumNode> nodes)
+	/**
+	 * Attempt to add an electricity requirement to a set of nodes.
+	 * 
+	 * @param req the ElectricityRequirement in question
+	 * @param nodes the set of nodes to have the requirement removed.
+	 * @return true if successfully added
+	 */
+	private Boolean addReqToNodes(ElectricityRequirement req, ArrayList<QuantumNode> nodes)
 	{
 		Boolean viable = true; //until proved otherwise;
 		for (QuantumNode n : nodes)
 		{
-			viable &= (n.getCapacity() >= e.getConsumption(n.getStartTime()));
+			viable &= (n.getCapacity() >= req.getConsumption(n.getStartTime()));
 		}
 		
 		if (viable)
 		{
 			for (QuantumNode n : nodes)
 			{
-				n.addReq(e);
+				n.addReq(req);
 			}
 		}
 		return viable;
 	}
+	/**
+	 * Attempts to create an electricity ticket from a requirement for a certain user
+	 * @param u the user in question
+	 * @param req the requirement in question
+	 * @return the ticket
+	 */
 	private Boolean genTicketIfPossible(UserAgent u, ElectricityRequirement req)
 	{
 		Boolean ret = false;
@@ -138,6 +203,14 @@ public class TicketAllocator {
 		}
 		return ret;
 	}
+	/**
+	 * Attempts to create an electricity ticket from a requirement for a certain user
+	 * The requirement has been shifted in time to attempt a better fit
+	 * @param u the user in question
+	 * @param req the requirement in question
+	 * @param proxy the time shifted requirement
+	 * @return the ticket
+	 */
 	private Boolean genTicketIfPossible(UserAgent u, ElectricityRequirement req, ElectricityRequirement proxy)
 	{
 		Boolean ret = false;
@@ -149,8 +222,16 @@ public class TicketAllocator {
 		}
 		return ret;
 	}
+	/**
+	 * Attempts to create a ticket for an ElectricityRequirement
+	 * If {@link TicketAllocator#tryHard} is set, shifts the requirement in time for a better fit
+	 * 
+	 * @param u the user that owns the requirement
+	 * @param req the requirement in question
+	 * @return success?
+	 */
 	private Boolean processRequirement(UserAgent u, ElectricityRequirement req)
- {
+	{
 		Boolean ret = false;
 		ret = genTicketIfPossible(u, req);
 		if (!ret && tryHard) {
@@ -171,6 +252,15 @@ public class TicketAllocator {
 
 	}
 	
+	/**
+	 * finds the quantity as a number between 0..1 that a electricityRequirement makes 
+	 * up of the overall electricity demand of a user
+	 * where 1 indicates it is the only requirement
+	 * 
+	 * @param offset the number of requirements that have already been considered
+	 * @param reqs the array of requirements
+	 * @return the value between 0..1
+	 */
 	private Double findReqRatio(int offset, ArraySet<ElectricityRequirement> reqs)
 	{
 		ElectricityRequirement subject = reqs.get(offset);
@@ -183,8 +273,13 @@ public class TicketAllocator {
 		//System.out.println(tally + " " + ret + " " + reqs.getSize() + " " + offset);
 		return ret/tally;
 	}
+	/**
+	 * Attempts to calculate tickets for the currently entered user agents
+	 * @return the user agents with their tickets added
+	 */
 	public ArraySet<UserAgent> calculateTickets()
 	{
+		//Evaluates the weightings of the existing users
 		rankings = arbiter.getWeighting(usrArray);
 		indexes = new HashMap<UserAgent, Integer>();
 		userFinished = new HashMap<UserAgent, Boolean>();
@@ -193,6 +288,7 @@ public class TicketAllocator {
 		
 		for (UserAgent u : usrArray)
 		{
+			//Sort the users by ranks
 			Collections.sort(u.getReqs(), new requirementPrioComparator());
 			indexes.put(u, 0);
 			userFinished.put(u,false);
@@ -243,10 +339,19 @@ public class TicketAllocator {
 		}
 		return usrArray;
 	}
-	public Boolean fitIntoSpace(ElectricityTicket t, ElectricityRequirement r, int numberNeeded, double duration, boolean mutable, ArrayList<QuantumNode> nodes)
+	/**
+	 * Attempts create a ticket for the electricity requirement given a small set of nodes
+	 * @param t   The ticket to be modified
+	 * @param req The requirement in question
+	 * @param numberNeeded The number of nodes needed to satisfy the requirement
+	 * @param duration The duration of the electricity requirement in non-integer nodes
+	 * @param nodes The available nodes to attempt to move the requirement to
+	 * @return Success?
+	 */
+	public Boolean fitIntoSpace(ElectricityTicket t, ElectricityRequirement req, int numberNeeded, double duration, ArrayList<QuantumNode> nodes)
 	{
-		double durB = r.getDuration();
-		ArrayList<QuantumNode> rNodes = queue.findIntersectingNodes(r,nodes);
+		double durB = req.getDuration();
+		ArrayList<QuantumNode> rNodes = queue.findIntersectingNodes(req,nodes);
 		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
 		
 		Date start = rNodes.get(0).getStartTime();
@@ -256,7 +361,7 @@ public class TicketAllocator {
 		{
 			if (tally < numberNeeded)
 			{
-			if ((q.getCapacity() >= r.getConsumption(q.getStartTime())))
+			if ((q.getCapacity() >= req.getConsumption(q.getStartTime())))
 			{
 				tally++;
 				end = q.getEndTime();
@@ -272,36 +377,46 @@ public class TicketAllocator {
 			if (tally == numberNeeded)
 			{
 				t.setStart(start);
-				r.setStartTime(start, duration);
+				req.setStartTime(start, duration);
 				t.setEnd(end);
-				return addReqToNodes(r, viableNodes);
+				return addReqToNodes(req, viableNodes);
 			}
 		}
 		return false;
 	}
-	public Boolean expandToFit(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket oldTkt, ElectricityRequirement r, boolean mutable) {
-		double durB = e.getDuration();
+	/**
+	 * Attempts to expand a ticket to allow a longer ElectricityRequirement to fit in the same space.
+	 * 
+	 * @param newTkt
+	 * @param oldReq
+	 * @param oldTkt
+	 * @param newReq
+	 * @param mutable Defines whether the underlying nodes can be changed, or whether copies should be made.
+	 * @return success?
+	 */
+	public Boolean expandToFit(ElectricityTicket newTkt, ElectricityRequirement oldReq, ElectricityTicket oldTkt, ElectricityRequirement newReq, boolean mutable) {
+		double durB = oldReq.getDuration();
 		double edgeB = oldTkt.getQuantisedDuration() - durB;
-		double durA = r.getDuration();
-		double edgeA = t.getQuantisedDuration() - durA;
+		double durA = newReq.getDuration();
+		double edgeA = newTkt.getQuantisedDuration() - durA;
 		edgeA = (edgeA <= 0.) ? edgeA : 0;
 		edgeB = (edgeB <= 0.) ? edgeB : 0;
 		
-		ElectricityRequirement reqNewA = new ElectricityRequirement(DateHelper.dPlus(t.getStart(), edgeA),
-				DateHelper.dPlus(t.getEnd(), -edgeA),
-				new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
+		ElectricityRequirement reqNewA = new ElectricityRequirement(DateHelper.dPlus(newTkt.getStart(), edgeA),
+				DateHelper.dPlus(newTkt.getEnd(), -edgeA),
+				new DecimalRating(newReq.getPriority()), newReq.getProfileCode(), newReq.getMaxConsumption(), newReq.getUserID(), newReq.getId());
 		ElectricityRequirement reqNewB = new ElectricityRequirement(DateHelper.dPlus(oldTkt.getStart(), edgeB),
 				DateHelper.dPlus(oldTkt.getEnd(), -edgeB),
-				new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
-		ElectricityRequirement reqA = new ElectricityRequirement(t.getStart(),t.getEnd(),
-				new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId());
+				new DecimalRating(oldReq.getPriority()), oldReq.getProfileCode(), oldReq.getMaxConsumption(), oldReq.getUserID(), oldReq.getId());
+		ElectricityRequirement reqA = new ElectricityRequirement(newTkt.getStart(),newTkt.getEnd(),
+				new DecimalRating(newReq.getPriority()), newReq.getProfileCode(), newReq.getMaxConsumption(), newReq.getUserID(), newReq.getId());
 		ElectricityRequirement reqB = new ElectricityRequirement(oldTkt.getStart(),oldTkt.getEnd(),
-				new DecimalRating(e.getPriority()), e.getProfileCode(), e.getMaxConsumption(), e.getUserID(), e.getId());
+				new DecimalRating(oldReq.getPriority()), oldReq.getProfileCode(), oldReq.getMaxConsumption(), oldReq.getUserID(), oldReq.getId());
 
 		ElectricityRequirement extendDummy = new ElectricityRequirement(
-				new Date((long)Math.min(t.getStart().getTime()+edgeA*QuantumNode.quanta, oldTkt.getStart().getTime()+edgeB*QuantumNode.quanta)),
-				new Date((long) Math.max(t.getEnd().getTime()-edgeA*QuantumNode.quanta,oldTkt.getEnd().getTime()-edgeB*QuantumNode.quanta)),
-				new DecimalRating(r.getPriority()), r.getProfileCode(), r.getMaxConsumption(), r.getUserID(), r.getId() //dummy variables
+				new Date((long)Math.min(newTkt.getStart().getTime()+edgeA*QuantumNode.quanta, oldTkt.getStart().getTime()+edgeB*QuantumNode.quanta)),
+				new Date((long) Math.max(newTkt.getEnd().getTime()-edgeA*QuantumNode.quanta,oldTkt.getEnd().getTime()-edgeB*QuantumNode.quanta)),
+				new DecimalRating(newReq.getPriority()), newReq.getProfileCode(), newReq.getMaxConsumption(), newReq.getUserID(), newReq.getId() //dummy variables
 				);
 		ArrayList<QuantumNode> nodes;
 		if (mutable)
@@ -321,14 +436,23 @@ public class TicketAllocator {
 		Boolean ret = false;
 		if (reqNewB.getStartTime().before(reqNewA.getStartTime()))
 		{
-			ret = fitIntoSpace(t, reqNewB,(int)Math.ceil(durB),durB,mutable,nodes)&&fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),durA,mutable,nodes);
+			ret = fitIntoSpace(newTkt, reqNewB,(int)Math.ceil(durB),durB,nodes)&&fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),durA,nodes);
 		}
 		else
 		{
-			ret = fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),durA,mutable,nodes)&&fitIntoSpace(t, reqNewB,(int)Math.ceil(durB),durB,mutable,nodes);
+			ret = fitIntoSpace(oldTkt, reqNewA,(int)Math.ceil(durA),durA,nodes)&&fitIntoSpace(newTkt, reqNewB,(int)Math.ceil(durB),durB,nodes);
 		}
 		return ret; 
 	}
+	/**
+	 * Attempts to extend a ticket if the ticket duration is less than the requirement duration
+	 * @param t
+	 * @param e
+	 * @param tktOld
+	 * @param r
+	 * @param mutable Defines whether the underlying nodes can be changed, or whether copies should be made.
+	 * @return success?
+	 */
 	public Boolean extendTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
 
 		double metric = e.getDuration() - t.getQuantisedDuration();
@@ -339,6 +463,15 @@ public class TicketAllocator {
 		
 		return false;
 	}
+	/**
+	 * Attempts to intensify a ticket if the ticket amplitude is less than the requirement amplitude
+	 * @param t
+	 * @param e
+	 * @param tktOld
+	 * @param r
+	 * @param mutable
+	 * @return
+	 */
 	public Boolean intensifyTicket(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
 		double metric = e.getMaxConsumption() - t.magnitude;
 		if (metric >0)
@@ -347,6 +480,15 @@ public class TicketAllocator {
 		}
 		return false;
 	}
+	/**
+	 * Attempt to intensify a ticket to allow a higher amplitude requirement to fit in that slot
+	 * @param t
+	 * @param e
+	 * @param tktOld
+	 * @param r
+	 * @param mutable
+	 * @return
+	 */
 	private Boolean intensify(ElectricityTicket t, ElectricityRequirement e, ElectricityTicket tktOld, ElectricityRequirement r, boolean mutable) {
 
 		ElectricityRequirement reqA = new ElectricityRequirement(t.getStart(),t.getEnd(),
