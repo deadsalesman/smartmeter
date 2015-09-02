@@ -1,5 +1,6 @@
 package uk.ac.imperial.smartmeter.webcomms;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
@@ -19,7 +20,7 @@ import uk.ac.imperial.smartmeter.impl.LCHandler;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
-import uk.ac.imperial.smartmeter.interfaces.ServerIFace;
+import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -28,11 +29,11 @@ import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Twople;
 
 /**
- * imaclass
+ * Acts as a central controller for the individual client nodes, coordinating between the High Level controller and the Device Controller.
  * @author bwindo
  *
  */
-public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
+public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace, UniqueIdentifierIFace{
 	private String eDCHost;
 	private int eDCPort;
 	private String hLCHost;
@@ -54,27 +55,50 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 	            System.setSecurityManager(new RMISecurityManager());
 	        }
 	}
+	/**
+	 * Queries the controller whether there are any {@link ElectricityTicket} objects that do not have sufficient utility for the {@link ElectricityRequirement} associated to be fully satisfied.
+	 * @return true if there any requirements that are not being sufficiently satisfied.
+	 */
 	public boolean queryUnhappyTickets()
 	{
 		return handler.queryUnhappyTickets();
 	}
+	/**
+	 * 
+	 * @return an ArrayList containing all {@link ElectricityTicket} objects that have been marked as not having sufficient utility for the {@link ElectricityRequirement} associated to be fully satisfied.
+	 */
 	public ArrayList<ElectricityTicket> getUnhappyTickets()
 	{
 		return handler.getUnhappyTickets();
 	}
+	/**
+	 * Queries the controller to see if it has any {@link ElectricityRequirement}s which do not have an associated {@link ElectricityTicket} capable of satisfying their requirements.
+	 * @return true iff there are no unsatisfied requirements
+	 */
 	public Boolean queryUnsatisfiedReqs()
 	{
 		return handler.queryUnsatisfiedReqs();
 	}
-
+	/**
+	 * Finds the electricity tickets that are active at the same time as a given {@link ElectricityRequirement}.
+	 * @param req The requirement in question.
+	 * @return An {@link ArraySet} of the tickets that conflict with the given requirement.
+	 */
 	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
 	{
 		return handler.findCompetingTickets(req);
 	}
+	/**
+	 * Constructs a new {@link ElectronicConsumerDevice} via the factory, then calls:
+	 * {@link LCClient#addDevice(ElectronicConsumerDevice ed, Integer pin)} 
+	 */
 	public Boolean addDevice(Boolean state, Integer type, String deviceID, Integer pin)
 	{
 		return addDevice(ElectronicDeviceFactory.getDevice(type,deviceID,state),pin);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean addDevice(ElectronicConsumerDevice ed, Integer pin)
 	{
@@ -84,6 +108,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean GodModeCalcTKTS()
 	{
 		try {
@@ -92,6 +120,11 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * Gets all tickets associated with the user associated with the invoking client.
+	 * @return  An ArraySet of all the tickets associated with the owner of the invoking client.
+	 * @see LCClient#getTickets(String user)
+	 */
 	public ArraySet<ElectricityTicket> getTickets()
 	{
 		try {
@@ -107,6 +140,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public ArraySet<ElectricityTicket> getTickets(String user)
 	{
 		try {
@@ -115,6 +152,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean setRequirement(ElectricityRequirement req)
 	{
 		try {
@@ -128,6 +169,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 
 		return false;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean setState(String deviceID, Boolean val)
 	{
 		try {
@@ -136,16 +181,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
-	public String formatMessage(String ... args)
-	{
-		String ret = userId + ",";
-		for (String s : args)
-		{
-			ret += s + ",";
-		}
-		
-		return ret;
-	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean getState(String deviceID)
 	{
 		try {
@@ -154,6 +193,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean removeDevice(String deviceID)
 	{
 		try {
@@ -162,10 +205,18 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * Registers the current user with the remote server, treating the public key as empty Inadvisable to invoke. 
+	 * @see LCClient#registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation, Double economic, int port)
+	 */
 	public Twople<String,String> registerUser(Double worth, Double generation, Double economic,int port) {
 		return registerUser(worth, generation, economic, "", port);
 	}
-		
+	/**
+	 * Registers the current user with the remote server. 
+	 * @see LCClient#registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
+			Double economic, int port)
+	 */
 	public Twople<String,String> registerUser(Double worth, Double generation, Double economic, String pubKey, int port) {
 		try {
 			return lookupHLCServer().registerUser(handler.getSalt(),handler.getHash(),userId, userName, pubKey, worth, generation, economic, port);
@@ -173,7 +224,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String getId() {
 		return userId;
 	}
@@ -183,6 +237,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		Boolean e = wipeEDC();
 		return e&&h;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean wipeEDC()
 	{
 		try {
@@ -191,6 +249,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Boolean wipeHLC()
 	{
 		try {
@@ -199,22 +261,38 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * Sets the {@link ElectricityGeneration} of the user invoking this method to the specified value.
+	 * @see LCClient#setGeneration(String userId, ElectricityGeneration i)
+	 */
 	public Boolean setGeneration(ElectricityGeneration i) {
 		return setGeneration(userId, i);
 	}
-
+	/**
+	 * Queries the remote database for the user invoking this method.
+	 * @see LCClient#queryUserExists(String userId)
+	 */
 	public Boolean queryUserExists() {
 		return queryUserExists(userId);
 	}
-
+	/**
+	 * Gets the {@link UUID} registered to the user invoking this method.
+	 * @see LCClient#getRegisteredUUID(String userId)
+	 */
 	public String getRegisteredUUID() {
 		return getRegisteredUUID(userId);
 	}
-
+	/**
+	 * Sets the {@link UUID} registered to the user invoking this method.
+	 * @param fromString The UUID to set the userID to.
+	 */
 	public void setID(UUID fromString) {
 		userId = fromString.toString();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public ArraySet<ElectricityTicket> queryCompeting(String location, int port, ElectricityRequirement req) {
 		try {
 			return lookupLCServer(location,port).queryCompeting(location, port, req);
@@ -222,6 +300,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
 		TicketTuple ret = null;
@@ -233,6 +314,14 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 		return ret;
 	}
+	/**
+	 * Evaluates the utility of two time intervals. The utility is one if they are identical, and decreases the more different they are.
+	 * @param start1 The start time of the first interval.
+	 * @param end1 The end time of the first interval.
+	 * @param start2 The start time of the second interval.
+	 * @param end2 The end time of the second interval.
+	 * @return A number between 0 and 1 inclusive representing the utility provided by the two timeslots.
+	 */
 	public static Double evalTimeGap(Date start1, Date end1, Date start2, Date end2) {
 		//previous work suggests four hours is a suitable time for the requirement to be useless. This is not accurate e.g. television.
 		//However, it is a good starting point. Propose adding a flexibility measure to requirements? Integrating may be tricky.
@@ -252,17 +341,12 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		
 	}
 
-	private ServerIFace lookupServer(String name, int port, String registered)
-	{
-		Registry registry;
-		try {
-			registry = LocateRegistry.getRegistry(name, port);
-			return (ServerIFace) registry.lookup(registered);
-		} catch (RemoteException | NotBoundException e) {
-			e.printStackTrace();
-		};
-		return null;
-	}
+	/**
+	 * Looks up the registry hosted at a remote client.
+	 * @param name The ip address of the remote client. 
+	 * @param port The port of the registry at the remote client.
+	 * @return A {@link LCServerIFace} from the remote registry, or null if this was not possible.
+	 */
 	private LCServerIFace lookupLCServer(String name, int port)
 	{
 		//return (LCServerIFace)lookupServer(name,port, "LCServer");
@@ -275,6 +359,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		};
 		return null;
 	}
+	/**
+	 * Looks up the registry hosted at a remote {@link HLCServer}.
+	 * @return A {@link HLCServerIFace} from the remote registry, or null if this was not possible.
+	 */
 	private HLCServerIFace lookupHLCServer()
 	{
 		Registry registry;
@@ -286,6 +374,10 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		};
 		return null;
 	}
+	/**
+	 * Looks up the registry hosted at a remote {@link EDCServer}.
+	 * @return A {@link EDCServerIFace} from the remote registry, or null if this was not possible.
+	 */
 	private EDCServerIFace lookupEDCServer()
 	{
 		//return (EDCServerIFace)lookupServer(eDCHost,eDCPort, "EDCServer");
@@ -299,6 +391,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		};
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getMessage(String name, int port) throws RemoteException {
 		String ret = "";
@@ -306,6 +401,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		System.out.println(ret);
 		return ret;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public HashMap<String, Twople<String, InetSocketAddress>> getAddresses(){
 		try {
@@ -314,6 +412,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		TicketTuple ret = null;
@@ -325,6 +426,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 		return ret;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		TicketTuple ret = null;
@@ -336,6 +440,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 		return ret;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		TicketTuple ret = null;
@@ -347,6 +454,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 		return ret;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		TicketTuple ret = null;
@@ -358,6 +468,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 		return ret;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port) {
@@ -367,6 +480,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean setGeneration(String userId, ElectricityGeneration i) {
 		try {
@@ -375,6 +491,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean queryUserExists(String userId) {
 		try {
@@ -383,6 +502,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return false;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getRegisteredUUID(String userId) {
 		try {
@@ -391,6 +513,9 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean registerClient(String location, int port, int ownPort, String userId, String ipAddr, String pubKey) {
 		try {
@@ -400,11 +525,19 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		}
 	}
 	
-
+	/**
+	 * Registers the client invoking this with the designated LCServer, adding it to the log of users. This is mandatory for further negotiations to take place.
+	 * Assumes the ip address can be given simply as "localhost".
+	 * @see LCClient#registerClient(String location, int port, int ownPort, String userId, String ipAddr, String pubKey)
+	 * @return Success?
+	 */
 	public Boolean registerClient(String location, int port, int ownPort, String pubKey)
 	{
 		return registerClient(location,port,ownPort,userId,"localhost", pubKey);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ElectronicDevice getDevice(String deviceID) {
 		try {
@@ -413,10 +546,16 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 			return null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException {
 		return offer(location, port, tuple.newTkt, tuple.oldTkt);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getPublicKey() throws RemoteException {
 		try {
@@ -424,5 +563,20 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace {
 		} catch (RemoteException e) {
 			return null;
 		}
+	}
+	/**
+	 * Instantiates a new LCClient.
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+
+		if (args.length != 6) {
+			System.err.println("Usage: java LContNode <host name> <port number> <host name> <port number> <username> <password>");
+			System.exit(1);
+		}
+		@SuppressWarnings("unused")
+		LCClient client = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4],args[5]); // TODO
+
 	}
 }

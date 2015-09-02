@@ -2,6 +2,11 @@ package uk.ac.imperial.smartmeter.res;
 
 import java.io.Serializable;
 import java.util.Date;
+/**
+ * A class representing the ElectricityGeneration of a particular entity.
+ * @author bwindo
+ *
+ */
 public class ElectricityGeneration implements Serializable{
 	/**
 	 * 

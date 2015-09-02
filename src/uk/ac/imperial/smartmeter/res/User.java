@@ -4,7 +4,11 @@ package uk.ac.imperial.smartmeter.res;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
-
+/**
+ * @deprecated
+ * @author bwindo
+ *
+ */
 public class User implements UniqueIdentifierIFace{
 	private UUID id;
 	private String name;

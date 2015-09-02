@@ -7,6 +7,7 @@ import java.io.IOException;
  *
  */
 public class HLContNode {
+	@SuppressWarnings("unused")
 	private static HLCServer client;
 
 	public static void main(String[] args) throws IOException {

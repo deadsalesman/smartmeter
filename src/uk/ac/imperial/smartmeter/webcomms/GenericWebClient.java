@@ -6,7 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
+/**
+ * Class used to carry out socket communications between objects.
+ * @author bwindo
+ * @deprecated
+ */
 public class GenericWebClient {
 	  public static void main(String[] args) throws IOException {
 	         

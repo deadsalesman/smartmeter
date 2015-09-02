@@ -1,7 +1,16 @@
 package uk.ac.imperial.smartmeter.res;
 
 import java.io.Serializable;
-
+/**
+ * Class that binds a pair of four objects into a single object. 
+ * 'Nicer' alternative to using a map of T-> map of U-> map of V -> W.
+ * @author bwindo
+ *
+ * @param <T>
+ * @param <U>
+ * @param <V>
+ * @param <W>
+ */
 public class Quadruple <T, U, V, W> implements Serializable {
 	/**
 	 * 

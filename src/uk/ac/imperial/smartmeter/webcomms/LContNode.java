@@ -8,6 +8,12 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.Twople;
 
+/**
+ * A stupid, deprecated class, with no real purpose or relevance.
+ * @author bwindo
+ * @deprecated
+ *
+ */
 public class LContNode {
 	private static LCClient client;
 

@@ -26,6 +26,7 @@ public class TestUserPriority extends GenericTest {
 
 		TicketAllocator alloc = new TicketAllocator(m, new Date(),false);
 		
+		@SuppressWarnings("unused")
 		ArraySet<UserAgent> x  = alloc.calculateTickets();
 		try{
 			return (u.getReqTktMap().get(e)!=null);

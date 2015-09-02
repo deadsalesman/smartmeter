@@ -2,6 +2,15 @@ package uk.ac.imperial.smartmeter.res;
 
 import java.io.Serializable;
 
+/**
+ * Class that binds a pair of three objects into a single object. 
+ * Alternative to using a map of T-> map of U->V.
+ * @author bwindo
+ *
+ * @param <T>
+ * @param <U>
+ * @param <V>
+ */
 public class Triple <T, U, V> implements Serializable {
 	/**
 	 * 

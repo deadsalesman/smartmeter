@@ -9,6 +9,13 @@ import java.util.Iterator;
 
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
+/**
+ * Container class designed to be equivalent to an ArrayList, but entries must exist only once. 
+ * This is enforced by the entries all extending UniqueIdentifierIFace.
+ * @author bwindo
+ *
+ * @param <T>
+ */
 public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> implements Iterable<T>, Comparable<T>, Collection<T>, Serializable{
 	/**
 	 * 
@@ -19,6 +26,10 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 	{
 		arr = new ArrayList<T>();
 	}
+	/**
+	 * Creates a new ArraySet using the elements of an existing one.
+	 * @param t
+	 */
 	public ArraySet(ArraySet<T> t)
 	{
 		arr = new ArrayList<T>();
@@ -27,11 +38,20 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 			arr.add(q);
 		}
 	}
+	/**
+	 * Creates a new ArraySet using a single existing element.
+	 * @param t
+	 */
 	public ArraySet(T t)
 	{
 		arr = new ArrayList<T>();
 		arr.add(t);
 	}
+	/**
+	 * Adds a new T to the ArraySet iff its id does not already exist in the list.
+	 * @param i The T to add.
+	 * @return Success?
+	 */
 	public boolean add(T i) {
 		boolean exists = false;
 		if (arr != null) {
@@ -46,6 +66,11 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 		return !exists;
 		
 	}
+	/**
+	 * Returns the T whose id matches the given id, where possible. 
+	 * @param id The id in question.
+	 * @return The element whose id matches, or null if no such element exists.
+	 */
 	public T findFromID(String id)
 	{
 		for (T t : arr)
@@ -58,6 +83,11 @@ public class ArraySet<T extends UniqueIdentifierIFace> extends ArrayList<T> impl
 		
 		return null;
 	}
+	/**
+	 * Adds the T to the ArraySet, replacing any existing T that shares the id.
+	 * @param i The T in question.
+	 * @return true if no element was replaced, false otherwise.
+	 */
 	public boolean forceAdd(T i)
 	{
 		boolean exists = false;

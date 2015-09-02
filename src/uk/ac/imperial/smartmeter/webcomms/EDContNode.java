@@ -9,6 +9,7 @@ import java.io.IOException;
  *
  */
 public class EDContNode {
+	@SuppressWarnings("unused")
 	private static EDCServer client;
 	public static void main(String[] args) throws IOException {
 

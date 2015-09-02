@@ -12,6 +12,13 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.Twople;
 
+/**
+ * Class that handles autonomous control of the LocalController.
+ * Issues requests which are responded to by remote servers via the {@link LCClient}
+ * @author bwindo
+ * @see LCClient
+ * @see LCServer
+ */
 public class LCAdmin implements Runnable{
 
 	Thread t;
@@ -39,6 +46,12 @@ public class LCAdmin implements Runnable{
 	private ArraySet<ElectricityRequirement> currentReqs;
 	private ArraySet<ElectricityRequirement> deadReqs;
 	
+	/**
+	 * Creates a new LCAdmin with the given parameters. 
+	 * @param lc Reference to the {@link LCServer}'s client, used to issue requests.
+	 * @param port Port that the server listens to.
+	 * @param pubKey Public key of the standalone client.
+	 */
 	public LCAdmin(LCClient lc, int port, String pubKey)
 	{
 		pubkey = pubKey;
@@ -57,6 +70,11 @@ public class LCAdmin implements Runnable{
 		
 		updateRequirementClasses(client.handler.getReqs());
 	}
+	/**
+	 * Determines whether an {@link ElectricityRequirement} happens in the past, present or future.
+	 * @param e The requirement in question.
+	 * @return An integer corresponding the the location in time of the requirement. 2 => past, 1 => present, 0 => future.
+	 */
 	public Integer getRequirementCategory(ElectricityRequirement e)
 	{
 		Date d = new Date();
@@ -76,6 +94,10 @@ public class LCAdmin implements Runnable{
 		
 		return ret;
 	}
+	/**
+	 * Places the elements of the given ArraySet into three different categories depending on whether they have occurred, are occurring, or have yet to occur.
+	 * @param reqs The set of {@link ElectricityRequirement}s.
+	 */
 	public void updateRequirementClasses(ArraySet<ElectricityRequirement> reqs)
 	{
 		for (ElectricityRequirement r : reqs)
@@ -83,7 +105,7 @@ public class LCAdmin implements Runnable{
 			switch(getRequirementCategory(r))
 			{
 			case -1:
-				System.out.println("The requirement category algorithm is broken in LCAdmin");
+				System.out.println("The requirement category algorithm is broken in LCAdmin"); //this should not be possible to reach without wibbly wobbly timey wimey stuff
 				break;
 			case 0:
 				newReqs.add(r);
@@ -98,6 +120,10 @@ public class LCAdmin implements Runnable{
 		}
 
 	}
+	/**
+	 * Checks the three time categories to determine if any future requirements are now live, and if any live requirements are now dead.
+	 * Moves requirements into their correct categories based on their current state.
+	 */
 	public void modifyRequirementClasses()
 	{
 		try{
@@ -125,12 +151,16 @@ public class LCAdmin implements Runnable{
 			
 		}
 	}
+	/**
+	 * If a ticket exists for the requirement, request the {@EDCServer} to turn on that device.
+	 * @param r the requirement to be tested.
+	 */
 	private void checkTickets(ElectricityRequirement r) {
 		ElectricityTicket q = client.handler.findMatchingTicket(r);
 		if (q!=null)
 		{
 			q.setActive(true);
-			System.out.println(client.setState(r.getDevice().getId(), true));
+			client.setState(r.getDevice().getId(), true);
 		}
 		
 	}
@@ -142,6 +172,10 @@ public class LCAdmin implements Runnable{
 	{
 		active = false;
 	}
+	/**
+	 * Requests a list of all the known users from the {@link HLCServer}.
+	 * @return true iff there are users in the log of users.
+	 */
 	private Boolean requestBulletin() {
 		HashMap<String, Twople<String,InetSocketAddress>> x = client.getAddresses();
 		if (x!= null) {
@@ -156,10 +190,14 @@ public class LCAdmin implements Runnable{
 			}
 			}
 		}
-		}
+
 		bulletin.sociallyAwah = true;
-		return false;
+		}
+		return bulletin.sociallyAwah;
 	}
+	/**
+	 * Starts the LCAdmin and hooks it on a new thread.
+	 */
 	public void start() {
 		System.out.println("Client admin active.");
 		if (t == null)
@@ -168,6 +206,9 @@ public class LCAdmin implements Runnable{
 	         t.start ();
 	      }
 	}
+	/**
+	 * Central polling loop that waits for set amounts of time and then performs administrative actions such as swapping tickets and updating logs of users in the system.
+	 */
 	@Override
 	public void run() {
 

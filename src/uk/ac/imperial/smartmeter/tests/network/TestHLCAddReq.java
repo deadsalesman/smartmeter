@@ -15,8 +15,6 @@ public class TestHLCAddReq extends GenericTest {
 	@Override
 	public boolean doTest() throws Exception{
 
-		String t = UUID.randomUUID().toString();
-
 			LCServer elsie = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort, 9003, TicketTestHelper.user1,"");
 			ElectricityRequirement e = new ElectricityRequirement(
 					DateHelper.os(0.),

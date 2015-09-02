@@ -1,7 +1,11 @@
 package uk.ac.imperial.smartmeter.res;
 
 import java.io.Serializable;
-
+/**
+ * Used exclusively to store two tickets in a single class to allow two tickets to be returned from RMI method invocations.
+ * @author bwindo
+ *
+ */
 public class TicketTuple implements Serializable {
 	/**
 	 * 

@@ -8,11 +8,18 @@ import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.electricityprofile.ConsumptionProfile;
 import uk.ac.imperial.smartmeter.electricityprofile.ElectricityProfileFactory;
 import uk.ac.imperial.smartmeter.electricityprofile.ProfileList;
+import uk.ac.imperial.smartmeter.electricityprofile.ProfileType;
 import uk.ac.imperial.smartmeter.electronicdevices.DeviceList;
+import uk.ac.imperial.smartmeter.electronicdevices.DeviceType;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
+/**
+ * A class representing a requirement for electricity for a particular period of time.
+ * @author bwindo
+ *
+ */
 public class ElectricityRequirement implements UniqueIdentifierIFace, Serializable{
 	/**
 	 * 
@@ -21,28 +28,47 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	private Date startTime;
 	private Date endTime;
 	private double duration;
+	/**
+	 * A {@link DecimalRating} representing the importance of the requirement.
+	 */
 	private DecimalRating priority;
+	/**
+	 * A {@link ConsumptionProfile} representing the shape of the requirement. For example, it might have a constant demand, or a demand that gradually increases.
+	 */
 	private ConsumptionProfile profile; //consumption assum
 	private UUID reqID;
 	private UUID userID;
 	private Boolean tampered = false;
+	/**
+	 * The physical {@link ElectronicConsumerDevice} that needs the requirement described in the associated instance of this object.
+	 */
 	public ElectronicConsumerDevice device;
+	/**
+	 * @return the position in {@link ProfileType} that the current {@link ElectricityRequirement#profile} represents.
+	 */
 	public int getProfileCode()
 	{
 		return ProfileList.getCode(profile);
 	}
+	/**
+	 * 
+	 * @return the position in {@link DeviceType} that the current {@link ElectricityRequirement#device} represents.
+	 */
 	public int getDeviceCode()
 	{
 		return DeviceList.getCode(device);
 	}
-	public ElectricityRequirement(Date start, Date end, DecimalRating prio, String user)
-	{
-		this(start,end,prio,1,1,user,"");
-	}
+	/**
+	 * Debug ctor that is used in testing.
+	 * @param amplitude The amplitude to set the device's profile to consume.
+	 */
 	public ElectricityRequirement(double amplitude)
 	{
 		this(new Date(), new Date(), new DecimalRating(2),1,amplitude,UUID.randomUUID().toString()); //DEBUG ONLY
 	}
+	/**
+	 * @return A String representation of the current ElectricityRequirement.
+	 */
 	public String toString()
 	{
 	    String repr = 
@@ -56,18 +82,52 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 			;
 		return repr;
 	}
+	/**
+	 * Debug ctor that is used in testing.
+	 * @param start The start time of the requirement.
+	 * @param end The end time of the requirement.
+	 */
 	public ElectricityRequirement(Date start, Date end)
 	{
 		this(start, end, new DecimalRating(5),1,1.,UUID.randomUUID().toString());
 	}
+	/**
+	 * Returns a new ElectricityRequirement based on the given parameters.
+	 * @param start The start time of the requirement.
+	 * @param end The end time of the requirement.
+	 * @param prio A rating representing the importance of the requirement.
+	 * @param profileId The type of {@link ConsumptionProfile} to use, as defined in {@link DeviceType}.
+	 * @param amplitude The amplitude to set the device's profile to consume.
+	 * @param iDUser The identity of the {@link UserAgent} that owns the requirement.
+	 */
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude, String iDUser)
     {
 		this(start, end, prio, profileId, amplitude, iDUser, UUID.randomUUID().toString());
 	}
+	/**
+	 * Returns a new ElectricityRequirement based on the given parameters.
+	 * @param start The start time of the requirement.
+	 * @param end The end time of the requirement.
+	 * @param prio A rating representing the importance of the requirement.
+	 * @param profileId The type of {@link ConsumptionProfile} to use, as defined in {@link DeviceType}.
+	 * @param amplitude The amplitude to set the device's profile to consume.
+	 * @param iDUser The identity of the {@link UserAgent} that owns the requirement.
+	 * @param idString A string representing the {@link UUID} to be adopted by the new ElectricityRequirement.
+	 */
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, int profileId, double amplitude, String iDUser,String idString )
 	{
 	 this(start, end, prio, amplitude, iDUser, idString, ElectronicDeviceFactory.getDevice(profileId));
 	}
+	/**
+	 * Returns a new ElectricityRequirement based on the given parameters.
+	 * @param start The start time of the requirement.
+	 * @param end The end time of the requirement.
+	 * @param prio A rating representing the importance of the requirement.
+	 * @param amplitude The amplitude to set the device's profile to consume.
+	 * @param iDUser The identity of the {@link UserAgent} that owns the requirement.
+	 * @param idString A string representing the {@link UUID} to be adopted by the new ElectricityRequirement.
+	 * @param d The {@link ElectronicConsumerDevice} that needs the requirement described in the associated instance of this object
+	 */
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, double amplitude, String iDUser,String idString, ElectronicConsumerDevice d)
 	{
 		device = d;
@@ -87,6 +147,10 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 			reqID = UUID.fromString(idString);
 		}
 	}
+	/**
+	 * Clones an existing ElectricityRequirement.
+	 * @param req The requirement to be cloned. 
+	 */
 	public ElectricityRequirement(ElectricityRequirement req) {
 		device = ElectronicDeviceFactory.getDevice(req.getDeviceCode(),req.device.getId(),req.device.getConsumptionEnabled());
 		startTime = DateHelper.clone(req.startTime);
@@ -98,9 +162,19 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 		reqID = UUID.fromString(req.getId());
 	}
 
+	/**
+	 * 
+	 * Returns a new ElectricityRequirement based on the given parameters.
+	 * @param start The start time of the requirement.
+	 * @param end The end time of the requirement.
+	 * @param prio A rating representing the importance of the requirement.
+	 * @param amplitude The amplitude to set the device's profile to consume.
+	 * @param iDUser The identity of the {@link UserAgent} that owns the requirement.
+	 * @param d The {@link ElectronicConsumerDevice} that needs the requirement described in the associated instance of this object
+	 */
 	public ElectricityRequirement(Date start, Date end, DecimalRating prio, Double amplitude, String iDUser,
-			ElectronicConsumerDevice ret) {
-		this(start, end, prio,  amplitude, iDUser, UUID.randomUUID().toString(), ret);
+			ElectronicConsumerDevice d) {
+		this(start, end, prio,  amplitude, iDUser, UUID.randomUUID().toString(), d);
 	}
 	public int getPriority() {
 		return priority.getValue();
@@ -112,6 +186,10 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	public Date getStartTime() {
 		return startTime;
 	}
+	/**
+	 * 
+	 * @return true if the requirement has been modified since construction.
+	 */
 	public Boolean getTampered()
 	{
 		return tampered;
@@ -119,12 +197,21 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	public Date getEndTime() {
 		return endTime;
 	}
+	/**
+	 * Sets the start time to a given {@link Date}, keeps the duration constant.
+	 * @param d The given {@link Date}.
+	 */
 	public void setStartTime(Date d)
 	{
 		startTime = new Date(d.getTime());
 		endTime = DateHelper.dPlus(d, duration/QuantumNode.quanta);
 		tampered = true;
 	}
+	/**
+	 * Sets the start time to a given {@link Date}, changes the duration to the given double.
+	 * @param d  The given {@link Date}.
+	 * @param dur The desired duration in units of {@link QuantumNode} quanta.
+	 */
 	public void setStartTime(Date d, double dur)
 	{
 		startTime = new Date(d.getTime());
@@ -136,6 +223,11 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	{
 		return profile.getMaxConsumption();
 	}
+	/**
+	 * Gets the amplitude of the demand required at a given time.
+	 * @param time The time in question.
+	 * @return The amplitude required at that time.
+	 */
 	public double getConsumption(Date time)
 	{
 		return profile.getConsumption(startTime, time); //a classic example of where dependency injection might not be a bad idea
@@ -152,6 +244,10 @@ public class ElectricityRequirement implements UniqueIdentifierIFace, Serializab
 	public void setUserID(String id) {
 	   userID = UUID.fromString(id);
 	}
+	/**
+	 * Sets the {@link ElectricityRequirement#device} to a given device. Also updates {@link ElectricityRequirement#profile} to the profile of the given device.
+	 * @param d The given device.
+	 */
 	public void setDevice(ElectronicConsumerDevice d)
 	{
 		device = d;

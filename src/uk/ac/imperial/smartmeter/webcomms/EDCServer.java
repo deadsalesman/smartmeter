@@ -19,6 +19,10 @@ import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
  */
 public class EDCServer implements EDCServerIFace{
 	private int portNum;
+	/**
+	 * Creates a new EDCServer and initialises security settings. Exports RMI facilities and listens on a given port.
+	 * @param parseInt The port RMI listens on.
+	 */
 	public EDCServer(int parseInt) {
 		portNum = parseInt;
 		handler = new EDCHandler();
@@ -45,30 +49,53 @@ public class EDCServer implements EDCServerIFace{
 	}
 
 	private EDCHandler handler;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean addDevice(ElectronicConsumerDevice ed, Integer pin) {
 		return handler.addDevice(ed, pin);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean setState(String deviceID, Boolean val) {
 		return handler.setState(deviceID, val);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean getState(String deviceID) {
 		return handler.getState(deviceID);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean removeDevice(String deviceID) {
 		return handler.removeDevice(deviceID);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean wipeEDC() {
 		return handler.wipe();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ElectronicDevice getDevice(String deviceID) {
 		return handler.getDevice(deviceID);
 	}
+	/**
+	 * Instantiates an EDCServer for standalone testing
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 
 		if (args.length != 1) {
@@ -77,6 +104,7 @@ public class EDCServer implements EDCServerIFace{
 		}
 
 		System.setProperty("java.rmi.server.hostname", DefaultTestClient.ipAddr); 
+		@SuppressWarnings("unused")
 		EDCServer client = new EDCServer(Integer.parseInt(args[0]));
 
 		System.out.println("Device Server listening on : " + args[0]);

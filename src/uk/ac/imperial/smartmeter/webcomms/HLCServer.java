@@ -24,7 +24,12 @@ import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Twople;
 import uk.ac.imperial.smartmeter.res.UserAgent;
-
+/**
+ * Class that handles High Level control of the network, registering users and allocating tickets.
+ * It responds to queries from clients and listens on a given port.
+ * @author bwindo
+ *
+ */
 public class HLCServer implements HLCServerIFace{
 	private int portNum;
 	private HLCHandler handler;
@@ -34,6 +39,10 @@ public class HLCServer implements HLCServerIFace{
 	private String id;
 	private HashMap<String, Twople<String,InetSocketAddress>> clients;
 	private InetAddress tempAddress;
+	/**
+	 * Creates a new HLCServer and initialises security settings. Exports RMI facilities and listens on a given port.
+	 * @param parseInt The port RMI listens on.
+	 */
 	public HLCServer(int parseInt) {
 		portNum = parseInt;
 		handler = new HLCHandler();
@@ -69,64 +78,100 @@ public class HLCServer implements HLCServerIFace{
 			System.out.println(e.getMessage());
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public HashMap<String, Twople<String, InetSocketAddress>> getAddresses(){
 		return clients;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple extendMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		Boolean success = handler.extendTicket(tktNew, req, tktOld, true);
 		return new TicketTuple(tktNew, tktOld, success);
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple extendImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		Boolean success = handler.extendTicket(tktNew, req, tktOld, false);
 
 		return new TicketTuple(tktNew, tktOld, success);
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple intensifyMutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		Boolean success = handler.intensifyTicket(tktNew, req, tktOld, true);
 
 		return new TicketTuple(tktNew, tktOld, success);
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TicketTuple intensifyImmutableTicket(ElectricityTicket tktNew, ElectricityTicket tktOld, ElectricityRequirement req) {
 		Boolean success = handler.intensifyTicket(tktNew, req, tktOld, false);
 		return new TicketTuple(tktNew, tktOld, success);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getRegisteredUUID(String userId) {
 		return handler.getUUID(userId);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean queryUserExists(String userId) {
 		return handler.queryUserExistence(userId);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean setGeneration(String userId, ElectricityGeneration i) {
 		return handler.setUserGeneration(userId, i);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean wipeHLC() {
 		clients = new HashMap<String, Twople<String, InetSocketAddress>>();
 		return handler.clearAll();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean setRequirement(ElectricityRequirement req) {
 		return handler.setRequirement(req);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean GodModeCalcTKTS() {
 		return handler.calculateTickets();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ArraySet<ElectricityTicket> getTickets(String user) {
 		return handler.getTickets(user);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String foreignPubKey, Double worth, Double generation,
 			Double economic, int port) {
@@ -143,10 +188,18 @@ public class HLCServer implements HLCServerIFace{
 						));
 		return new Twople<String, String>(id,pubKey);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getPublicKey() throws RemoteException {
 		return pubKey;
 	}
+	/**
+	 * Generates a {@link HLCServer} instance.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 
 		if (args.length != 1) {
@@ -155,6 +208,7 @@ public class HLCServer implements HLCServerIFace{
 		}
 
 		System.setProperty("java.rmi.server.hostname", DefaultTestClient.ipAddr); 
+		@SuppressWarnings("unused")
 		HLCServer client = new HLCServer(Integer.parseInt(args[0]));
 
 		System.out.println("High Level Server listening on " + args[0]);

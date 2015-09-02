@@ -1,7 +1,5 @@
 package uk.ac.imperial.smartmeter.tests.network;
 
-import java.util.UUID;
-
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
@@ -13,7 +11,6 @@ public class TestAppendedRequirement extends GenericTest {
 
 	@Override
 	public boolean doTest() throws Exception{
-		String t = UUID.randomUUID().toString();
 		LCServer elsie = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,9015,TicketTestHelper.user1,"");
 
 		elsie.registerUser(0.,10.,0.,8999);

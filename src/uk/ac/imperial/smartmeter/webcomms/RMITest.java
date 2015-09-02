@@ -3,6 +3,13 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
+
+/**
+ * Basic test of the RMI protocol.
+ * @deprecated
+ * @author bwindo
+ *
+ */
 public class RMITest {
 	public static void main(String[] args)
 	{
@@ -16,7 +23,9 @@ public class RMITest {
 		try {
 
 			LCServer srv = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,1098,TicketTestHelper.user1,"");
+			@SuppressWarnings("unused")
 			EDCServer client = new EDCServer(9002);
+			@SuppressWarnings("unused")
 			HLCServer hl = new HLCServer(9001);
 			
 //			boolean redt = srv.client.addDevice(true, 1, UUID.randomUUID().toString(), 5);

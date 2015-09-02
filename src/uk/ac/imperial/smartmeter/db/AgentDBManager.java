@@ -23,7 +23,6 @@ public class AgentDBManager extends IntegratedDBManager<UserAgent>{
 		super(dbLocation, primTable, primFmt);
 	}
 	private static String primTable = "AGENT_TABLE";
-	private static String joinTable = primTable +", USER_TABLE WHERE USER_TABLE.ID = " + primTable+".USERID";
 	private static String primFmt   = 
 			"CREATE TABLE     " +  primTable + "("   +
 			"ID     INT       PRIMARY KEY NOT NULL," +

@@ -2,6 +2,14 @@ package uk.ac.imperial.smartmeter.res;
 
 import java.io.Serializable;
 
+/**
+ * Class that binds a pair of two objects into a single object. 
+ * Alternative to using a map of T->P.
+ * @author bwindo
+ *
+ * @param <T>
+ * @param <P>
+ */
 public class Twople<T, P> implements Serializable {
 	/**
 	 * 
