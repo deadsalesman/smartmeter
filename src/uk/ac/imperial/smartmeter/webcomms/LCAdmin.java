@@ -10,7 +10,7 @@ import java.util.Random;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Triple;
 
 /**
  * Class that handles autonomous control of the LocalController.
@@ -177,16 +177,16 @@ public class LCAdmin implements Runnable{
 	 * @return true iff there are users in the log of users.
 	 */
 	private Boolean requestBulletin() {
-		HashMap<String, Twople<String,InetSocketAddress>> x = client.getAddresses();
+		HashMap<String, Triple<String,InetSocketAddress, Double>> x = client.getAddresses();
 		if (x!= null) {
-		for (Entry<String, Twople<String,InetSocketAddress>> e : x.entrySet())
+		for (Entry<String, Triple<String,InetSocketAddress, Double>> e : x.entrySet())
 		{
 			
 			if (e.getValue()!=null)
 			{
 				if (!e.getKey().equals(client.getId())) 
 				{
-				bulletin.add(new NamedSocket(e.getKey(),e.getValue().right,e.getValue().left));
+				bulletin.add(new NamedSocket(e.getKey(),e.getValue().central,e.getValue().left));
 			}
 			}
 		}

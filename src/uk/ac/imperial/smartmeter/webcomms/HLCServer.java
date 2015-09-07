@@ -16,12 +16,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.impl.HLCHandler;
-import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
+import uk.ac.imperial.smartmeter.institutions.GenericInstitution;
+import uk.ac.imperial.smartmeter.institutions.ServerCapitalIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Triple;
 import uk.ac.imperial.smartmeter.res.Twople;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 /**
@@ -30,14 +32,15 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
  * @author bwindo
  *
  */
-public class HLCServer implements HLCServerIFace{
+public class HLCServer implements ServerCapitalIFace{
 	private int portNum;
 	private HLCHandler handler;
 	private String pubKey;
 	private String privKey;
 	private String passWd;
 	private String id;
-	private HashMap<String, Twople<String,InetSocketAddress>> clients;
+	private HashMap<String, Triple<String,InetSocketAddress, Double>> clients;
+	private HashMap<String, GenericInstitution> institutions;
 	private InetAddress tempAddress;
 	/**
 	 * Creates a new HLCServer and initialises security settings. Exports RMI facilities and listens on a given port.
@@ -46,7 +49,7 @@ public class HLCServer implements HLCServerIFace{
 	public HLCServer(int parseInt) {
 		portNum = parseInt;
 		handler = new HLCHandler();
-		clients = new HashMap<String, Twople<String, InetSocketAddress>>();
+		clients = new HashMap<String, Triple<String,InetSocketAddress, Double>>();
 		 if (System.getSecurityManager() == null) {
 	            System.setSecurityManager(new RMISecurityManager());
 	        }
@@ -67,7 +70,7 @@ public class HLCServer implements HLCServerIFace{
 			pubKey = x.right;
 			privKey = x.left;
 			handler.setCredentials(passWd, privKey, pubKey);
-			HLCServerIFace stub = (HLCServerIFace) UnicastRemoteObject.exportObject(this, 0);
+			ServerCapitalIFace stub = (ServerCapitalIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("HLCServer", stub);
 			SignatureHelper.printPubKey(id, pubKey);
@@ -82,7 +85,7 @@ public class HLCServer implements HLCServerIFace{
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HashMap<String, Twople<String, InetSocketAddress>> getAddresses(){
+	public HashMap<String, Triple<String,InetSocketAddress, Double>> getAddresses(){
 		return clients;
 	}
 	/**
@@ -145,7 +148,7 @@ public class HLCServer implements HLCServerIFace{
 	 */
 	@Override
 	public Boolean wipeHLC() {
-		clients = new HashMap<String, Twople<String, InetSocketAddress>>();
+		clients = new HashMap<String, Triple<String,InetSocketAddress, Double>>();
 		return handler.clearAll();
 	}
 	/**
@@ -175,7 +178,7 @@ public class HLCServer implements HLCServerIFace{
 	@Override
 	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String foreignPubKey, Double worth, Double generation,
 			Double economic, int port) {
-		clients.put(userId, new Twople<String, InetSocketAddress>(pubKey,new InetSocketAddress(tempAddress,port)));
+		clients.put(userId, new Triple<String, InetSocketAddress, Double>(pubKey,new InetSocketAddress(tempAddress,port),0.));
 		handler.addUserAgent(new UserAgent(
 						salt,
 						hash,
@@ -222,5 +225,38 @@ public class HLCServer implements HLCServerIFace{
 				e.printStackTrace();
 			}
 		}
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean setCapital(String userId, Double value) throws RemoteException {
+		try {
+		clients.get(userId).right = clients.get(userId).right+value;
+		return true;
+		}
+		catch (NullPointerException e)
+		{
+			return false;
+		}
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Double getCapital(String userId) throws RemoteException {
+		return clients.get(userId).right;
+	}
+	@Override
+	public Boolean checkUser(String userID, String institutionName) throws RemoteException {
+		return institutions.get(institutionName).checkUser(userID, institutionName);
+	}
+	@Override
+	public Boolean addUser(String userID, String institutionName) throws RemoteException {
+		return institutions.get(institutionName).addUser(userID, institutionName);
+	}
+	@Override
+	public Boolean removeUser(String userID, String institutionName) throws RemoteException {
+		return institutions.get(institutionName).removeUser(userID, institutionName);
 	}
 }

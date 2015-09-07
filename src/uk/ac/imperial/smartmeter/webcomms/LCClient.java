@@ -17,6 +17,9 @@ import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
 import uk.ac.imperial.smartmeter.impl.LCHandler;
+import uk.ac.imperial.smartmeter.institutions.GlobalCapitalIFace;
+import uk.ac.imperial.smartmeter.institutions.InstitutionIFace;
+import uk.ac.imperial.smartmeter.institutions.ServerCapitalIFace;
 import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
@@ -26,6 +29,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Triple;
 import uk.ac.imperial.smartmeter.res.Twople;
 
 /**
@@ -33,7 +37,7 @@ import uk.ac.imperial.smartmeter.res.Twople;
  * @author bwindo
  *
  */
-public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace, UniqueIdentifierIFace{
+public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFace, UniqueIdentifierIFace, InstitutionIFace {
 	private String eDCHost;
 	private int eDCPort;
 	private String hLCHost;
@@ -375,13 +379,41 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace, 
 		return null;
 	}
 	/**
+	 * Looks up the registry hosted at a remote {@link HLCServer}.
+	 * @return A {@link GlobalCapitalIFace} from the remote registry, or null if this was not possible.
+	 */
+	private GlobalCapitalIFace lookupCapitalServer()
+	{
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(hLCHost,hLCPort);
+			return (GlobalCapitalIFace) registry.lookup("HLCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	/**
+	 * Looks up the registry hosted at a remote {@link HLCServer}.
+	 * @return A {@link InstitutionIFace} from the remote registry, or null if this was not possible.
+	 */
+	private InstitutionIFace lookupInstitution()
+	{
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(hLCHost,hLCPort);
+			return (InstitutionIFace) registry.lookup("HLCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	/**
 	 * Looks up the registry hosted at a remote {@link EDCServer}.
 	 * @return A {@link EDCServerIFace} from the remote registry, or null if this was not possible.
 	 */
 	private EDCServerIFace lookupEDCServer()
 	{
-		//return (EDCServerIFace)lookupServer(eDCHost,eDCPort, "EDCServer");
-
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(eDCHost,eDCPort);
@@ -405,7 +437,7 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace, 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HashMap<String, Twople<String, InetSocketAddress>> getAddresses(){
+	public HashMap<String, Triple<String,InetSocketAddress, Double>> getAddresses(){
 		try {
 			return lookupHLCServer().getAddresses();
 		} catch (RemoteException e) {
@@ -578,5 +610,40 @@ public class LCClient implements LCServerIFace, HLCServerIFace, EDCServerIFace, 
 		@SuppressWarnings("unused")
 		LCClient client = new LCClient(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), args[4],args[5]); // TODO
 
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean setCapital(String userId, Double value) throws RemoteException {
+		return lookupCapitalServer().setCapital(userId, value);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Double getCapital(String userId) throws RemoteException {
+		return lookupCapitalServer().getCapital(userId);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean checkUser(String userID, String institutionName) throws RemoteException {
+		return lookupInstitution().checkUser(userID, institutionName);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean addUser(String userID, String institutionName) throws RemoteException {
+		return lookupInstitution().addUser(userID, institutionName);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean removeUser(String userID, String institutionName) throws RemoteException {
+		return lookupInstitution().removeUser(userID, institutionName);
 	}
 }

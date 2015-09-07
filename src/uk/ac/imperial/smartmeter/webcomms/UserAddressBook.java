@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Triple;
 
 /**
  * Container class for a set of {@link UserAddress}es.
@@ -115,11 +115,11 @@ public class UserAddressBook {
 	 * @param entry A Twople representation of the new address as a userid:InetSocketAddress pair.
 	 * @return  true if the user is not already in the address book.
 	 */
-	public boolean addUser(Entry<String, Twople<String, InetSocketAddress>> entry) {
+	public boolean addUser(Entry<String, Triple<String,InetSocketAddress, Double>> entry) {
 		boolean exists = queryUserExists(entry.getKey());
 		if (!exists)
 		{
-			addresses.put(entry.getKey(),new UserAddress(entry.getKey(),entry.getValue().left,entry.getValue().right.getHostName(),entry.getValue().right.getPort()));
+			addresses.put(entry.getKey(),new UserAddress(entry.getKey(),entry.getValue().left,entry.getValue().central.getHostName(),entry.getValue().central.getPort()));
 		}
 		return exists;
 	}

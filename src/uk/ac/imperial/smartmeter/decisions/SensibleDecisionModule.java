@@ -23,6 +23,9 @@ public class SensibleDecisionModule implements DecisionModuleIFace{
 	{
 		credit = value;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean decideUtility(Double newUtility, Double oldUtility, UserAddressBook users,  String user) {
 		Double history = users.getHistory(user);

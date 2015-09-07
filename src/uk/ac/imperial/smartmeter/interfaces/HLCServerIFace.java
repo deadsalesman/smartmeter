@@ -11,6 +11,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Triple;
 import uk.ac.imperial.smartmeter.res.Twople;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
@@ -20,7 +21,7 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 	  * @return a map of userId to a Tuple of publicKey and InetSocketAddress.
 	  * @throws RemoteException
 	  */
-	HashMap<String, Twople<String, InetSocketAddress>> getAddresses() throws RemoteException;
+	HashMap<String, Triple<String, InetSocketAddress, Double>> getAddresses() throws RemoteException;
 
 	/**
 	 * Attempts to extend a ticket if the ticket duration is less than the requirement duration, changing the underlying node data.

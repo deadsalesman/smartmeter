@@ -19,6 +19,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
+import uk.ac.imperial.smartmeter.res.Triple;
 import uk.ac.imperial.smartmeter.res.Twople;
 
 /**
@@ -93,7 +94,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			SignatureHelper.printSecKey(client.getId(), privKey);
 			
 			passWd = password;
-			for (Entry<String, Twople<String, InetSocketAddress>> entry : client.getAddresses().entrySet())
+			for (Entry<String, Triple<String,InetSocketAddress, Double>> entry : client.getAddresses().entrySet())
 			{
 				addresses.addUser(entry);
 			}
