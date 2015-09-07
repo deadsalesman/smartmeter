@@ -12,6 +12,8 @@ import uk.ac.imperial.smartmeter.allocator.QuantumNode;
 import uk.ac.imperial.smartmeter.autonomous.LCStandalone;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
+import uk.ac.imperial.smartmeter.decisions.DecisionModuleFactory;
+import uk.ac.imperial.smartmeter.decisions.DecisionModuleIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -40,6 +42,8 @@ public class LCServer implements Runnable, LCServerIFace{
 	private String pubKey;
 	private String privKey;
 	private String passWd;
+	private DecisionModuleIFace decisionModule;
+	
 	public void setTicketDurationModifiable(Boolean t)
 	{
 		durationModifiable = t;
@@ -64,6 +68,7 @@ public class LCServer implements Runnable, LCServerIFace{
 		portNum = ownPort;
 		client = new LCClient(eDCHostName, eDCPortNum, hLCHostName, hLCPortNum, name, password);
 		addresses = new UserAddressBook();
+		decisionModule = DecisionModuleFactory.getDecisionModule("Sensible");
 		 if (System.getSecurityManager() == null) {
 	            System.setSecurityManager(new RMISecurityManager());
 	        }
@@ -144,26 +149,7 @@ public class LCServer implements Runnable, LCServerIFace{
 		SignatureHelper.signTicketForNewUser(oldtkt, client.getId(), passWd);
 		SignatureHelper.signTicketForNewUser(newtkt, client.getId(), passWd);
 	}
-	/**
-	 * Determines if the change in utility is acceptable given the previous history with the user who offered the ticket in the first place.
-	 * @param newUtility The utility given to the new pairing of ticket and requirement.
-	 * @param oldUtility The utility given to the old pairing of ticket and requirement.
-	 * @param user The specific user who has offered the new ticket.
-	 * @return true if the deal is sufficiently favourable.
-	 */
-	private Boolean decideUtility(Double newUtility, Double oldUtility, String user) {
-		// TODO implement different types of agent
-		Double history = 0.;
-		Double credit = 0.;
-		Double leeway = 0.2;
-		history = addresses.getHistory(user);
-		
-		if ((history <= credit) && (Math.abs(newUtility-oldUtility) <= leeway)) {
-			addresses.setHistory(user,history + (newUtility - oldUtility));
-			return true;
-		}
-		return false;
-	}
+
 	/**
 	 * Calculates the utility of a given {@link ElectricityTicket} : {@link ElectricityRequirement} pair.
 	 * @param newtkt The ticket under consideration.
@@ -305,7 +291,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			Double oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
 																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
 			Double newUtility = evaluateUtility(new ElectricityTicket(tktOffered), oldReq, new ElectricityTicket(tktDesired));
-			result = decideUtility(newUtility, oldUtility,traderId);
+			result = decisionModule.decideUtility(newUtility, oldUtility,addresses,traderId);
 			}
 			if (result)
 			{
@@ -355,5 +341,13 @@ public class LCServer implements Runnable, LCServerIFace{
 	public TicketTuple offer(String location, int port, TicketTuple tuple) throws RemoteException {
 		return offer(location, port, tuple.newTkt, tuple.oldTkt);
 	}
-
+	
+	/**
+	 * This method changes the type of decision agent used the the {@link LCServer} to make choices regarding whether or not to accept tickets.
+	 * @param moduleName A string representing the type of decision agent to use.
+	 */
+	public void setDecisionModule(String moduleName)
+	{
+		decisionModule = DecisionModuleFactory.getDecisionModule(moduleName);
+	}
 }
