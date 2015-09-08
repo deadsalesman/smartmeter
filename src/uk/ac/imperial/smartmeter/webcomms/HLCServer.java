@@ -9,6 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -18,6 +19,8 @@ import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.impl.HLCHandler;
 import uk.ac.imperial.smartmeter.institutions.GenericInstitution;
 import uk.ac.imperial.smartmeter.institutions.ServerCapitalIFace;
+import uk.ac.imperial.smartmeter.log.LogTicketTransaction;
+import uk.ac.imperial.smartmeter.log.TicketLogToCSV;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -42,6 +45,8 @@ public class HLCServer implements ServerCapitalIFace{
 	private HashMap<String, Triple<String,InetSocketAddress, Double>> clients;
 	private HashMap<String, GenericInstitution> institutions;
 	private InetAddress tempAddress;
+	private ArrayList<LogTicketTransaction> transactionLog;
+	
 	/**
 	 * Creates a new HLCServer and initialises security settings. Exports RMI facilities and listens on a given port.
 	 * @param parseInt The port RMI listens on.
@@ -149,6 +154,7 @@ public class HLCServer implements ServerCapitalIFace{
 	@Override
 	public Boolean wipeHLC() {
 		clients = new HashMap<String, Triple<String,InetSocketAddress, Double>>();
+		transactionLog = new ArrayList<LogTicketTransaction>();
 		return handler.clearAll();
 	}
 	/**
@@ -258,5 +264,13 @@ public class HLCServer implements ServerCapitalIFace{
 	@Override
 	public Boolean removeUser(String userID, String institutionName) throws RemoteException {
 		return institutions.get(institutionName).removeUser(userID, institutionName);
+	}
+	@Override
+	public Boolean registerTicketTransaction(LogTicketTransaction log) throws RemoteException {
+		return transactionLog.add(log);
+	}
+	@Override
+	public Boolean printTicketTransactions() throws RemoteException {
+		return TicketLogToCSV.writeLog(transactionLog);
 	}
 }

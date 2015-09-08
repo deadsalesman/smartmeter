@@ -56,6 +56,8 @@ public class TestManyStandaloneClients extends GenericTest {
 		d.stop();
 		e.stop();
 		f.stop();
+
+		a.server.client.printTicketTransactions();
 		
 		a.wipe();
 		return (sumTkts(l,m,o,p,q,r)==6);

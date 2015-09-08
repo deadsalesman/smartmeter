@@ -24,6 +24,8 @@ import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
+import uk.ac.imperial.smartmeter.log.LogTicketTransaction;
+import uk.ac.imperial.smartmeter.log.RegisterTransactionIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -380,6 +382,21 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	}
 	/**
 	 * Looks up the registry hosted at a remote {@link HLCServer}.
+	 * @return A {@link RegisterTransactionIFace} from the remote registry, or null if this was not possible.
+	 */
+	private RegisterTransactionIFace lookupTransactionServer()
+	{
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(hLCHost,hLCPort);
+			return (RegisterTransactionIFace) registry.lookup("HLCServer");
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	/**
+	 * Looks up the registry hosted at a remote {@link HLCServer}.
 	 * @return A {@link GlobalCapitalIFace} from the remote registry, or null if this was not possible.
 	 */
 	private GlobalCapitalIFace lookupCapitalServer()
@@ -645,5 +662,19 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	@Override
 	public Boolean removeUser(String userID, String institutionName) throws RemoteException {
 		return lookupInstitution().removeUser(userID, institutionName);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean registerTicketTransaction(LogTicketTransaction log) throws RemoteException {
+		return lookupTransactionServer().registerTicketTransaction(log);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean printTicketTransactions() throws RemoteException {
+		return lookupTransactionServer().printTicketTransactions();
 	}
 }

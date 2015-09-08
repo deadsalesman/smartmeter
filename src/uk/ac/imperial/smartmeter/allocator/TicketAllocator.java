@@ -1,5 +1,9 @@
 package uk.ac.imperial.smartmeter.allocator;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +15,8 @@ import java.util.Map.Entry;
 import uk.ac.imperial.smartmeter.comparators.requirementPrioComparator;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.impl.HLController;
+import uk.ac.imperial.smartmeter.log.LogTicketTransaction;
+import uk.ac.imperial.smartmeter.log.RegisterTransactionIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.DateHelper;
 import uk.ac.imperial.smartmeter.res.DecimalRating;
@@ -18,12 +24,13 @@ import uk.ac.imperial.smartmeter.res.EleGenConglomerate;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.UserAgent;
+import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
 /**
  * Class handles initial allocation of Electricity slots to the various users of the system
  * @author Ben Windo
  * @see HLController
  */
-public class TicketAllocator {
+public class TicketAllocator implements RegisterTransactionIFace {
 	private Map<ElectricityRequirement, ArrayList<QuantumNode>> reqMap;
 	private CalendarQueue queue;
 	private ArraySet<UserAgent> usrArray;
@@ -122,6 +129,10 @@ public class TicketAllocator {
 	{
 		ElectricityTicket tkt = new ElectricityTicket(req.getStartTime(), req.getEndTime(), req.getMaxConsumption(), req.getUserID(), req.getId());
 
+		try {
+			registerTicketTransaction(new LogTicketTransaction(userId, req.getUserID(), tkt.id.toString(), new Date()));
+		} catch (RemoteException e) {
+		}
 		SignatureHelper.signTicketForNewUser(tkt, userId, password);
 		SignatureHelper.verifyTicket(tkt);
 		return tkt;
@@ -527,6 +538,34 @@ public class TicketAllocator {
 		}
 		return successA&&successB;
 	
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean registerTicketTransaction(LogTicketTransaction log) throws RemoteException {
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(DefaultTestClient.ipAddr,DefaultTestClient.HLCPort);
+			return ((RegisterTransactionIFace) registry.lookup("HLCServer")).registerTicketTransaction(log);
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean printTicketTransactions() throws RemoteException {
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(DefaultTestClient.ipAddr,DefaultTestClient.HLCPort);
+			return ((RegisterTransactionIFace) registry.lookup("HLCServer")).printTicketTransactions();
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		};
+		return null;
 	}
 	
 }

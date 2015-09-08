@@ -16,7 +16,7 @@ import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 public class TestArbitraryClientNumber extends GenericTest {
 
 	@Override
-	public boolean doTest() {
+	public boolean doTest() throws Exception {
 		Integer nClients = 3;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -50,7 +50,7 @@ public class TestArbitraryClientNumber extends GenericTest {
 			l.stop();
 			tickets.add(l.server.client.getTickets());
 		}
-		
+
 		clients.get(0).wipe();
 		int ret = sumTkts(tickets);
 		System.out.println(ret);

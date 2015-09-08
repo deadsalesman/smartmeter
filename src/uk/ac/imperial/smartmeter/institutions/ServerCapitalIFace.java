@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.institutions;
 
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
+import uk.ac.imperial.smartmeter.log.RegisterTransactionIFace;
 import uk.ac.imperial.smartmeter.webcomms.HLCServer;
 
 /**
@@ -8,6 +9,6 @@ import uk.ac.imperial.smartmeter.webcomms.HLCServer;
  * @author bwindo
  *
  */
-public interface ServerCapitalIFace extends HLCServerIFace, GlobalCapitalIFace, InstitutionIFace{
+public interface ServerCapitalIFace extends HLCServerIFace, GlobalCapitalIFace, InstitutionIFace, RegisterTransactionIFace{
 
 }

@@ -130,5 +130,5 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 	 * @throws RemoteException
 	 */
 	String getPublicKey() throws RemoteException;
-	
+
 }

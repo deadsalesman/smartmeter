@@ -46,6 +46,7 @@ public class TestObservableFlow extends GenericTest {
 			ArraySet<ElectricityTicket> p = a.server.client.getTickets();
 			ArraySet<ElectricityTicket> q = b.server.client.getTickets();
 			temp = (p.get(0).getId().equals(mID.toString()))&&(q.get(0).getId().equals(lID.toString()));
+
 			a.wipe();
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block

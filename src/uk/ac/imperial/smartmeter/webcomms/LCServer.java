@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
@@ -15,6 +16,7 @@ import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.decisions.DecisionModuleFactory;
 import uk.ac.imperial.smartmeter.decisions.DecisionModuleIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
+import uk.ac.imperial.smartmeter.log.LogTicketTransaction;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
@@ -149,6 +151,11 @@ public class LCServer implements Runnable, LCServerIFace{
 		client.handler.forceNewTicket(oldtkt);
 		SignatureHelper.signTicketForNewUser(oldtkt, client.getId(), passWd);
 		SignatureHelper.signTicketForNewUser(newtkt, client.getId(), passWd);
+		try {
+			client.registerTicketTransaction(new LogTicketTransaction(oldtkt.ownerID.toString(), newtkt.ownerID.toString(), newtkt.getId(), new Date()));
+			client.registerTicketTransaction(new LogTicketTransaction(newtkt.ownerID.toString(), oldtkt.ownerID.toString(), oldtkt.getId(), new Date()));
+		} catch (RemoteException e) {
+		}
 	}
 
 	/**

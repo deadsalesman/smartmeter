@@ -27,9 +27,11 @@ public class LCAdmin implements Runnable{
 	private Double timeSinceLastBulletin=0.;
 	private Double timeSinceLastNegotiation=0.;
 	private Double timeSinceLastReqCheck=0.;
+	private Double timeSinceLastInstitutionCheck=0.;
 
 
 	private Double reasonableReqCheckTime;
+	private Double reasonableInstitutionCheckTime;
 	private Double reasonableBulletinTime;
 	private Double reasonableTicketTime;
 	private Double reasonableNegotiationTime;
@@ -63,6 +65,7 @@ public class LCAdmin implements Runnable{
 		reasonableBulletinTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
 		reasonableTicketTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
 		reasonableNegotiationTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
+		reasonableInstitutionCheckTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
 
 		newReqs = new ArraySet<ElectricityRequirement>();
 		currentReqs = new ArraySet<ElectricityRequirement>();
@@ -225,6 +228,8 @@ public class LCAdmin implements Runnable{
 				timeSinceLastBulletin += pollingTime;
 				timeSinceLastNegotiation += pollingTime;
 				timeSinceLastReqCheck += pollingTime;
+				timeSinceLastInstitutionCheck += pollingTime;
+				
 			if (timeSinceLastReqCheck > reasonableReqCheckTime)
 			{
 				updateRequirementClasses(client.newReqs);
@@ -236,6 +241,10 @@ public class LCAdmin implements Runnable{
 				//attempt to get tickets from the central server
 				client.getTickets();
 				timeSinceLastTickets = 0.;
+			}
+			if (timeSinceLastInstitutionCheck > reasonableInstitutionCheckTime)
+			{
+				
 			}
 			if (timeSinceLastBulletin > reasonableBulletinTime)
 			{
