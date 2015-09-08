@@ -28,7 +28,7 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 
 /**
  * A simple utility class that generates a RSA PGPPublicKey/PGPSecretKey pair.
@@ -95,9 +95,9 @@ public class KeyPairGen
      * @param pass The password that can be used to access the secret key.
      * @return A Twople<String,String> containing the secretkey on the left side, and the public key on the right.
      */
-	public static Twople<String, String> genKeySet(String userId, String pass) {
+	public static Pair<String, String> genKeySet(String userId, String pass) {
 
-		Twople<String, String> ret = new Twople<String, String>();
+		Pair<String, String> ret = new Pair<String, String>();
 		try {
 			Security.addProvider(new BouncyCastleProvider());
 
@@ -121,7 +121,7 @@ public class KeyPairGen
 	 * 
 	 * @param identities An array of Twoples containing username and passwords to be associated with public/secret key pairs.
 	 */
-    public static void genKeySet(ArrayList<Twople<String, String>> identities)
+    public static void genKeySet(ArrayList<Pair<String, String>> identities)
     {
     	try{
     		Security.addProvider(new BouncyCastleProvider());
@@ -132,7 +132,7 @@ public class KeyPairGen
             
             KeyPair                    kp = kpg.generateKeyPair();
             
-                for (Twople<String, String> t : identities)
+                for (Pair<String, String> t : identities)
                 {
                     FileOutputStream    out3 = new FileOutputStream(t.left+"_secret.bpg");
                     FileOutputStream    out4 = new FileOutputStream(t.left+"_pub.bpg");

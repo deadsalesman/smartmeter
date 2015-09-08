@@ -6,7 +6,7 @@ import java.util.UUID;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestTicketVerificationMultipleSignatories extends GenericTest {
@@ -22,16 +22,16 @@ public class TestTicketVerificationMultipleSignatories extends GenericTest {
 		String id4= "ticketverification4";
 		String pass4 = "tktpass4";
 		
-		Twople<String, String> y1 = KeyPairGen.genKeySet(id1, pass1);
+		Pair<String, String> y1 = KeyPairGen.genKeySet(id1, pass1);
 		SignatureHelper.printPubKey(id1,y1.right);
 		SignatureHelper.printSecKey(id1,y1.left);
-		Twople<String, String> y2 = KeyPairGen.genKeySet(id2, pass2);
+		Pair<String, String> y2 = KeyPairGen.genKeySet(id2, pass2);
 		SignatureHelper.printPubKey(id2,y2.right);
 		SignatureHelper.printSecKey(id2,y2.left);
-		Twople<String, String> y3 = KeyPairGen.genKeySet(id3, pass3);
+		Pair<String, String> y3 = KeyPairGen.genKeySet(id3, pass3);
 		SignatureHelper.printPubKey(id3,y3.right);
 		SignatureHelper.printSecKey(id3,y3.left);
-		Twople<String, String> y4 = KeyPairGen.genKeySet(id4, pass4);
+		Pair<String, String> y4 = KeyPairGen.genKeySet(id4, pass4);
 		SignatureHelper.printPubKey(id4,y4.right);
 		SignatureHelper.printSecKey(id4,y4.left);
 		

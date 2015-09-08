@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.crypto.PGPSigner;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestBasicSignUnsign extends GenericTest {
@@ -23,7 +23,7 @@ public class TestBasicSignUnsign extends GenericTest {
 		
 		for (byte b : testFileData.getBytes()){fOut.write(b);}
 		
-		Twople<String, String> y = KeyPairGen.genKeySet(id, pass);
+		Pair<String, String> y = KeyPairGen.genKeySet(id, pass);
 		SignatureHelper.printPubKey(id,y.right);
 		SignatureHelper.printSecKey(id,y.left);
 		PGPSigner.signFile(testFile+".xtx", id +"_secret.bpg", pass);

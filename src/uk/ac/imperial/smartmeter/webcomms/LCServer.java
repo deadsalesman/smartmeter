@@ -22,7 +22,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Triple;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 
 /**
  * Class that handles remote communication and response for the LocalController.
@@ -88,7 +88,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			LCServerIFace stub = (LCServerIFace) UnicastRemoteObject.exportObject(this, 0);
 			Registry registry = LocateRegistry.getRegistry(portNum);
 			registry.rebind("LCServer", stub);
-			Twople<String, String> x = KeyPairGen.genKeySet(client.getId(), password);
+			Pair<String, String> x = KeyPairGen.genKeySet(client.getId(), password);
 			pubKey = x.right;
 			privKey = x.left;
 
@@ -115,8 +115,8 @@ public class LCServer implements Runnable, LCServerIFace{
 	 * @param port The port the LCServer is listening on.
 	 * @return the pair consisting of the server's id and its public key.
 	 */
-	public Twople<String,String> registerUser(Double social, Double generation, Double economic, int port) {
-		Twople<String, String> ret = client.registerUser(social, generation, economic, pubKey, port);
+	public Pair<String,String> registerUser(Double social, Double generation, Double economic, int port) {
+		Pair<String, String> ret = client.registerUser(social, generation, economic, pubKey, port);
 		SignatureHelper.printPubKey(ret.left, ret.right);
 		addresses.setHLCiD(ret.left);
 		return ret;

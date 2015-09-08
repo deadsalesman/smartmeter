@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @param <T>
  * @param <P>
  */
-public class Twople<T, P> implements Serializable {
+public class Pair<T, P> implements Serializable {
 	/**
 	 * 
 	 */
@@ -18,15 +18,15 @@ public class Twople<T, P> implements Serializable {
 	public T left;
 	public P right;
 
-	public Twople(T t, P p) {
+	public Pair(T t, P p) {
 		left = t;
 		right = p;
 	}
 
-	public Twople() {
+	public Pair() {
 	}
 
-	public Boolean equals(Twople<T, P> t) {
+	public Boolean equals(Pair<T, P> t) {
 
 		return t.left.equals(left) && t.right.equals(right); //obviously broken for many types. beware.
 

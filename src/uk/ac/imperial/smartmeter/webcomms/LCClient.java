@@ -32,7 +32,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Triple;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 
 /**
  * Acts as a central controller for the individual client nodes, coordinating between the High Level controller and the Device Controller.
@@ -215,7 +215,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * Registers the current user with the remote server, treating the public key as empty Inadvisable to invoke. 
 	 * @see LCClient#registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation, Double economic, int port)
 	 */
-	public Twople<String,String> registerUser(Double worth, Double generation, Double economic,int port) {
+	public Pair<String,String> registerUser(Double worth, Double generation, Double economic,int port) {
 		return registerUser(worth, generation, economic, "", port);
 	}
 	/**
@@ -223,7 +223,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * @see LCClient#registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port)
 	 */
-	public Twople<String,String> registerUser(Double worth, Double generation, Double economic, String pubKey, int port) {
+	public Pair<String,String> registerUser(Double worth, Double generation, Double economic, String pubKey, int port) {
 		try {
 			return lookupHLCServer().registerUser(handler.getSalt(),handler.getHash(),userId, userName, pubKey, worth, generation, economic, port);
 		} catch (RemoteException e) {
@@ -521,7 +521,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
+	public Pair<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double worth, Double generation,
 			Double economic, int port) {
 		try {
 			return lookupHLCServer().registerUser(salt, hash, userId, userName, pubKey, worth, generation, economic, port);

@@ -6,7 +6,7 @@ import java.util.UUID;
 import uk.ac.imperial.smartmeter.crypto.KeyPairGen;
 import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.tests.GenericTest;
 
 public class TestTicketVerification extends GenericTest {
@@ -16,7 +16,7 @@ public class TestTicketVerification extends GenericTest {
 		String id = "ticketverification";
 		String pass = "tktpass";
 		
-		Twople<String, String> y = KeyPairGen.genKeySet(id, pass);
+		Pair<String, String> y = KeyPairGen.genKeySet(id, pass);
 		SignatureHelper.printPubKey(id,y.right);
 		SignatureHelper.printSecKey(id,y.left);
 		ElectricityTicket p = new ElectricityTicket(new Date(), new Date(), 0., UUID.randomUUID().toString(), UUID.randomUUID().toString());

@@ -12,7 +12,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Triple;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 
  public interface HLCServerIFace extends ServerIFace {
@@ -79,7 +79,7 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 	 * @return A tuple containing the HLCServer's id and publicKey.
 	 * @throws RemoteException
 	 */
-	Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double social, Double generation, Double economic, int port) throws RemoteException;
+	Pair<String,String> registerUser(String salt, String hash, String userId, String userName, String pubKey, Double social, Double generation, Double economic, int port) throws RemoteException;
 
 	/**
 	 * Adds an {@link ElectricityRequirement} to the user whose id matches that of its owner.

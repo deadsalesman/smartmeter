@@ -2,6 +2,7 @@ package uk.ac.imperial.smartmeter.log;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -16,10 +17,10 @@ public class LogTicketTransaction implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 254012216679379337L;
-	private String userDonor;
-	private String userReceiver;
-	private String ticketId;
-	private Date timeTransaction;
+	public String userDonor;
+	public String userReceiver;
+	public String ticketId;
+	public Date timeTransaction;
 	
 	/**
 	 * @return A String[] containing appropriate headers for a .csv file representing the ticket's internal data.
@@ -35,7 +36,9 @@ public class LogTicketTransaction implements Serializable {
 		ArrayList<String> headers = new ArrayList<String>();
 		for (Field f : LogTicketTransaction.class.getDeclaredFields())
 		{
-			headers.add(f.getName());
+			if (Modifier.isPublic(f.getModifiers())) {
+				headers.add(f.getName());
+			}
 		}
 		return headers.toArray(new String[headers.size()]);
 	}
@@ -47,10 +50,12 @@ public class LogTicketTransaction implements Serializable {
 		ArrayList<String> data = new ArrayList<String>();
 		for (Field f : LogTicketTransaction.class.getDeclaredFields())
 		{
+			if (Modifier.isPublic(f.getModifiers())) {
 			try {
 				data.add(f.get(this).toString());
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 			
+			}
 			}
 		}
 		

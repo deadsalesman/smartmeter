@@ -27,7 +27,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Triple;
-import uk.ac.imperial.smartmeter.res.Twople;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 /**
  * Class that handles High Level control of the network, registering users and allocating tickets.
@@ -70,7 +70,7 @@ public class HLCServer implements ServerCapitalIFace{
 			Security.addProvider(new BouncyCastleProvider());
 			passWd = "itsa me, the hlc";
 			id =  handler.getId();
-			Twople<String, String> x = KeyPairGen.genKeySet(id, passWd);
+			Pair<String, String> x = KeyPairGen.genKeySet(id, passWd);
 			System.out.println("id/pass:"+id+" "+passWd);
 			pubKey = x.right;
 			privKey = x.left;
@@ -182,7 +182,7 @@ public class HLCServer implements ServerCapitalIFace{
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Twople<String,String> registerUser(String salt, String hash, String userId, String userName, String foreignPubKey, Double worth, Double generation,
+	public Pair<String,String> registerUser(String salt, String hash, String userId, String userName, String foreignPubKey, Double worth, Double generation,
 			Double economic, int port) {
 		clients.put(userId, new Triple<String, InetSocketAddress, Double>(pubKey,new InetSocketAddress(tempAddress,port),0.));
 		handler.addUserAgent(new UserAgent(
@@ -195,7 +195,7 @@ public class HLCServer implements ServerCapitalIFace{
 						generation,
 						economic
 						));
-		return new Twople<String, String>(id,pubKey);
+		return new Pair<String, String>(id,pubKey);
 	}
 	/**
 	 * {@inheritDoc}
