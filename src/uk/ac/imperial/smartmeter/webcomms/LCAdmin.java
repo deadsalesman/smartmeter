@@ -11,6 +11,7 @@ import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.res.Triple;
 
 /**
@@ -63,9 +64,9 @@ public class LCAdmin implements Runnable{
 		ownPort = port;
 		Random rn = new Random();
 		reasonableReqCheckTime = Math.pow(10., 7.8 + rn.nextInt(50)/100);
-		reasonableBulletinTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
+		reasonableBulletinTime = Math.pow(10., 8.2 + rn.nextInt(50)/100);
 		reasonableTicketTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
-		reasonableNegotiationTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
+		reasonableNegotiationTime = Math.pow(10.,8.4 + rn.nextInt(50)/100);
 		reasonableInstitutionCheckTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
 
 		newReqs = new ArraySet<ElectricityRequirement>();
@@ -266,34 +267,40 @@ public class LCAdmin implements Runnable{
 					while (i < attempts && !successfulTrade)
 					{
 						i++;
-						InetSocketAddress addr = bulletin.getNextAddress();
-						if (addr!=null)
+						Pair<NamedSocket,Integer> subject = bulletin.getNextAddress();
+						if (subject!=null)
 						{
-						String location = addr.getHostName();
-						int port = addr.getPort();
-						client.registerClient(location, port,ownPort, pubkey);
-						ElectricityRequirement req = client.handler.findMatchingRequirement(t);
-					ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, req);
-					if (tkts != null)
-					{
-					for (ElectricityTicket e : tkts)
-					{
-						if(!successfulTrade)
-						{
-							if (LCServer.calcUtilityNoExtension(e, req) > LCServer.calcUtilityNoExtension(t, req))
+							String location = subject.left.socket.getHostName();
+							int port = subject.left.socket.getPort();
+							client.registerClient(location, port,ownPort, pubkey);
+							ElectricityRequirement req = client.handler.findMatchingRequirement(t);
+							ArraySet<ElectricityTicket> tkts = client.queryCompeting(location, port, req);
+							if (tkts != null)
 							{
-							//System.out.println(LCServer.calcUtilityNoExtension(e, req)+" : " + LCServer.calcUtilityNoExtension(t, req));
-
-								successfulTrade = client.offer(location, port, e,t).success;
-								if (successfulTrade){}//System.out.println(e.toString()+" " + t.toString());}
+								for (ElectricityTicket e : tkts)
+								{
+									if(!successfulTrade)
+									{
+										
+										if (LCServer.calcUtilityNoExtension(e, req) > LCServer.calcUtilityNoExtension(t, req))
+										{
+											successfulTrade = client.offer(location, port, e,t).success;
+											if (successfulTrade)
+											{
+												bulletin.setUtility(subject, 1);
+											}//System.out.println(e.toString()+" " + t.toString());}
+											else
+											{
+												bulletin.setUtility(subject, -1);
+											}
+										}
+									}
+								}
 							}
 						}
-						}
-					}
-					}
 					}
 				}
-				}
+			}
 			
 			}
 			else

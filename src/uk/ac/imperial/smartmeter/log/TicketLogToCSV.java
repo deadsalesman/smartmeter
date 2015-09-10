@@ -19,7 +19,7 @@ public class TicketLogToCSV {
 	 */
 	public static Boolean writeLog(ArrayList<LogTicketTransaction> logs)
 	{
-		try (CSVWriter writer = new CSVWriter(new FileWriter("/tickets/logout.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);){
+		try (CSVWriter writer = new CSVWriter(new FileWriter("./tickets/logout.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);){
 			LogTicketTransaction dummy = new LogTicketTransaction(null, null, null, null);
 			writer.writeNext(dummy.getHeaders());
 			for (LogTicketTransaction l : logs)
