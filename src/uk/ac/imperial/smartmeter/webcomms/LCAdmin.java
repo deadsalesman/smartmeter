@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
@@ -180,9 +181,9 @@ public class LCAdmin implements Runnable{
 	 * @return true iff there are users in the log of users.
 	 */
 	private Boolean requestBulletin() {
-		HashMap<String, Triple<String,InetSocketAddress, Double>> x = client.getAddresses();
+		HashMap<String, Triple<String,InetSocketAddress, LogCapital>> x = client.getAddresses();
 		if (x!= null) {
-		for (Entry<String, Triple<String,InetSocketAddress, Double>> e : x.entrySet())
+		for (Entry<String, Triple<String,InetSocketAddress, LogCapital>> e : x.entrySet())
 		{
 			
 			if (e.getValue()!=null)

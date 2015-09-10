@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import uk.ac.imperial.smartmeter.impl.HLController;
+import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
@@ -21,7 +22,7 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
 	  * @return a map of userId to a Tuple of publicKey and InetSocketAddress.
 	  * @throws RemoteException
 	  */
-	HashMap<String, Triple<String, InetSocketAddress, Double>> getAddresses() throws RemoteException;
+	HashMap<String, Triple<String, InetSocketAddress, LogCapital>> getAddresses() throws RemoteException;
 
 	/**
 	 * Attempts to extend a ticket if the ticket duration is less than the requirement duration, changing the underlying node data.

@@ -32,7 +32,11 @@ public class LogTicketTransaction implements Serializable {
 		ticketId = id;
 		timeTransaction = timestamp;
 	}
-	public static String[] getHeaders() {
+	/**
+	 * A String[] containing the headers for internal data for use in a .csv creator
+	 * @return
+	 */
+	public String[] getHeaders() {
 		ArrayList<String> headers = new ArrayList<String>();
 		for (Field f : LogTicketTransaction.class.getDeclaredFields())
 		{
@@ -44,7 +48,7 @@ public class LogTicketTransaction implements Serializable {
 	}
 	/**
 	 * 
-	 * @return A String[] containing the internal data in the form of a string array for use in {@link TicketLogToCSV}
+	 * @return A String[] containing the internal data in the form of a string array for use in a .csv creator
 	 */
 	public String[] dataToStringArray() {
 		ArrayList<String> data = new ArrayList<String>();

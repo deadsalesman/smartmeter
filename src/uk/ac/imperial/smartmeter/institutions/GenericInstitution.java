@@ -144,5 +144,12 @@ public class GenericInstitution implements InstitutionIFace, GlobalCapitalIFace 
 		};
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean printCapital() throws RemoteException {
+		return lookupHLCCapital().printCapital();
+	}
 
 }

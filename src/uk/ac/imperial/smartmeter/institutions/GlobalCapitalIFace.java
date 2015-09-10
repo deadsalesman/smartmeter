@@ -25,4 +25,12 @@ public interface GlobalCapitalIFace extends ServerIFace{
 	 * @throws RemoteException
 	 */
 	Double getCapital(String userId) throws RemoteException;
+	
+	/**
+	 * Prints the social capital to .csv files.
+	 * @return True if success
+	 * @throws RemoteException
+	 */
+	Boolean printCapital() throws RemoteException;
+	
 }

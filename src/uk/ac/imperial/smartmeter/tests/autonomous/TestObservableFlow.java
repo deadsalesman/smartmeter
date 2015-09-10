@@ -48,6 +48,7 @@ public class TestObservableFlow extends GenericTest {
 			temp = (p.get(0).getId().equals(mID.toString()))&&(q.get(0).getId().equals(lID.toString()));
 
 			a.server.client.printTicketTransactions();
+			a.server.client.printCapital();
 			
 			a.wipe();
 		} catch (RemoteException e1) {

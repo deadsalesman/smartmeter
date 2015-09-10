@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.res.Triple;
 
 /**
@@ -115,7 +116,7 @@ public class UserAddressBook {
 	 * @param entry A Twople representation of the new address as a userid:InetSocketAddress pair.
 	 * @return  true if the user is not already in the address book.
 	 */
-	public boolean addUser(Entry<String, Triple<String,InetSocketAddress, Double>> entry) {
+	public boolean addUser(Entry<String, Triple<String,InetSocketAddress, LogCapital>> entry) {
 		boolean exists = queryUserExists(entry.getKey());
 		if (!exists)
 		{

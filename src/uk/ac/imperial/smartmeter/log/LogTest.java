@@ -3,11 +3,18 @@ package uk.ac.imperial.smartmeter.log;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * @deprecated
+ * Test for csv capabilities.
+ * @author bwindo
+ *
+ */
 public class LogTest {
+	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
-		String[] x = LogTicketTransaction.getHeaders();
 		LogTicketTransaction y = new LogTicketTransaction("hi","ho","silver",new Date());
+		String[] x = y.getHeaders();
 		ArrayList<LogTicketTransaction> a = new ArrayList<LogTicketTransaction>();
 		
 		for (int i = 0; i < 1000; i++)

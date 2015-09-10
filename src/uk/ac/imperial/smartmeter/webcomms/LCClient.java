@@ -24,15 +24,16 @@ import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.HLCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
+import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.log.LogTicketTransaction;
 import uk.ac.imperial.smartmeter.log.RegisterTransactionIFace;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Triple;
-import uk.ac.imperial.smartmeter.res.Pair;
 
 /**
  * Acts as a central controller for the individual client nodes, coordinating between the High Level controller and the Device Controller.
@@ -454,7 +455,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HashMap<String, Triple<String,InetSocketAddress, Double>> getAddresses(){
+	public HashMap<String, Triple<String, InetSocketAddress, LogCapital>> getAddresses(){
 		try {
 			return lookupHLCServer().getAddresses();
 		} catch (RemoteException e) {
@@ -676,5 +677,12 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	@Override
 	public Boolean printTicketTransactions() throws RemoteException {
 		return lookupTransactionServer().printTicketTransactions();
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean printCapital() throws RemoteException {
+		return lookupCapitalServer().printCapital();
 	}
 }

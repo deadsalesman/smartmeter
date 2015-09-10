@@ -1,8 +1,14 @@
 package uk.ac.imperial.smartmeter.smx;
 
-
+/**
+ * @deprecated
+ * Test code for development.
+ * @author bwindo
+ *
+ */
 public class SMXParserTester {
-  public static void main(String[] args)
+  @SuppressWarnings("unused")
+public static void main(String[] args)
   {
 	  String get = "get  Consumator_01 P_cons=;Q_cons=;   Consumator_07 P_cons=;U_R=;     Consumator_23 P_cons=;U_R=;I_R=;";
 	  String ret = "result-get    Consumator_01 P_cons=7.42;Q_cons=1.31;     Consumator_07     P_cons=2.12;U_R=214;    Consumator_23 P_cons=0.58;U_R=226;I_R=31.5;";

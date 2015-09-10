@@ -362,7 +362,6 @@ public class TicketAllocator implements RegisterTransactionIFace {
 	 */
 	public Boolean fitIntoSpace(ElectricityTicket t, ElectricityRequirement req, int numberNeeded, double duration, ArrayList<QuantumNode> nodes)
 	{
-		double durB = req.getDuration();
 		ArrayList<QuantumNode> rNodes = queue.findIntersectingNodes(req,nodes);
 		ArrayList<QuantumNode> viableNodes = new ArrayList<QuantumNode>();
 		

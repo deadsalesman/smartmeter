@@ -16,13 +16,14 @@ import uk.ac.imperial.smartmeter.crypto.SignatureHelper;
 import uk.ac.imperial.smartmeter.decisions.DecisionModuleFactory;
 import uk.ac.imperial.smartmeter.decisions.DecisionModuleIFace;
 import uk.ac.imperial.smartmeter.interfaces.LCServerIFace;
+import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.log.LogTicketTransaction;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
+import uk.ac.imperial.smartmeter.res.Pair;
 import uk.ac.imperial.smartmeter.res.TicketTuple;
 import uk.ac.imperial.smartmeter.res.Triple;
-import uk.ac.imperial.smartmeter.res.Pair;
 
 /**
  * Class that handles remote communication and response for the LocalController.
@@ -96,7 +97,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			SignatureHelper.printSecKey(client.getId(), privKey);
 			
 			passWd = password;
-			for (Entry<String, Triple<String,InetSocketAddress, Double>> entry : client.getAddresses().entrySet())
+			for (Entry<String, Triple<String,InetSocketAddress, LogCapital>> entry : client.getAddresses().entrySet())
 			{
 				addresses.addUser(entry);
 			}
@@ -291,14 +292,16 @@ public class LCServer implements Runnable, LCServerIFace{
         {
         	modAmp = false;
         	modDur = false;
+        	Double oldUtility = 0.;
+        	Double newUtility = 0.;
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktDesired);
 			ElectricityTicket tempOld = new ElectricityTicket(tktDesired);
 			ElectricityTicket tempNew = new ElectricityTicket(tktOffered);
 			if (SignatureHelper.verifyTicket(tktOffered, addresses))
 			{
-			Double oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
-																	   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
-			Double newUtility = evaluateUtility(new ElectricityTicket(tktOffered), oldReq, new ElectricityTicket(tktDesired));
+			 oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
+				                               											   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
+			 newUtility = evaluateUtility(new ElectricityTicket(tktOffered), oldReq, new ElectricityTicket(tktDesired));
 			result = decisionModule.decideUtility(newUtility, oldUtility,addresses,traderId);
 			}
 			if (result)
@@ -314,7 +317,13 @@ public class LCServer implements Runnable, LCServerIFace{
 				}
 				tempNew = query.newTkt;
 				tempOld = query.oldTkt;
-				modifyTickets(tktDesired,tktOffered, tempOld, tempNew);
+				Double del = newUtility - oldUtility;
+				try {
+					client.setCapital(traderId, del);
+					client.setCapital(client.getId(), -del);
+					modifyTickets(tktDesired,tktOffered, tempOld, tempNew);
+				} catch (RemoteException e) {
+				}
 			}
         }
 		return new TicketTuple(tktDesired, tktOffered, result);
