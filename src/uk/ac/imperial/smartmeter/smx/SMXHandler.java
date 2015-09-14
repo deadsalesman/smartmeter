@@ -2,14 +2,21 @@ package uk.ac.imperial.smartmeter.smx;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 import uk.ac.imperial.smartmeter.res.Pair;
 
@@ -105,7 +112,37 @@ public class SMXHandler {
 		}
 		return null;
 	}
-	
+	static {
+	    HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
+	        {
+	            public boolean verify(String hostname, SSLSession session)
+	            {
+	                // ip address of the service URL(like.23.28.244.244)
+	                if (hostname.equals("23.28.244.244"))
+	                    return true;
+	                return false;
+	            }
+	        });
+	}
+	public SMXReading[] sendHTTPSRequest(String request)
+	{
+	try {
+        URL u = new URL("https://192.168.1.221/SIRIUSsgs");
+        HttpsURLConnection http = (HttpsURLConnection)u.openConnection();
+        Authenticator.setDefault( new MyAuthenticator() );
+        http.setAllowUserInteraction(true);
+        http.setRequestMethod("GET");
+        http.connect();
+
+        InputStream is = http.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        return parseSMXInput(reader.readLine()); 
+    }
+    catch (IOException ioe) {
+
+        return null;
+    }
+	}
 	/**
 	 * Parses an input string from the SMX, extracting the SMXReadings from that object.
 	 * @param input The string from the SMX.
