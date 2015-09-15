@@ -74,7 +74,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * 
 	 * @return an ArrayList containing all {@link ElectricityTicket} objects that have been marked as not having sufficient utility for the {@link ElectricityRequirement} associated to be fully satisfied.
 	 */
-	public ArrayList<ElectricityTicket> getUnhappyTickets()
+	public synchronized ArrayList<ElectricityTicket> getUnhappyTickets()
 	{
 		return handler.getUnhappyTickets();
 	}
@@ -91,7 +91,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * @param req The requirement in question.
 	 * @return An {@link ArraySet} of the tickets that conflict with the given requirement.
 	 */
-	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
+	public synchronized ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req)
 	{
 		return handler.findCompetingTickets(req);
 	}
@@ -132,7 +132,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * @return  An ArraySet of all the tickets associated with the owner of the invoking client.
 	 * @see LCClient#getTickets(String user)
 	 */
-	public ArraySet<ElectricityTicket> getTickets()
+	public synchronized ArraySet<ElectricityTicket> getTickets()
 	{
 		try {
 		ArraySet<ElectricityTicket> output = lookupHLCServer().getTickets(userId);
@@ -151,7 +151,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ArraySet<ElectricityTicket> getTickets(String user)
+	public synchronized ArraySet<ElectricityTicket> getTickets(String user)
 	{
 		try {
 			return lookupHLCServer().getTickets(user);
@@ -311,7 +311,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
+	public synchronized TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
 		TicketTuple ret = null;
 		try {
 			ret = lookupLCServer(location,port).offer(location, port, tktDesired, tktOffered);
