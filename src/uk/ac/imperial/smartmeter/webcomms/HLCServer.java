@@ -38,7 +38,7 @@ import uk.ac.imperial.smartmeter.res.UserAgent;
  * @author bwindo
  *
  */
-public class HLCServer implements ServerCapitalIFace{
+public class HLCServer implements ServerCapitalIFace, Runnable {
 	private int portNum;
 	private HLCHandler handler;
 	private String pubKey;
@@ -49,6 +49,7 @@ public class HLCServer implements ServerCapitalIFace{
 	private HashMap<String, GenericInstitution> institutions;
 	private InetAddress tempAddress;
 	private ArrayList<LogTicketTransaction> transactionLog;
+	private boolean active = true;
 	
 	/**
 	 * Creates a new HLCServer and initialises security settings. Exports RMI facilities and listens on a given port.
@@ -302,5 +303,20 @@ public class HLCServer implements ServerCapitalIFace{
 			logs.add(new Pair<String, LogCapital>(x.getKey(),x.getValue().right));
 		}
 		return CapitalLogToCSV.writeLog(logs);
+	}
+	@Override
+	public void run() {
+		try {
+			while(active )
+			{
+				Thread.sleep(1);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void stop() {
+		active = false;
 	}
 }

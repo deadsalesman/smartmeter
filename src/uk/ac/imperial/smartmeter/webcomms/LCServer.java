@@ -158,7 +158,15 @@ public class LCServer implements Runnable, LCServerIFace{
 		} catch (RemoteException e) {
 		}
 	}
-
+	public Double calculateTotalUtility()
+	{
+		Double total = 0.;
+		for (Entry<ElectricityRequirement, ElectricityTicket> x : client.handler.getReqTktMap().entrySet())
+		{
+			total += x.getKey().getPriority()*calcUtilityNoExtension(x.getValue(), x.getKey());
+		}
+		return total;
+	}
 	/**
 	 * Calculates the utility of a given {@link ElectricityTicket} : {@link ElectricityRequirement} pair.
 	 * @param newtkt The ticket under consideration.

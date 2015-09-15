@@ -17,7 +17,7 @@ public class TestArbitraryClientNumber extends GenericTest {
 
 	@Override
 	public boolean doTest() throws Exception {
-		Integer nClients = 3;
+		Integer nClients = 30;
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date dateStart = new Date();
@@ -26,8 +26,8 @@ public class TestArbitraryClientNumber extends GenericTest {
 		try{
 		for (int i = 0; i < nClients; i++)
 		{
-			LCStandalone newLC = new LCStandalone(9400+i, UUID.randomUUID().toString(),1.,200.,3.);
-			TicketTestHelper.bindRequirement(newLC.server.client,1.1, 2.3, 4,3.);
+			LCStandalone newLC = new LCStandalone(9400+i, UUID.randomUUID().toString(),1.,0.09,3.);
+			TicketTestHelper.bindRequirement(newLC.server.client,1.1, 20.3, 4,3.);
 			clients.add(newLC);
 		}
 		}catch(RemoteException e)
@@ -35,7 +35,17 @@ public class TestArbitraryClientNumber extends GenericTest {
 			
 		}
 		
-		clients.get(0).server.client.GodModeCalcTKTS();
+		Boolean calced = false;
+		int i = 0;
+		while((!calced)&&(i < clients.size()))
+		{
+			try{
+			clients.get(i).server.client.GodModeCalcTKTS();
+			calced = true;
+			}catch (Exception e){}
+			i++;
+		}
+		
 
 		
 		try {
@@ -44,14 +54,28 @@ public class TestArbitraryClientNumber extends GenericTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Double total = 0.;
 		
 		for (LCStandalone l : clients)
 		{
+			try{
 			l.stop();
 			tickets.add(l.server.client.getTickets());
+			total += l.server.calculateTotalUtility();
+			} catch (NullPointerException e){}
 		}
+		System.out.println(total);
 
-		clients.get(0).wipe();
+		calced = false;
+		i = 0;
+		while((!calced)&&(i < clients.size()))
+		{
+			try{
+			clients.get(i).wipe();
+			calced = true;
+			}catch (Exception e){}
+			i++;
+		}
 		int ret = sumTkts(tickets);
 		System.out.println(ret);
 
@@ -69,5 +93,9 @@ public class TestArbitraryClientNumber extends GenericTest {
 		}
 		return count;
 	}
-
+	public static void main(String[] args) throws Exception
+	{
+		TestArbitraryClientNumber x = new TestArbitraryClientNumber();
+		
+	}
 }

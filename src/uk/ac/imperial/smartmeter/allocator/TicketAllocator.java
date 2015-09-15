@@ -130,8 +130,12 @@ public class TicketAllocator implements RegisterTransactionIFace {
 		ElectricityTicket tkt = new ElectricityTicket(req.getStartTime(), req.getEndTime(), req.getMaxConsumption(), req.getUserID(), req.getId());
 
 		try {
-			registerTicketTransaction(new LogTicketTransaction(userId, req.getUserID(), tkt.id.toString(), new Date()));
-		} catch (RemoteException e) {
+
+			Date datum = new Date();
+			LogTicketTransaction log = new LogTicketTransaction(userId, req.getUserID(), tkt.id.toString(), datum);
+			//registerTicketTransaction(log);
+		} catch (Exception e) {
+			System.out.println(e.getMessage()+"");
 		}
 		SignatureHelper.signTicketForNewUser(tkt, userId, password);
 		SignatureHelper.verifyTicket(tkt);

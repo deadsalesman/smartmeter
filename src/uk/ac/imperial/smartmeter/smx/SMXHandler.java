@@ -103,7 +103,17 @@ public class SMXHandler {
 					PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
 					BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));)
 			{
+			request = "get\tThcrtd\tTickTime=;P_cons=;Q_cons=;I_R=;";
 			out.println(request);
+		     ArrayList<String> input = new ArrayList<String>();
+	        	String temp;
+	        	int log = 2;
+	        	int tally = 0;
+	        while ((tally < log)&&((temp=in.readLine())!=null))
+	        {
+	        	input.add(temp);
+	        	tally++;
+	        }
 			return parseSMXInput(in.readLine());
 			}
 		} catch (IOException e) {
@@ -136,6 +146,7 @@ public class SMXHandler {
 
         InputStream is = http.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+   
         return parseSMXInput(reader.readLine()); 
     }
     catch (IOException ioe) {

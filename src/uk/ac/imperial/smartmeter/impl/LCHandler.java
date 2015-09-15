@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.impl;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityGeneration;
@@ -134,4 +135,14 @@ private LController controller;
 	public boolean queryUnhappyTickets() {
 		return controller.queryUnhappyTickets();
 	}
+	
+	/**
+	 * 
+	 * @return the map of requirements to tickets.
+	 */
+	public Map<ElectricityRequirement, ElectricityTicket> getReqTktMap()
+	{
+		return controller.getReqTktMap();
+	}
+	
 }

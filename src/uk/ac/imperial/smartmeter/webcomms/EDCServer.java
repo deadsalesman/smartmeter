@@ -17,7 +17,7 @@ import uk.ac.imperial.smartmeter.interfaces.EDCServerIFace;
  * @author Ben Windo
  *
  */
-public class EDCServer implements EDCServerIFace{
+public class EDCServer implements EDCServerIFace, Runnable {
 	private int portNum;
 	/**
 	 * Creates a new EDCServer and initialises security settings. Exports RMI facilities and listens on a given port.
@@ -49,6 +49,7 @@ public class EDCServer implements EDCServerIFace{
 	}
 
 	private EDCHandler handler;
+	private boolean active;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -118,5 +119,20 @@ public class EDCServer implements EDCServerIFace{
 			}
 		}
 		
+	}
+	@Override
+	public void run() {
+		try {
+			while(active)
+			{
+				Thread.sleep(1);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void stop() {
+		active = false;
 	}
 }

@@ -38,6 +38,7 @@ public class TestPracticalIntensify extends GenericTest {
 		aClient.registerClient(locationOfB, portOfB);
 		ElectricityRequirement req = aClient.client.handler.getReqs().get(0);
 		ArraySet<ElectricityTicket> competing = aClient.client.queryCompeting(locationOfB,portOfB, req);
+		bClient.setDecisionModule("Selfish");
 		aClient.client.offer(locationOfB, portOfB, competing.get(0),aClient.client.handler.findMatchingTicket(req));
 		
 		ArraySet<ElectricityTicket> c = aClient.client.getTickets();
@@ -46,6 +47,7 @@ public class TestPracticalIntensify extends GenericTest {
 		Boolean temp1 = (c.get(0).getId().equals(aID.toString()))&&(d.get(0).getId().equals(bID.toString()));
 		
 		bClient.setTicketAmplitudeModifiable(true);
+		bClient.setDecisionModule("Social");
 		aClient.client.offer(locationOfB, portOfB, competing.get(0),aClient.client.handler.findMatchingTicket(req));
 		
 		ArraySet<ElectricityTicket> e = aClient.client.getTickets();

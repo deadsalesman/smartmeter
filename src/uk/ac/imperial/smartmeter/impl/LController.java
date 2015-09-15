@@ -2,6 +2,7 @@ package uk.ac.imperial.smartmeter.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -298,5 +299,14 @@ public class LController {
 			}
 		}
 		return unhappyTickets.size()!=0;
+	}
+	
+	/**
+	 * 
+	 * @return the map of requirements to tickets.
+	 */
+	public Map<ElectricityRequirement, ElectricityTicket> getReqTktMap()
+	{
+		return this.masterUser.getReqTktMap();
 	}
 }
