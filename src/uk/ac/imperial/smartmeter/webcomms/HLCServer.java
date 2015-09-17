@@ -75,7 +75,7 @@ public class HLCServer implements ServerCapitalIFace, Runnable {
 			passWd = "itsa me, the hlc";
 			id =  handler.getId();
 			Pair<String, String> x = KeyPairGen.genKeySet(id, passWd);
-			System.out.println("id/pass:"+id+" "+passWd);
+			//System.out.println("id/pass:"+id+" "+passWd);
 			pubKey = x.right;
 			privKey = x.left;
 			handler.setCredentials(passWd, privKey, pubKey);
@@ -84,7 +84,8 @@ public class HLCServer implements ServerCapitalIFace, Runnable {
 			registry.rebind("HLCServer", stub);
 			SignatureHelper.printPubKey(id, pubKey);
 			SignatureHelper.printSecKey(id, privKey);
-			System.out.println(pubKey);
+			transactionLog = new ArrayList<LogTicketTransaction>();
+			//System.out.println(pubKey);
 		}catch (RemoteException e)
 		{
 			System.out.println(e.getMessage());
@@ -289,7 +290,7 @@ public class HLCServer implements ServerCapitalIFace, Runnable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean printTicketTransactions() throws RemoteException {
+	public Integer printTicketTransactions() throws RemoteException {
 		return TicketLogToCSV.writeLog(transactionLog);
 	}
 	/**

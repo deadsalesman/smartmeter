@@ -168,6 +168,7 @@ public class LController {
 	public ArraySet<ElectricityTicket> findCompetingTickets(ElectricityRequirement req) {
 		ArraySet<ElectricityTicket> ret = new ArraySet<ElectricityTicket>();
 		for (ElectricityTicket t : masterUser.getReqTktMap().values()){
+			try{
 			if (t.getStart().compareTo(req.getStartTime())<0)
 			{
 				if (t.getEnd().compareTo(req.getStartTime())>=0)
@@ -182,6 +183,8 @@ public class LController {
 					ret.add(t);
 				}
 			}
+			}
+			catch(NullPointerException n){}
 		}
 		
 		return ret;
@@ -255,8 +258,14 @@ public class LController {
 	 */
 	public ElectricityRequirement findMatchingRequirement(ElectricityTicket tkt) {
 		for (Entry<ElectricityRequirement, ElectricityTicket> x : masterUser.getReqTktMap().entrySet()) {
+			try{
 			if (tkt.id.toString().equals(x.getValue().id.toString())) {
 				return x.getKey();
+			}
+			}
+			catch(NullPointerException e)
+			{
+				
 			}
 		}
 		return null;

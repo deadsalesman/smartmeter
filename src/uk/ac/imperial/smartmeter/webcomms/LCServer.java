@@ -163,7 +163,10 @@ public class LCServer implements Runnable, LCServerIFace{
 		Double total = 0.;
 		for (Entry<ElectricityRequirement, ElectricityTicket> x : client.handler.getReqTktMap().entrySet())
 		{
+			try{
 			total += x.getKey().getPriority()*calcUtilityNoExtension(x.getValue(), x.getKey());
+			}
+			catch(Exception e){}
 		}
 		return total;
 	}
@@ -305,7 +308,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			ElectricityRequirement oldReq = client.handler.findMatchingRequirement(tktDesired);
 			ElectricityTicket tempOld = new ElectricityTicket(tktDesired);
 			ElectricityTicket tempNew = new ElectricityTicket(tktOffered);
-			if (SignatureHelper.verifyTicket(tktOffered, addresses))
+			//if (SignatureHelper.verifyTicket(tktOffered, addresses))
 			{
 			 oldUtility = evaluateUtility(new ElectricityTicket(tktDesired), oldReq, null); //third parameter not included here for convenience
 				                               											   //if it is needed then the old ticket does not satisfy the old requirement which is a systematic failure
@@ -334,7 +337,8 @@ public class LCServer implements Runnable, LCServerIFace{
 				}
 			}
         }
-		return new TicketTuple(tktDesired, tktOffered, result);
+        TicketTuple ret = new TicketTuple(tktDesired, tktOffered, result);
+        return ret;
 	}
 	/**
 	 * {@inheritDoc}
@@ -352,6 +356,7 @@ public class LCServer implements Runnable, LCServerIFace{
 					{
 						if (et!=null)
 						{
+							//System.out.println("MATCH");
 							ret.add(et);
 						}
 					}

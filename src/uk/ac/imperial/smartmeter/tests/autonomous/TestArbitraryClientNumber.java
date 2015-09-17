@@ -26,7 +26,8 @@ public class TestArbitraryClientNumber extends GenericTest {
 		try{
 		for (int i = 0; i < nClients; i++)
 		{
-			LCStandalone newLC = new LCStandalone(9400+i, UUID.randomUUID().toString(),1.,0.09,3.);
+			LCStandalone newLC = new LCStandalone(9400+i, UUID.randomUUID().toString(),1.,3.,3.);
+			newLC.server.setDecisionModule("Sensible");
 			TicketTestHelper.bindRequirement(newLC.server.client,1.1, 20.3, 4,3.);
 			clients.add(newLC);
 		}

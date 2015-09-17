@@ -560,7 +560,7 @@ public class TicketAllocator implements RegisterTransactionIFace {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean printTicketTransactions() throws RemoteException {
+	public Integer printTicketTransactions() throws RemoteException {
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(DefaultTestClient.ipAddr,DefaultTestClient.HLCPort);

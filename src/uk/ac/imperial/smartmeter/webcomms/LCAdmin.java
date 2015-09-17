@@ -63,10 +63,10 @@ public class LCAdmin implements Runnable{
 		bulletin = new Bulletin();
 		ownPort = port;
 		Random rn = new Random();
-		reasonableReqCheckTime = Math.pow(10., 7.8 + rn.nextInt(50)/100);
-		reasonableBulletinTime = Math.pow(10., 8.2 + rn.nextInt(50)/100);
-		reasonableTicketTime = Math.pow(10., 8.8 + rn.nextInt(50)/100);
-		reasonableNegotiationTime = Math.pow(10.,8.4 + rn.nextInt(50)/100);
+		reasonableReqCheckTime = Math.pow(10., 6.8 + rn.nextInt(50)/100);
+		reasonableBulletinTime = Math.pow(10., 7.2 + rn.nextInt(50)/100);
+		reasonableTicketTime = Math.pow(10., 6.8 + rn.nextInt(50)/100);
+		reasonableNegotiationTime = Math.pow(10.,7.4 + rn.nextInt(50)/100);
 		reasonableInstitutionCheckTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
 
 		newReqs = new ArraySet<ElectricityRequirement>();
@@ -103,8 +103,9 @@ public class LCAdmin implements Runnable{
 	 * Places the elements of the given ArraySet into three different categories depending on whether they have occurred, are occurring, or have yet to occur.
 	 * @param reqs The set of {@link ElectricityRequirement}s.
 	 */
-	public void updateRequirementClasses(ArraySet<ElectricityRequirement> reqs)
+	public synchronized void updateRequirementClasses(ArraySet<ElectricityRequirement> reqs)
 	{
+		try{
 		for (ElectricityRequirement r : reqs)
 		{
 			switch(getRequirementCategory(r))
@@ -122,6 +123,11 @@ public class LCAdmin implements Runnable{
 				deadReqs.add(r);
 				break;
 			}
+		}
+		}
+		catch(ConcurrentModificationException e)
+		{
+			
 		}
 
 	}
@@ -217,7 +223,7 @@ public class LCAdmin implements Runnable{
 	@Override
 	public void run() {
 
-		int attempts = 3;
+		int attempts = 15;
 		
 	
 		while(active)
@@ -238,7 +244,7 @@ public class LCAdmin implements Runnable{
 				client.newReqs = new ArraySet<ElectricityRequirement>();
 				modifyRequirementClasses();
 			}
-			if (client.queryUnsatisfiedReqs()&&(timeSinceLastTickets>reasonableTicketTime))
+			if ((!client.queryUnsatisfiedReqs())&&(timeSinceLastTickets>reasonableTicketTime))
 			{
 				//attempt to get tickets from the central server
 				client.getTickets();
@@ -282,13 +288,22 @@ public class LCAdmin implements Runnable{
 									if(!successfulTrade)
 									{
 										
-										if (LCServer.calcUtilityNoExtension(e, req) > LCServer.calcUtilityNoExtension(t, req))
+										if (LCServer.calcUtilityNoExtension(e, req) >= (1*LCServer.calcUtilityNoExtension(t, req)))
 										{
+											System.out.println("Viable trade");
+											try{
 											successfulTrade = client.offer(location, port, e,t).success;
+											}
+											catch(NullPointerException ex)
+											{
+												successfulTrade = false;
+												System.out.println("rfed");
+											}
 											if (successfulTrade)
 											{
 												bulletin.setUtility(subject, 1);
-											}//System.out.println(e.toString()+" " + t.toString());}
+												System.out.println("Trade made");
+											}
 											else
 											{
 												bulletin.setUtility(subject, -1);

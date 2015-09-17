@@ -17,5 +17,5 @@ public interface RegisterTransactionIFace {
 	 * @return True if successful.
 	 * @throws RemoteException
 	 */
-	Boolean printTicketTransactions() throws RemoteException;
+	Integer printTicketTransactions() throws RemoteException;
 }

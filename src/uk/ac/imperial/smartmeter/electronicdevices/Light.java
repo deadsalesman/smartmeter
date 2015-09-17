@@ -22,7 +22,7 @@ public class Light implements ElectronicConsumerDevice{
 	
 
 	Light(){
-		demand = new LightConsumptionProfile();
+		demand = new LightConsumptionProfile(1.);
 	}
 	public Light(String id2, Boolean initialState) {
 		this();

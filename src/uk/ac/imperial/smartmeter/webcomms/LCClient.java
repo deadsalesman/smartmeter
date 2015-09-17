@@ -317,7 +317,8 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 			ret = lookupLCServer(location,port).offer(location, port, tktDesired, tktOffered);
 			tktDesired.clone(ret.newTkt);
 			tktOffered.clone(ret.oldTkt);
-		} catch (RemoteException e) {
+		} catch (RemoteException | NullPointerException n) {
+			System.out.println(n.getMessage());
 		}
 		return ret;
 	}
@@ -675,7 +676,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean printTicketTransactions() throws RemoteException {
+	public Integer printTicketTransactions() throws RemoteException {
 		return lookupTransactionServer().printTicketTransactions();
 	}
 	/**

@@ -26,4 +26,8 @@ public class DecisionModuleFactory {
 			throw new IllegalArgumentException();
 		}
 	}
+	public static Integer getNModules()
+	{
+		return 5;
+	}
 }

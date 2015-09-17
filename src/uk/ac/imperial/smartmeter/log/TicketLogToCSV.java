@@ -17,18 +17,20 @@ public class TicketLogToCSV {
 	 * @param logs An ArrayList of the {@link LogTicketTransaction}s to be written.
 	 * @return 
 	 */
-	public static Boolean writeLog(ArrayList<LogTicketTransaction> logs)
+	public static Integer writeLog(ArrayList<LogTicketTransaction> logs)
 	{
+		Integer total = -1;
 		try (CSVWriter writer = new CSVWriter(new FileWriter("./tickets/logout.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);){
 			LogTicketTransaction dummy = new LogTicketTransaction(null, null, null, null);
 			writer.writeNext(dummy.getHeaders());
+			total = 0;
 			for (LogTicketTransaction l : logs)
 			{
 				writer.writeNext(l.dataToStringArray());
+				total += 1;
 			}
-			return true;
 		} catch (IOException e) {
-			return false;
 		}
+		return total;
 	}
 }

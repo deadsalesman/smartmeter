@@ -24,9 +24,16 @@ public class LightConsumptionProfile extends ConsumptionProfile {
 	{
 		super();
 	}
-	public LightConsumptionProfile(double dur, double amplitude)
+	public LightConsumptionProfile(Double amp)
 	{
-		super(dur,amplitude);
+		super();
+		amplitude = amp;
+		name = "Light";
+	}
+	public LightConsumptionProfile(double dur, double amp)
+	{
+		super(dur,amp);
+		amplitude =amp;
 		name = "Light";
 	}
 

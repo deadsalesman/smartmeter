@@ -31,6 +31,20 @@ public class TicketTestHelper {
 	{
 		
 	}
+	public static ElectricityRequirement bindRequirement(LCClient lc, Double start, Double end, Integer prio, ElectronicConsumerDevice d)
+	{
+		ElectricityRequirement ele = new ElectricityRequirement(
+				DateHelper.os(start), 
+				DateHelper.os(end), 
+				new DecimalRating(prio), 
+				d.getMaxConsumptionRate(), 
+				lc.getId(),
+				d
+				);
+		lc.setRequirement(ele);
+		return ele;
+		
+	}
 	public static ElectricityRequirement bindRequirement(UserAgent u, Double start, Double end, Integer prio, int amplitude)
 	{
 		return bindRequirement(u,start,end,prio,new Double(amplitude));
