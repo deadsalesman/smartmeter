@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
@@ -141,7 +142,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 			handler.setTicket(t);
 		}
 		return handler.getTkts();
-		} catch(RemoteException e)
+		} catch(RemoteException | ConcurrentModificationException e)
 		{
 			
 		}

@@ -300,7 +300,7 @@ public class LController {
 	 * Queries whether there are any {@link ElectricityTicket} objects that do not have sufficient utility for the {@link ElectricityRequirement} associated to be fully satisfied.
 	 * @return true if there any requirements that are not being sufficiently satisfied.
 	 */
-	public boolean queryUnhappyTickets() {
+	public synchronized boolean queryUnhappyTickets() {
 		unhappyTickets = new ArrayList<ElectricityTicket>();
 		double threshold = 1.1;//0.95; //TODO: set a reasonable value. current is for debug, would normally be lower obviously
 		for (Entry<ElectricityRequirement, ElectricityTicket> e : masterUser.getReqTktMap().entrySet())

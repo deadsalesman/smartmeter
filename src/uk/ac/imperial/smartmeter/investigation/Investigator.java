@@ -34,21 +34,41 @@ public class Investigator {
 		eThread.start();
 	}
 		Thread.sleep(2000);
-		this.investigateRandomPriorities();
+		ArrayList<Double> results = new ArrayList<Double>();
+		
+		for (int i = 0; i < 1; i++)
+		{
+			//results.add(this.investigateRealisticSimulation());
+			results.add(this.investigateRandomPriorities());
+		Thread.sleep(6000);
+		}
+		Double total = 0.;
+		for (Double d : results)
+		{
+			System.out.println(d);
+			total += d;
+		}
+		System.out.println("Average = " + total / results.size());
 		System.exit(0);
 	}
-	private void investigateRandomPriorities() throws Exception
+	private Double investigateRealisticSimulation() throws Exception
+	{
+		ArrayList<LCStandalone> clients = InvestigationHelper.generateRealisticSimulation();
+		return processRequirements(clients);
+		
+	}
+	private Double investigateRandomPriorities() throws Exception
 	{
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		for (int i = 0; i < nAgents; i++)
 		{
 			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, 1);
-			InvestigationHelper.allocateManyLightsRandomPriorities(temp,40, 100);
+			InvestigationHelper.allocateManyLightsRandomPriorities(temp,130, 100);
 			clients.add(temp);
 		}
-		processRequirements(clients);
+		return processRequirements(clients);
 	}
-	private void investigateManyLights() throws Exception
+	private Double investigateManyLights() throws Exception
 	{
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		for (int i = 0; i < nAgents; i++)
@@ -57,10 +77,10 @@ public class Investigator {
 			InvestigationHelper.allocateManyLights(temp,20, 100);
 			clients.add(temp);
 		}
-		processRequirements(clients);
+		return processRequirements(clients);
 
 	}
-	private void processRequirements(ArrayList<LCStandalone> clients) throws Exception
+	private Double processRequirements(ArrayList<LCStandalone> clients) throws Exception
 	{
 
 		ArrayList<ArraySet<ElectricityTicket>> tickets = new ArrayList<ArraySet<ElectricityTicket>>();
@@ -92,6 +112,7 @@ public class Investigator {
 		clients.get(0).wipe();
 		int ret = sumTkts(tickets);
 		System.out.println("total tkts: " + ret);
+		return total;
 	}
 	private Integer sumTkts(ArrayList<ArraySet<ElectricityTicket>> tickets) {
 

@@ -28,10 +28,19 @@ public class SensibleDecisionModule implements DecisionModuleIFace{
 	 */
 	@Override
 	public Boolean decideUtility(Double newUtility, Double oldUtility, UserAddressBook users,  String user) {
-		Double history = users.getHistory(user);
+		Double history = 0.;
+		try {
+			users.getHistory(user);
+		} catch (NullPointerException e) {
+
+		}
 		Double utilityChange = newUtility - oldUtility;
 		if (history + utilityChange <= credit) {
-			users.setHistory(user,history + utilityChange);
+			try {
+				users.setHistory(user, history + utilityChange);
+			} catch (NullPointerException e) {
+
+			}
 			return true;
 		}
 		return false;

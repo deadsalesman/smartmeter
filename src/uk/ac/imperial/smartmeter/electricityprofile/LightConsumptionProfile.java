@@ -18,7 +18,7 @@ public class LightConsumptionProfile extends ConsumptionProfile {
 	 */
 	@Override
 	protected double shape(double time) {
-		return 1;
+		return amplitude;
 	}
 	public LightConsumptionProfile()
 	{

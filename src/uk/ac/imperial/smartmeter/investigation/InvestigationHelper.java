@@ -10,6 +10,7 @@ import uk.ac.imperial.smartmeter.autonomous.LCStandalone;
 import uk.ac.imperial.smartmeter.decisions.DecisionModuleFactory;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicConsumerDevice;
 import uk.ac.imperial.smartmeter.electronicdevices.ElectronicDeviceFactory;
+import uk.ac.imperial.smartmeter.electronicdevices.Uniform;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.tests.allocator.TicketTestHelper;
 
@@ -30,31 +31,83 @@ public class InvestigationHelper {
 		rnd.setSeed((new Date()).getTime());
 		return generateStandaloneSpecificDecisionProcess(i, rnd.nextInt(DecisionModuleFactory.getNModules()+1));
 	}
-	public static LCStandalone generateStandaloneSpecificDecisionProcess(Integer i, Integer value) throws RemoteException {
-		LCStandalone newLC = new LCStandalone(9600+i, UUID.randomUUID().toString(),1.,0.39,3.);
+	private static String modFromInt(Integer value)
+	{
 		switch(value)
 		{
 		case 1:
-			newLC.server.setDecisionModule("Sensible");
-			break;
+			return "Sensible";
 		case 2:
-			newLC.server.setDecisionModule("Social");
-			break;
+			return "Social";
 		case 3:
-			newLC.server.setDecisionModule("Selfish");
-			break;
+			return "Selfish";
 		case 4:
-			newLC.server.setDecisionModule("Stubborn");
-			break;
+			return "Stubborn";
 		case 5:
-			newLC.server.setDecisionModule("Stochastic");
-			break;
+			return "Stochastic";
 		default:
-			newLC.server.setDecisionModule("Selfish");
-			break;
+			return "Selfish";
 				
 		}
+	}
+	public static LCStandalone generateStandaloneSpecificDecisionProcess(Integer i, Integer value) throws RemoteException {
+		LCStandalone newLC = new LCStandalone(9600+i, UUID.randomUUID().toString(),1.,0.39,3.);
+		newLC.server.setDecisionModule(modFromInt(value));
 		return newLC;
+	}
+	
+	public static ArrayList<LCStandalone> generateRealisticSimulation() throws RemoteException 
+	{
+		ArrayList<LCStandalone> ret = new ArrayList<LCStandalone>();
+		Integer agentType = 3;
+		
+		for (int i = 0; i < 8; i++)
+		{
+			LCStandalone a = new LCStandalone(9700+i,UUID.randomUUID().toString(),1.,5.,3.);
+			allocateStandardRequirements(a);
+			ret.add(a);
+		}
+		
+		
+		for (LCStandalone x : ret)
+		{
+			x.server.setDecisionModule(modFromInt(agentType));
+		}
+		
+		return ret ;
+	}
+	public static void allocateStandardRequirements(LCStandalone user)
+	{
+		ElectronicConsumerDevice ed = ElectronicDeviceFactory.getDevice("LIGHT");
+		Double pct = 100.;
+		Random rnd = new Random();
+		Double stdev = 2.;
+		bindNewRequirement(user, getGaussian((double)8, stdev).intValue(), 0.05, 8000., 100.);
+		bindNewRequirement(user, getGaussian((double)3, stdev).intValue(), 3., 500., 6000.);
+		bindNewRequirement(user, getGaussian((double)7, stdev).intValue(), 1., 1000., 4000.);
+		bindNewRequirement(user, getGaussian((double)6, stdev).intValue(), 8., 500., 1000.);
+		bindNewRequirement(user, getGaussian((double)2, stdev).intValue(), 3., 1000., 1000.);
+		bindNewRequirement(user, getGaussian((double)3, stdev).intValue(), 3., 1000., 2000.);
+		bindNewRequirement(user, getGaussian((double)3, stdev).intValue(), 3., 1000., 3000.);
+		bindNewRequirement(user, getGaussian((double)5, stdev).intValue(), 1., 400., 1000.);
+		bindNewRequirement(user, getGaussian((double)9, stdev).intValue(), 1., 100., 1000.);
+		bindNewRequirement(user, getGaussian((double)3, stdev).intValue(), 1., 1000., 6000.);
+		bindNewRequirement(user, getGaussian((double)1, stdev).intValue(), 4., 600., 6000.);
+		bindNewRequirement(user, getGaussian((double)3, stdev).intValue(), 1., 1000., 4000.);
+	}
+	private static void bindNewRequirement(LCStandalone user, Integer priority, Double amplitude, Double duration, Double start)
+	{
+		Uniform ed = new Uniform(amplitude);
+		Random rnd = new Random();
+		rnd.setSeed((new Date()).getTime());
+		Integer thresh = rnd.nextInt(101);
+		Boolean bind = 100 >= thresh;
+		
+		if (bind)
+		{
+			TicketTestHelper.bindRequirement(user.server.client, start, duration+start, priority, ed);
+		}
+		
 	}
 	public static void allocateManyLights(LCStandalone lcStandalone, Integer nLights, Integer pct) {
 		Integer total = 0;

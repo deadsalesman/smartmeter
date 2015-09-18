@@ -32,6 +32,10 @@ public class Uniform implements ElectronicConsumerDevice {
 		active = initialState;
 		id = UUID.fromString(id2);
 	}
+	public Uniform(Double amplitude) {
+		this();
+		demand = new UniformConsumptionProfile(amplitude);
+	}
 	/**
 	 * {@inheritDoc}
 	 */

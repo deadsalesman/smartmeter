@@ -24,6 +24,12 @@ public class UniformConsumptionProfile extends ConsumptionProfile {
 	{
 		super();
 	}
+	public UniformConsumptionProfile(Double amp)
+	{
+		super();
+		amplitude = amp;
+		name = "Uniform";
+	}
 	public UniformConsumptionProfile(double dur, double amplitude)
 	{
 		super(dur,amplitude);

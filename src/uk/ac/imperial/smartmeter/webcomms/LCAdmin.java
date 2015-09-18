@@ -44,7 +44,6 @@ public class LCAdmin implements Runnable{
 	public LCClient client;
 	private int ownPort;
 	private Boolean active = true;
-	
 
 	private ArraySet<ElectricityRequirement> newReqs;
 	private ArraySet<ElectricityRequirement> currentReqs;
@@ -291,8 +290,8 @@ public class LCAdmin implements Runnable{
 										Double left = LCServer.calcUtilityNoExtension(e, req);
 										Double right = (1*LCServer.calcUtilityNoExtension(t, req));
 
-										System.out.println("Viable trade?: " + left + " : " + right);
-										if (left >= right)
+										//if(right!=1){System.out.println("Viable trade?: " + left + " : " + right);}
+										if (left > right)
 										{
 											System.out.println("Viable trade: " + left + " : " + right);
 											try{

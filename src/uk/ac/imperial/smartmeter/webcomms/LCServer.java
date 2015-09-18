@@ -46,7 +46,7 @@ public class LCServer implements Runnable, LCServerIFace{
 	private String pubKey;
 	private String privKey;
 	private String passWd;
-	private DecisionModuleIFace decisionModule;
+	public DecisionModuleIFace decisionModule;
 	
 	public void setTicketDurationModifiable(Boolean t)
 	{
