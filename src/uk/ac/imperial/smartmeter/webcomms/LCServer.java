@@ -205,10 +205,12 @@ public class LCServer implements Runnable, LCServerIFace{
 				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			} else {
 				// ticket is insufficient for this requirement
+				if (oldtkt!=null)
+				{
 				if (durationModifiable)
 				{
 				query = client.extendImmutableTicket(newtkt, oldtkt, r);
-				if (query.success)
+				if ((query!=null)&&(query.success))
 				{
 				newtkt.clone(query.newTkt);
 				oldtkt.clone(query.oldTkt);
@@ -216,18 +218,22 @@ public class LCServer implements Runnable, LCServerIFace{
 				utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 				}
 				}
+				}
 			}
 		} else {
 			if (amplitudeModifiable)
 			{
+				if (oldtkt!=null)
+				{
 			query = client.intensifyImmutableTicket(newtkt, oldtkt, r);
-			if (query.success)
+			if ((query!=null)&&(query.success))
 			{
 			newtkt.clone(query.newTkt);
 			oldtkt.clone(query.oldTkt);
 			modAmp = true;
 			utility += LCClient.evalTimeGap(newtkt.getStart(), newtkt.getEnd(), r.getStartTime(), r.getEndTime());
 			}
+				}
 			}
 		}
 
@@ -338,6 +344,7 @@ public class LCServer implements Runnable, LCServerIFace{
 			}
         }
         TicketTuple ret = new TicketTuple(tktDesired, tktOffered, result);
+        if(ret==null){System.out.println("goofed");}
         return ret;
 	}
 	/**

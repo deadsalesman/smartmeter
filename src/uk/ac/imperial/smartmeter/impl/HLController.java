@@ -295,6 +295,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	 * @return the matching {@link ElectricityRequirement} if it exists, else null.
 	 */
 	public ElectricityRequirement findMatchingRequirement(ElectricityTicket tkt) {
+		try{
 		for (UserAgent u:agents)
 		{
 		for (Entry<ElectricityRequirement, ElectricityTicket> x : u.getReqTktMap().entrySet()) {
@@ -302,6 +303,11 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 				return x.getKey();
 			}
 		}
+		}
+		}
+		catch (NullPointerException e)
+		{
+			
 		}
 		return null;
 	}

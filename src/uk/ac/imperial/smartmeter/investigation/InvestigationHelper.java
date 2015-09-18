@@ -99,6 +99,7 @@ public class InvestigationHelper {
 		while((!calced)&&(i < clients.size()))
 		{
 			try{
+			System.out.println(clients.get(i).hashCode());
 			clients.get(i).server.client.GodModeCalcTKTS();
 			calced = true;
 			}catch (Exception e){}
@@ -112,7 +113,7 @@ public class InvestigationHelper {
 		for (int i = 0; i < nLights; i++)
 		{
 			ElectronicConsumerDevice ed = ElectronicDeviceFactory.getDevice("LIGHT");
-			total += stochasticBindRequirementRandomPriorities(temp, i*(duration+1), duration, 3, ed, pct, 2.) ? 1:0 ;
+			total += stochasticBindRequirementRandomPriorities(temp, i*(duration+1), i*(duration+1)+duration, 3, ed, pct, 3.) ? 1:0 ;
 		}
 	}
 	private static boolean stochasticBindRequirementRandomPriorities(LCStandalone lc, Double start, Double duration, Integer priority, ElectronicConsumerDevice ed, Integer percentage, Double stdev) {

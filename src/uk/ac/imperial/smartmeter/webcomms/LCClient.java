@@ -314,11 +314,14 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	public synchronized TicketTuple offer(String location, int port, ElectricityTicket tktDesired, ElectricityTicket tktOffered) {
 		TicketTuple ret = null;
 		try {
-			ret = lookupLCServer(location,port).offer(location, port, tktDesired, tktOffered);
+			LCServerIFace registry = lookupLCServer(location,port);
+		//	if (registry==null){System.out.println("ffailure");}else{System.out.println("win");}
+			ret = registry.offer(location, port, tktDesired, tktOffered);
+		//	if (ret==null){System.out.println("capsize");}else{System.out.println("afloat");}
 			tktDesired.clone(ret.newTkt);
 			tktOffered.clone(ret.oldTkt);
 		} catch (RemoteException | NullPointerException n) {
-			System.out.println(n.getMessage());
+//			System.out.println("hiho " + n.getMessage());
 		}
 		return ret;
 	}
@@ -473,7 +476,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 			ret = lookupHLCServer().extendImmutableTicket(tktNew, tktOld, req);
 			tktNew.clone(ret.newTkt);
 			tktOld.clone(ret.oldTkt);
-		} catch (RemoteException e) {
+		} catch (RemoteException | NullPointerException e) {
 		}
 		return ret;
 	}

@@ -268,6 +268,7 @@ public class LCAdmin implements Runnable{
 				//attempt to exchange tickets with other clients
 				for (ElectricityTicket t : client.getUnhappyTickets())
 				{
+					//System.out.println(t.getStart());
 					int i = 0;
 					Boolean successfulTrade = false;
 					while (i < attempts && !successfulTrade)
@@ -287,10 +288,13 @@ public class LCAdmin implements Runnable{
 								{
 									if(!successfulTrade)
 									{
-										
-										if (LCServer.calcUtilityNoExtension(e, req) >= (1*LCServer.calcUtilityNoExtension(t, req)))
+										Double left = LCServer.calcUtilityNoExtension(e, req);
+										Double right = (1*LCServer.calcUtilityNoExtension(t, req));
+
+										System.out.println("Viable trade?: " + left + " : " + right);
+										if (left >= right)
 										{
-											System.out.println("Viable trade");
+											System.out.println("Viable trade: " + left + " : " + right);
 											try{
 											successfulTrade = client.offer(location, port, e,t).success;
 											}

@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.impl;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -274,21 +275,25 @@ public class LController {
 	 * Queries to see if it has any {@link ElectricityRequirement}s which do not have an associated {@link ElectricityTicket} capable of satisfying their requirements.
 	 * @return true iff there are no unsatisfied requirements
 	 */
-	public Boolean queryUnsatisfiedReqs() {
+	public synchronized Boolean queryUnsatisfiedReqs() {
 		Boolean ret = true;
-		
+		try{
 		for (ElectricityTicket e : masterUser.getReqTktMap().values())
 		{
 			ret &= (e!=null);
 		}
-		
+		}
+		catch(ConcurrentModificationException e)
+		{
+			ret = false;
+		}
 		return ret;
 	}
 	/**
 	 * 
 	 * @return an ArrayList containing all {@link ElectricityTicket} objects that have been marked as not having sufficient utility for the {@link ElectricityRequirement} associated to be fully satisfied.
 	 */
-	public ArrayList<ElectricityTicket> getUnhappyTickets() {
+	public synchronized ArrayList<ElectricityTicket> getUnhappyTickets() {
 		return unhappyTickets;
 	}
 	/**
@@ -297,7 +302,7 @@ public class LController {
 	 */
 	public boolean queryUnhappyTickets() {
 		unhappyTickets = new ArrayList<ElectricityTicket>();
-		double threshold = 1.1; //TODO: set a reasonable value. current is for debug, would normally be lower obviously
+		double threshold = 1.1;//0.95; //TODO: set a reasonable value. current is for debug, would normally be lower obviously
 		for (Entry<ElectricityRequirement, ElectricityTicket> e : masterUser.getReqTktMap().entrySet())
 		{
 			if (e.getValue()!=null){

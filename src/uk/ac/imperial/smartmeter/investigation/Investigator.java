@@ -42,8 +42,8 @@ public class Investigator {
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		for (int i = 0; i < nAgents; i++)
 		{
-			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, 2);
-			InvestigationHelper.allocateManyLightsRandomPriorities(temp,20, 100);
+			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, 1);
+			InvestigationHelper.allocateManyLightsRandomPriorities(temp,40, 100);
 			clients.add(temp);
 		}
 		processRequirements(clients);
@@ -68,11 +68,11 @@ public class Investigator {
 		System.out.println("Allocating tickets.");
 		InvestigationHelper.allocateTickets(clients);
 		System.out.println("Sleeping.");
-		try {
-			Thread.sleep((5+nAgents)*800);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		Integer count = 0;
+		for (int i = 0; i < (5+nAgents)*800; i++)
+		{
+			count++;
 		}
 		Double total = 0.;
 		System.out.println("Stopping clients.");
@@ -98,7 +98,13 @@ public class Investigator {
 		Integer count = 0;
 		for (ArraySet<ElectricityTicket> a : tickets)
 		{
-			count += a.getSize();
+			for (ElectricityTicket t : a)
+			{
+				if (t!=null)
+				{
+					count++;
+				}
+			}
 		}
 		return count;
 	}

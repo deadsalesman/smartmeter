@@ -58,7 +58,7 @@ public abstract class ConsumptionProfile implements Serializable{
 		}
 		else
 		{
-			return 0;
+			return (duration>=0)? 0 : amplitude;
 		}
 	}
 	public String getName() {
