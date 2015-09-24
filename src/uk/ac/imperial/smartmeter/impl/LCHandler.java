@@ -144,5 +144,8 @@ private LController controller;
 	{
 		return controller.getReqTktMap();
 	}
+	public Double getUserWeight() {
+		return controller.getUserWeight();
+	}
 	
 }

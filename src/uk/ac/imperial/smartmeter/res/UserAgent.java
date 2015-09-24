@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import uk.ac.imperial.smartmeter.allocator.TicketAllocator;
 import uk.ac.imperial.smartmeter.interfaces.UniqueIdentifierIFace;
 
 /** 
@@ -16,6 +17,10 @@ public class UserAgent implements UniqueIdentifierIFace {
 	private ElectricityGeneration generatedPower;
 	private Double economicPower;
 	private Double averageAllocation;
+	/**
+	 * Magnitude of the resource allocated to this Agent by the {@link TicketAllocator}
+	 */
+	public Double weight=0.;
 	/**
 	 * A map to indicate which {@link ElectricityRequirement} objects correspond to which {@link ElectricityTicket} objects.
 	 */
@@ -220,6 +225,9 @@ public class UserAgent implements UniqueIdentifierIFace {
 	}
 	public Double getSocialWorth() {
 		return socialWorth;
+	}
+	public Double getUserWeight() {
+		return weight;
 	}
 	public void setSocialWorth(Double socialWorth) {
 		this.socialWorth = socialWorth;

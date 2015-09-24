@@ -18,7 +18,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
  */
 public class CalendarQueue {
  private ArrayList<DayNode> calendar;
- public static final int  daysInCalendar = 5;//20; 
+ public static final int  daysInCalendar = 20; 
  private EleGenConglomerate conglom;
  private Date startTime;
  public int getCalendarSize()

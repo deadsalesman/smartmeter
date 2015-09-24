@@ -51,7 +51,12 @@ public class InvestigationHelper {
 		}
 	}
 	public static LCStandalone generateStandaloneSpecificDecisionProcess(Integer i, Integer value) throws RemoteException {
-		LCStandalone newLC = new LCStandalone(9600+i, UUID.randomUUID().toString(),1.,0.39,3.);
+		Double stdev = 1.;
+		Random rnd = new Random();
+		Double social = rnd.nextGaussian()*stdev+1.;
+		Double gen = rnd.nextGaussian()*stdev/2+0.29;
+		Double prod = rnd.nextGaussian()*stdev+3.;
+		LCStandalone newLC = new LCStandalone(9600+i, UUID.randomUUID().toString(),social,gen,prod);
 		newLC.server.setDecisionModule(modFromInt(value));
 		return newLC;
 	}

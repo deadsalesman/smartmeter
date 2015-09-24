@@ -7,6 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import uk.ac.imperial.smartmeter.allocator.QuantumNode;
@@ -160,8 +161,12 @@ public class LCServer implements Runnable, LCServerIFace{
 	}
 	public Double calculateTotalUtility()
 	{
+		return LCServer.calculateTotalUtility(this.client.handler.getReqTktMap());
+	}
+	public static Double calculateTotalUtility(Map<ElectricityRequirement, ElectricityTicket> reqmap)
+	{
 		Double total = 0.;
-		for (Entry<ElectricityRequirement, ElectricityTicket> x : client.handler.getReqTktMap().entrySet())
+		for (Entry<ElectricityRequirement, ElectricityTicket> x : reqmap.entrySet())
 		{
 			try{
 			total += x.getKey().getPriority()*calcUtilityNoExtension(x.getValue(), x.getKey());

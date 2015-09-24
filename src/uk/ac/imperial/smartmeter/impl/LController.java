@@ -323,4 +323,7 @@ public class LController {
 	{
 		return this.masterUser.getReqTktMap();
 	}
+	public Double getUserWeight() {
+		return this.masterUser.getUserWeight();
+	}
 }

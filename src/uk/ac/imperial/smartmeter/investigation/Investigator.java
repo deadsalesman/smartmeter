@@ -7,6 +7,7 @@ import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.webcomms.EDCServer;
 import uk.ac.imperial.smartmeter.webcomms.HLCServer;
+import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
 
 public class Investigator {
 	public Integer nAgents = 15;
@@ -63,7 +64,7 @@ public class Investigator {
 		for (int i = 0; i < nAgents; i++)
 		{
 			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, 1);
-			InvestigationHelper.allocateManyLightsRandomPriorities(temp,130, 100);
+			InvestigationHelper.allocateManyLightsRandomPriorities(temp,10, 100);
 			clients.add(temp);
 		}
 		return processRequirements(clients);
@@ -90,7 +91,8 @@ public class Investigator {
 		System.out.println("Sleeping.");
 		
 		Integer count = 0;
-		for (int i = 0; i < (5+nAgents)*800; i++)
+		Thread.sleep(LCAdmin.sleepOnStart*3);
+		for (int i = 0; i < (5+nAgents)*3000; i++)
 		{
 			count++;
 		}
@@ -102,8 +104,11 @@ public class Investigator {
 			l.stop();
 			reqs += l.server.client.handler.getReqs().getSize();
 			tickets.add(l.server.client.getTickets());
-			total += l.server.calculateTotalUtility();
-			} catch (NullPointerException e){}
+			Double weight = l.server.client.getUserWeight();
+			Double utility = l.server.calculateTotalUtility();
+			total += utility;
+			//System.out.println("Weight: " + weight + " Utility: " + utility + " Ratio: " + weight/utility);
+			} catch (NullPointerException e){ System.out.println(e.getStackTrace().toString());}
 		}
 		System.out.println("total utility: " + total);
 		System.out.println("total requirements: " + reqs);

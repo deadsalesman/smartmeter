@@ -60,9 +60,11 @@ public class LCStandalone {
 	 * @param generation The generated electricity amplitude of the server.
 	 * @param economic The economic worth of the server. 
 	 * @throws RemoteException
+	 * @throws InterruptedException 
 	 */
 	public void initialise(int port, String name, Double worth, Double generation, Double economic) throws RemoteException
 	{
+		
 		server = new LCServer(DefaultTestClient.ipAddr, DefaultTestClient.EDCPort, DefaultTestClient.ipAddr,DefaultTestClient.HLCPort,port,name,"");
 		admin = new LCAdmin(server.client,port,server.getPubKey());
 		server.registerUser(worth, generation, economic, port);

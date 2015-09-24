@@ -31,7 +31,7 @@ public class LCAdmin implements Runnable{
 	private Double timeSinceLastReqCheck=0.;
 	private Double timeSinceLastInstitutionCheck=0.;
 
-
+	public static long sleepOnStart = 60000;
 	private Double reasonableReqCheckTime;
 	private Double reasonableInstitutionCheckTime;
 	private Double reasonableBulletinTime;
@@ -57,6 +57,7 @@ public class LCAdmin implements Runnable{
 	 */
 	public LCAdmin(LCClient lc, int port, String pubKey)
 	{
+	
 		pubkey = pubKey;
 		client = lc;
 		bulletin = new Bulletin();
@@ -214,6 +215,12 @@ public class LCAdmin implements Runnable{
 	      {
 	         t = new Thread (this, (client.handler.getId()+"admin"));
 	         t.start ();
+	         try {
+				t.wait(sleepOnStart);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	      }
 	}
 	/**
@@ -289,7 +296,6 @@ public class LCAdmin implements Runnable{
 									{
 										Double left = LCServer.calcUtilityNoExtension(e, req);
 										Double right = (1*LCServer.calcUtilityNoExtension(t, req));
-
 										//if(right!=1){System.out.println("Viable trade?: " + left + " : " + right);}
 										if (left > right)
 										{

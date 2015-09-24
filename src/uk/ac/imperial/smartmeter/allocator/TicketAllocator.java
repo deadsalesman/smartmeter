@@ -25,6 +25,7 @@ import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.ElectricityTicket;
 import uk.ac.imperial.smartmeter.res.UserAgent;
 import uk.ac.imperial.smartmeter.webcomms.DefaultTestClient;
+import uk.ac.imperial.smartmeter.webcomms.LCServer;
 /**
  * Class handles initial allocation of Electricity slots to the various users of the system
  * @author Ben Windo
@@ -282,12 +283,14 @@ public class TicketAllocator implements RegisterTransactionIFace {
 		ElectricityRequirement subject = reqs.get(offset);
 		Double ret = subject.getMaxConsumption()*subject.getDuration()*subject.getPriority();
 		Double tally = 0.;
+		//The higher the bluntness, the more equitable the distribution of resources
+		Double bluntness = 2.;
 		for (int i = offset; i < reqs.getSize(); i++)
 		{
 			tally += reqs.get(i).getMaxConsumption()*reqs.get(i).getDuration()*reqs.get(i).getPriority();
 		}
 		//System.out.println(tally + " " + ret + " " + reqs.getSize() + " " + offset);
-		return ret/tally;
+		return (bluntness*ret)/(tally);
 	}
 	/**
 	 * Attempts to calculate tickets for the currently entered user agents
@@ -301,7 +304,10 @@ public class TicketAllocator implements RegisterTransactionIFace {
 		userFinished = new HashMap<UserAgent, Boolean>();
 		
 		Boolean finished = false;
-		
+		for (Entry<UserAgent, Double> x : rankings.entrySet())
+		{
+			x.getKey().weight = x.getValue();
+		}
 		for (UserAgent u : usrArray)
 		{
 			//Sort the users by ranks
@@ -352,6 +358,12 @@ public class TicketAllocator implements RegisterTransactionIFace {
 				/*we are finished if there are no requirements left to be addressed*/
 				finished &= b;
 			}
+		}
+		for (Entry<UserAgent, Double> x : rankings.entrySet())
+		{
+			Double weight = x.getKey().weight;
+			Double utility = LCServer.calculateTotalUtility(x.getKey().getReqTktMap());
+			System.out.println("Weight: " + weight + " Utility: " + utility + " Ratio: " + utility/weight);
 		}
 		return usrArray;
 	}

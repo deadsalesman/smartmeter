@@ -6,11 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import uk.ac.imperial.smartmeter.comparators.demandComparator;
-import uk.ac.imperial.smartmeter.comparators.equalityComparator;
-import uk.ac.imperial.smartmeter.comparators.needsComparator;
-import uk.ac.imperial.smartmeter.comparators.productivityComparator;
-import uk.ac.imperial.smartmeter.comparators.socialComparator;
 import uk.ac.imperial.smartmeter.res.ArraySet;
 import uk.ac.imperial.smartmeter.res.ElectricityRequirement;
 import uk.ac.imperial.smartmeter.res.UserAgent;
@@ -30,7 +25,7 @@ public class RescherArbiter {
 	 */
 	public RescherArbiter()
 	{
-		this(1.,1.,1.,1.,1.);
+		this(1.,1.,0.1,1.,1.);
 	}
 	/**
 	 * Initialises the RescherArbiter with the specified weightings for each of
@@ -145,6 +140,8 @@ public class RescherArbiter {
 	 */
 	public Map<UserAgent, Double> getWeighting(ArraySet<UserAgent> users)
 	{
+		Map<UserAgent, Double> ret = new HashMap<UserAgent, Double>();
+		/*
 		ArrayList<ArrayList<Integer>> ranks = new ArrayList<ArrayList<Integer>>();
 		
 		ranks.add(evaluateCanon(users, new demandComparator()));
@@ -161,10 +158,29 @@ public class RescherArbiter {
 				total.set(i, 1 + a.get(i) + weightings.get(ranks.indexOf(a))*total.get(i));
 			}
 		}
-		Map<UserAgent, Double> ret = new HashMap<UserAgent, Double>();
+		*/
+		for (UserAgent x : users)
+		{
+			Double tally = 0.;
+			tally+= x.getMaxPower()*demandModifier;
+			tally+= x.getAverageAllocation()*equalityModifier;
+			for (ElectricityRequirement e : x.getReqs())
+			{
+				tally+= e.getMaxConsumption()*needsModifier;
+			}
+			tally+= x.getEconomicPower()*productivityModifier;
+			tally+= x.getSocialWorth()*socialModifier;
+
+			ret.put(x, tally);
+			x.weight = tally;
+		}
+		/*
 		for (int i = 0; i < users.getSize(); i++) {
 			ret.put(users.get(i), total.get(i));
+			users.get(i).weight = total.get(i);
 		}
+		*/
 		return ret;
+		
 	}
 }

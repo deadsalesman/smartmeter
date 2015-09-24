@@ -349,7 +349,7 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 		double dsize = Math.abs(dur1-dur2)/2;
 		double uncappedUtility = (hrsOffset + dst + dsize) / hrsOffset;
 		double cappedUtility = uncappedUtility > 1. ? 1 : uncappedUtility;
-		return cappedUtility;
+		return cappedUtility < 0 ? 0 : cappedUtility;
 		
 	}
 
@@ -689,5 +689,8 @@ public class LCClient implements LCServerIFace, ServerCapitalIFace, EDCServerIFa
 	@Override
 	public Boolean printCapital() throws RemoteException {
 		return lookupCapitalServer().printCapital();
+	}
+	public Double getUserWeight() {
+		return handler.getUserWeight();
 	}
 }

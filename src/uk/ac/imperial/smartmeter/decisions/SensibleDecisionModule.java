@@ -16,7 +16,7 @@ public class SensibleDecisionModule implements DecisionModuleIFace{
 	
 	SensibleDecisionModule()
 	{
-		credit = 0.5;
+		credit = 1.3;
 	}
 	
 	SensibleDecisionModule(Double value)
