@@ -1,6 +1,7 @@
 package uk.ac.imperial.smartmeter.investigation;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import uk.ac.imperial.smartmeter.autonomous.LCStandalone;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -11,8 +12,8 @@ import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
 
 public class Investigator {
 	public Integer nAgents = 15;
-	public Integer nReqs = 100;
-	public Integer nTrials = 5;
+	public Integer nReqs = 200;
+	public Integer nTrials = 100;
 	public Integer agentType = 1;
 	public Boolean selfHost = true;
 	Investigator()
@@ -52,7 +53,23 @@ public class Investigator {
 			System.out.println(d);
 			total += d;
 		}
-		System.out.println("Average = " + total / results.size());
+	ArrayList<Double> results2 = new ArrayList<Double>();
+		agentType = 3;
+		for (int i = 0; i < nTrials; i++)
+		{
+			//results.add(this.investigateRealisticSimulation());
+			results.add(this.investigateRandomPriorities());
+		Thread.sleep(60000);
+		}
+		Double total2 = 0.;
+		for (Double d : results2)
+		{
+			System.out.println(d);
+			total += d;
+		}
+		System.out.println("Average = " + total / results2.size() + " for agent type 3");
+		System.out.println("Average = " + total / results.size() + "for agent type 1");
+		
 		System.exit(0);
 	}
 	private Double investigateRealisticSimulation() throws Exception
@@ -80,6 +97,7 @@ public class Investigator {
 			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, 4);
 			InvestigationHelper.allocateManyLights(temp,20, 100);
 			clients.add(temp);
+			System.out.println("Complete: " + i +" out of " + nAgents +" at  " +new Date());
 		}
 		return processRequirements(clients);
 
@@ -89,9 +107,9 @@ public class Investigator {
 
 		ArrayList<ArraySet<ElectricityTicket>> tickets = new ArrayList<ArraySet<ElectricityTicket>>();
 		Integer reqs = 0;
-		System.out.println("Allocating tickets.");
+		System.out.println("Allocating tickets. "  + new Date());
 		InvestigationHelper.allocateTickets(clients);
-		System.out.println("Sleeping.");
+		System.out.println("Sleeping. "  + new Date());
 		
 		Integer count = 0;
 		Thread.sleep(LCAdmin.sleepOnStart*3);
@@ -100,7 +118,8 @@ public class Investigator {
 			count++;
 		}
 		Double total = 0.;
-		System.out.println("Stopping clients.");
+		Double sqTotal = 0.;
+		System.out.println("Stopping clients. "  + new Date());
 		for (LCStandalone l : clients)
 		{
 			try{
@@ -110,10 +129,12 @@ public class Investigator {
 			Double weight = l.server.client.getUserWeight();
 			Double utility = l.server.calculateTotalUtility();
 			total += utility;
+			sqTotal += utility*utility;
 			//System.out.println("Weight: " + weight + " Utility: " + utility + " Ratio: " + weight/utility);
 			} catch (NullPointerException e){ System.out.println(e.getStackTrace().toString());}
 		}
 		System.out.println("total utility: " + total);
+		System.out.println("total stdev: " + (sqTotal-total*total)/clients.size()); //no bessel's correction because why not.
 		System.out.println("total requirements: " + reqs);
 
 		System.out.println("total trades: " +clients.get(0).server.client.printTicketTransactions());
