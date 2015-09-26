@@ -54,7 +54,7 @@ public class InvestigationHelper {
 		Double stdev = 1.;
 		Random rnd = new Random();
 		Double social = rnd.nextGaussian()*stdev+1.;
-		Double gen = rnd.nextGaussian()*stdev/2+0.29;
+		Double gen = rnd.nextGaussian()*stdev/2+0.39;
 		Double prod = rnd.nextGaussian()*stdev+3.;
 		LCStandalone newLC = new LCStandalone(9600+i, UUID.randomUUID().toString(),social,gen,prod);
 		newLC.server.setDecisionModule(modFromInt(value));

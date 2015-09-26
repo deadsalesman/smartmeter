@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import uk.ac.imperial.smartmeter.log.LogCapital;
 import uk.ac.imperial.smartmeter.res.ArraySet;
@@ -31,7 +33,7 @@ public class LCAdmin implements Runnable{
 	private Double timeSinceLastReqCheck=0.;
 	private Double timeSinceLastInstitutionCheck=0.;
 
-	public static long sleepOnStart = 60000;
+	public static long sleepOnStart = 20000;
 	private Double reasonableReqCheckTime;
 	private Double reasonableInstitutionCheckTime;
 	private Double reasonableBulletinTime;
@@ -63,11 +65,11 @@ public class LCAdmin implements Runnable{
 		bulletin = new Bulletin();
 		ownPort = port;
 		Random rn = new Random();
-		reasonableReqCheckTime = Math.pow(10., 6.8 + rn.nextInt(50)/100);
-		reasonableBulletinTime = Math.pow(10., 7.2 + rn.nextInt(50)/100);
-		reasonableTicketTime = Math.pow(10., 6.8 + rn.nextInt(50)/100);
-		reasonableNegotiationTime = Math.pow(10.,7.4 + rn.nextInt(50)/100);
-		reasonableInstitutionCheckTime = Math.pow(10.,8.9 + rn.nextInt(50)/100);
+		reasonableReqCheckTime = Math.pow(10., 7.8 + rn.nextInt(50)/100);
+		reasonableBulletinTime = Math.pow(10., 8.2 + rn.nextInt(50)/100);
+		reasonableTicketTime = Math.pow(10., 7.8 + rn.nextInt(50)/100);
+		reasonableNegotiationTime = Math.pow(10.,8.4 + rn.nextInt(50)/100);
+		reasonableInstitutionCheckTime = Math.pow(10.,9.9 + rn.nextInt(50)/100);
 
 		newReqs = new ArraySet<ElectricityRequirement>();
 		currentReqs = new ArraySet<ElectricityRequirement>();
@@ -214,13 +216,9 @@ public class LCAdmin implements Runnable{
 		if (t == null)
 	      {
 	         t = new Thread (this, (client.handler.getId()+"admin"));
-	         t.start ();
-	         try {
-				t.wait(sleepOnStart);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	         final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+	         executor.schedule(this, 1, TimeUnit.MILLISECONDS);
+	         
 	      }
 	}
 	/**
@@ -299,7 +297,7 @@ public class LCAdmin implements Runnable{
 										//if(right!=1){System.out.println("Viable trade?: " + left + " : " + right);}
 										if (left > right)
 										{
-											System.out.println("Viable trade: " + left + " : " + right);
+											//System.out.println("Viable trade: " + left + " : " + right);
 											try{
 											successfulTrade = client.offer(location, port, e,t).success;
 											}
@@ -311,7 +309,7 @@ public class LCAdmin implements Runnable{
 											if (successfulTrade)
 											{
 												bulletin.setUtility(subject, 1);
-												System.out.println("Trade made");
+												//System.out.println("Trade made");
 											}
 											else
 											{

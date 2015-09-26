@@ -284,7 +284,7 @@ public class TicketAllocator implements RegisterTransactionIFace {
 		Double ret = subject.getMaxConsumption()*subject.getDuration()*subject.getPriority();
 		Double tally = 0.;
 		//The higher the bluntness, the more equitable the distribution of resources
-		Double bluntness = 2.;
+		Double bluntness = 0.2*reqs.getSize();
 		for (int i = offset; i < reqs.getSize(); i++)
 		{
 			tally += reqs.get(i).getMaxConsumption()*reqs.get(i).getDuration()*reqs.get(i).getPriority();
@@ -327,7 +327,7 @@ public class TicketAllocator implements RegisterTransactionIFace {
 			{
 				double newRank = rankings.get(max)*(1-findReqRatio(indexes.get(max),max.getReqs()));
 				rankings.put(max, newRank);
-				if ((newRank ==0)||(Double.isNaN(newRank)))
+				if ((newRank <=0)||(Double.isNaN(newRank)))
 				{
 					userFinished.put(max, true);
 				}
@@ -356,8 +356,10 @@ public class TicketAllocator implements RegisterTransactionIFace {
 			for (Boolean b : userFinished.values())
 			{
 				/*we are finished if there are no requirements left to be addressed*/
+				
 				finished &= b;
 			}
+			//System.out.println(finished);
 		}
 		for (Entry<UserAgent, Double> x : rankings.entrySet())
 		{

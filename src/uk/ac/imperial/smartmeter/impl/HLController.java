@@ -43,6 +43,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	private String pass = "";
 	private String priv = "";
 	private String pub = "";
+	Boolean allocated = false;
 	
 	public HLController()
 	{
@@ -129,6 +130,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	{
 		alloc = new TicketAllocator(agents,new Date(), true, id.toString(), pass);
 		alloc.calculateTickets();
+		allocated = true;
 		return true;
 	}
 	/**
@@ -139,6 +141,8 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 	public ArraySet<ElectricityTicket> getTickets(String userId)
 	{
 		ArraySet<ElectricityTicket> ret = new ArraySet<ElectricityTicket>();
+		if (allocated)
+		{
 		for (UserAgent a : agents)
 		{
 			if (a.getId().equals(userId))
@@ -152,6 +156,7 @@ public class HLController implements HighLevelControllerIFace, UniqueIdentifierI
 					}
 				}
 			}
+		}
 		}
 		return ret;
 	}

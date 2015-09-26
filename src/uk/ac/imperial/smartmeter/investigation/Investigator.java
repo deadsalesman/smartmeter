@@ -11,6 +11,9 @@ import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
 
 public class Investigator {
 	public Integer nAgents = 15;
+	public Integer nReqs = 100;
+	public Integer nTrials = 5;
+	public Integer agentType = 1;
 	public Boolean selfHost = true;
 	Investigator()
 	{
@@ -34,14 +37,14 @@ public class Investigator {
 		hThread.start();
 		eThread.start();
 	}
-		Thread.sleep(2000);
+		//Thread.sleep(2000);
 		ArrayList<Double> results = new ArrayList<Double>();
 		
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < nTrials; i++)
 		{
 			//results.add(this.investigateRealisticSimulation());
 			results.add(this.investigateRandomPriorities());
-		Thread.sleep(6000);
+		Thread.sleep(60000);
 		}
 		Double total = 0.;
 		for (Double d : results)
@@ -63,8 +66,8 @@ public class Investigator {
 		ArrayList<LCStandalone> clients = new ArrayList<LCStandalone>();
 		for (int i = 0; i < nAgents; i++)
 		{
-			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, 1);
-			InvestigationHelper.allocateManyLightsRandomPriorities(temp,10, 100);
+			LCStandalone temp = InvestigationHelper.generateStandaloneSpecificDecisionProcess(i, agentType);
+			InvestigationHelper.allocateManyLightsRandomPriorities(temp,nReqs, 100);
 			clients.add(temp);
 		}
 		return processRequirements(clients);
@@ -92,7 +95,7 @@ public class Investigator {
 		
 		Integer count = 0;
 		Thread.sleep(LCAdmin.sleepOnStart*3);
-		for (int i = 0; i < (5+nAgents)*3000; i++)
+		for (int i = 0; i < (5+nAgents*nReqs)*300; i++)
 		{
 			count++;
 		}
