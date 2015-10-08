@@ -305,12 +305,16 @@ public class LController {
 		double threshold = 1.1;//0.95; //TODO: set a reasonable value. current is for debug, would normally be lower obviously
 		for (Entry<ElectricityRequirement, ElectricityTicket> e : masterUser.getReqTktMap().entrySet())
 		{
+			try{
 			if (e.getValue()!=null){
 			if (LCServer.calcUtilityNoExtension(e.getValue(),e.getKey()) < threshold)
 			{
 				unhappyTickets.add(e.getValue());
 			}
 			}
+			}
+			catch(ConcurrentModificationException ex)
+			{}
 		}
 		return unhappyTickets.size()!=0;
 	}

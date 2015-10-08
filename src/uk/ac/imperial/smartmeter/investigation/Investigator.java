@@ -12,8 +12,8 @@ import uk.ac.imperial.smartmeter.webcomms.LCAdmin;
 
 public class Investigator {
 	public Integer nAgents = 15;
-	public Integer nReqs = 200;
-	public Integer nTrials = 100;
+	public Integer nReqs = 100;
+	public Integer nTrials = 15;
 	public Integer agentType = 1;
 	public Boolean selfHost = true;
 	Investigator()
@@ -58,7 +58,7 @@ public class Investigator {
 		for (int i = 0; i < nTrials; i++)
 		{
 			//results.add(this.investigateRealisticSimulation());
-			results.add(this.investigateRandomPriorities());
+			results2.add(this.investigateRandomPriorities());
 		Thread.sleep(60000);
 		}
 		Double total2 = 0.;
